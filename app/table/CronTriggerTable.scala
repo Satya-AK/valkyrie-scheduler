@@ -1,7 +1,7 @@
 package table
 
 import com.google.inject.Inject
-import model.quartz.SchedulerCronTrigger
+import model.CronTrigger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
@@ -17,11 +17,11 @@ class CronTriggerTable @Inject()(protected val dbConfigProvider: DatabaseConfigP
 
   val table: TableQuery[TableDef] = TableQuery[TableDef]
 
-  class TableDef(tag: Tag) extends Table[SchedulerCronTrigger](tag, "QRTZ_JOB_DETAILS") {
+  class TableDef(tag: Tag) extends Table[CronTrigger](tag, "QRTZ_JOB_DETAILS") {
     def triggerName =  column[String]("TRIGGER_NAME")
     def groupName = column[String]("TRIGGER_GROUP")
     def cronExpression =  column[String]("CRON_EXPRESSION")
-    override def * = (triggerName, groupName, cronExpression) <> (SchedulerCronTrigger.tupled, SchedulerCronTrigger.unapply)
+    override def * = (triggerName, groupName, cronExpression) <> (CronTrigger.tupled, CronTrigger.unapply)
   }
 
 }
