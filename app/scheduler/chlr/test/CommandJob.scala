@@ -1,4 +1,4 @@
-package util
+package scheduler.chlr.test
 
 import org.quartz.{Job, JobExecutionContext}
 
@@ -8,8 +8,7 @@ import org.quartz.{Job, JobExecutionContext}
 class CommandJob extends Job {
 
   override def execute(context: JobExecutionContext): Unit = {
-    val data = context.getJobDetail.getJobDataMap.getString("foo")
-    println(s"foooo $data")
+    println("=" * 40)
   }
 
 }

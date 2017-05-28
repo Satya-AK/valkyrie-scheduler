@@ -4,7 +4,8 @@ import com.google.inject.Inject
 import model.{CronTrigger, Job, Trigger}
 import play.api.mvc.{Action, Controller}
 import repo.DBRepository
-import util.Scheduler
+import scheduler.chlr.test.Scheduler
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

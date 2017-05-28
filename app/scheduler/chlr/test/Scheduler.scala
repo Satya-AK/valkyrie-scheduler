@@ -1,10 +1,11 @@
-package util
+package scheduler.chlr.test
 
 import com.google.inject.{Inject, Singleton}
 import model.{CronTrigger, Job, Trigger}
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import play.api.Application
+import util.Util
 
 import scala.collection.JavaConverters._
 
@@ -15,12 +16,15 @@ import scala.collection.JavaConverters._
 @Singleton()
 class Scheduler @Inject() (application: Application) {
 
-  private val scheduler = {
-    val schedulerFactory = new StdSchedulerFactory()
-    schedulerFactory.initialize(Util.configToProperties(application.configuration.getConfig("scheduler").get))
-    schedulerFactory.getScheduler()
-  }
 
+  private lazy val scheduler = {
+    val schedulerFactory = new StdSchedulerFactory()
+    schedulerFactory.initialize(Util.configToProperties(application.configuration.getConfig("scheduler").get
+      ,application.configuration))
+    val _scheduler = schedulerFactory.getScheduler()
+    _scheduler.start()
+    _scheduler
+  }
 
   def createJob(job: Job) = {
     val jobDetail = JobBuilder.newJob(classOf[CommandJob])
@@ -37,9 +41,10 @@ class Scheduler @Inject() (application: Application) {
       .newTrigger()
       .withIdentity(new TriggerKey(trigger.triggerName, trigger.groupName))
       .forJob(job)
-      .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(5).repeatForever())
+      .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(2).repeatForever())
       .build()
     scheduler.scheduleJob(triggerDetail)
   }
+
 
 }
