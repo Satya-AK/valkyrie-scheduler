@@ -13,3 +13,4 @@ POST     /job/create                 @controllers.AppController.createJob
 GET      /job/group/:groupName       @controllers.AppController.listJobs(groupName: String)
 
 POST     /trigger/create             @controllers.AppController.createTrigger
+GET      /trigger/group/:groupName       @controllers.AppController.listTriggers(groupName: String)

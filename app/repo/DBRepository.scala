@@ -58,6 +58,7 @@ class DBRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
     .map(x => x.map(x => AppJob.create(x)))
   }
 
+
   def listTriggers(groupName: String) = {
     val action = for {
       mainTrigger <- triggerTable.table.filter(x => x.groupName === groupName)

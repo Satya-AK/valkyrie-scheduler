@@ -32,6 +32,7 @@ class Scheduler @Inject() (application: Application) {
       .withIdentity(new JobKey(job.jobName, job.groupName))
       .setJobData(new JobDataMap(Map("command" -> job.cmd).asJava))
       .storeDurably(true)
+      .withDescription(job.desc.orNull)
       .build()
     Future.successful(scheduler.addJob(jobDetail, true))
   }
@@ -41,6 +42,7 @@ class Scheduler @Inject() (application: Application) {
       .newTrigger()
       .withIdentity(new TriggerKey(appTrigger.triggerName, appTrigger.groupName))
       .forJob(appTrigger.jobName, appTrigger.groupName)
+      .withDescription(appTrigger.desc.orNull)
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
       .build()
     Future.successful(scheduler.scheduleJob(triggerDetail))

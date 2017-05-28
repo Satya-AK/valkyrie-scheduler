@@ -41,7 +41,7 @@ class AppController @Inject()(dBRepository: DBRepository,
   }
 
   def listTriggers(groupName: String) = Action.async {
-    dBRepository.listJobs(groupName)
+    dBRepository.listTriggers(groupName)
       .map(x => x.map(Json.toJson(_)))
       .map(x => x.foldLeft(JsArray()){ case (arr, data) => arr :+ data })
       .map(x => Ok(x))
