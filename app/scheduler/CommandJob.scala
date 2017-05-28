@@ -1,4 +1,4 @@
-package scheduler.chlr.test
+package scheduler
 
 import org.quartz.{Job, JobExecutionContext}
 

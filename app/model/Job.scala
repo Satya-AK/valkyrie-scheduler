@@ -21,7 +21,10 @@ case class Job(jobName: String,
     .map(x => new String(x.getBytes(0, x.length().asInstanceOf[Int])))
     .map(x => x.split(System.lineSeparator)
                .filterNot(_.startsWith("#"))
-               .map(x => x.split("=").toList match { case x :: tail => x -> tail.mkString("=") })
+               .map(x => x.split("=").toList match {
+                 case x :: tail => x -> tail.mkString("=")
+                 case Nil => "" -> ""
+               })
                .toMap)
 }
 

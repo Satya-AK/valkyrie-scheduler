@@ -9,5 +9,7 @@ GET     /                           controllers.HomeController.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /job/create                 @controllers.JobController.createJob
-GET     /job/show                   @controllers.JobController.getJobInfo
+POST     /job/create                 @controllers.AppController.createJob
+GET      /job/group/:groupName       @controllers.AppController.listJobs(groupName: String)
+
+POST     /trigger/create             @controllers.AppController.createTrigger

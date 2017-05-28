@@ -1,13 +1,14 @@
-package scheduler.chlr.test
+package scheduler
 
 import com.google.inject.{Inject, Singleton}
-import model.{CronTrigger, Job, Trigger}
+import model.{AppJob, AppTrigger}
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import play.api.Application
 import util.Util
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/27/17.
@@ -26,24 +27,23 @@ class Scheduler @Inject() (application: Application) {
     _scheduler
   }
 
-  def createJob(job: Job) = {
+  def createJob(job: AppJob) = {
     val jobDetail = JobBuilder.newJob(classOf[CommandJob])
-      .withIdentity(new JobKey(job.jobName, job.jobGroup))
-      .setJobData(new JobDataMap(Map("foo" -> "bar", "Hello" -> "World").asJava))
+      .withIdentity(new JobKey(job.jobName, job.groupName))
+      .setJobData(new JobDataMap(Map("command" -> job.cmd).asJava))
       .storeDurably(true)
       .build()
-    scheduler.addJob(jobDetail, true)
-    jobDetail
+    Future.successful(scheduler.addJob(jobDetail, true))
   }
 
-  def createTrigger(trigger: Trigger, cronTrigger: CronTrigger, job: JobDetail) = {
+  def createTrigger(appTrigger: AppTrigger) = {
     val triggerDetail = TriggerBuilder
       .newTrigger()
-      .withIdentity(new TriggerKey(trigger.triggerName, trigger.groupName))
-      .forJob(job)
-      .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(2).repeatForever())
+      .withIdentity(new TriggerKey(appTrigger.triggerName, appTrigger.groupName))
+      .forJob(appTrigger.jobName, appTrigger.groupName)
+      .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
       .build()
-    scheduler.scheduleJob(triggerDetail)
+    Future.successful(scheduler.scheduleJob(triggerDetail))
   }
 
 
