@@ -1,8 +1,11 @@
 package util
 
+import java.sql.Timestamp
 import java.util.Properties
+
 import play.api.Configuration
 import play.api.libs.json._
+
 import scala.concurrent.Future
 
 
@@ -11,8 +14,12 @@ import scala.concurrent.Future
   */
 object Util {
 
+
+  def uuid = java.util.UUID.randomUUID.toString.replace("-", "")
+
   def hostName = java.net.InetAddress.getLocalHost.getHostName
 
+  def currentTimeStamp = new Timestamp(new java.util.Date().getTime)
 
   /**
     * play configuration to java properties object.

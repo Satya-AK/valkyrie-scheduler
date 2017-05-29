@@ -9,10 +9,10 @@ GET     /                           controllers.HomeController.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-POST     /job/create                                 @controllers.AppController.createJob
-GET      /job/group/:groupName                       @controllers.AppController.listJobs(groupName: String)
-GET      /job/group/:groupName/job/:jobName          @controllers.AppController.fetchJob(groupName: String, jobName: String)
+POST     /job/create                                 @controllers.JobController.createJob
+GET      /job/group/:groupName                       @controllers.JobController.listJobs(groupName: String)
+GET      /job/group/:groupName/job/:jobName          @controllers.JobController.fetchJob(groupName: String, jobName: String)
 
-POST     /trigger/create                             @controllers.AppController.createTrigger
-GET      /trigger/group/:groupName                   @controllers.AppController.listTriggers(groupName: String)
-GET      /trigger/group/:groupName/trigger/:jobName  @controllers.AppController.fetchTrigger(groupName: String, jobName: String)
+POST     /trigger/create                             @controllers.TriggerController.createTrigger
+GET      /trigger/group/:groupName                   @controllers.TriggerController.listTriggers(groupName: String)
+GET      /trigger/group/:groupName/trigger/:jobName  @controllers.TriggerController.fetchTrigger(groupName: String, jobName: String)
