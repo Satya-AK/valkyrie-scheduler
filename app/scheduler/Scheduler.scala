@@ -18,12 +18,13 @@ import scala.concurrent.Future
 class Scheduler @Inject() (application: Application) {
 
 
-  private lazy val scheduler = {
+  val scheduler = {
     val schedulerFactory = new StdSchedulerFactory()
     schedulerFactory.initialize(Util.configToProperties(application.configuration.getConfig("scheduler").get
       ,application.configuration))
     val _scheduler = schedulerFactory.getScheduler()
     _scheduler.start()
+    println("the scheduler has been started")
     _scheduler
   }
 

@@ -66,7 +66,8 @@ class InstanceRepository @Inject() (protected val dbConfigProvider: DatabaseConf
     for {
       statusId <- statusRepository.getStatusName(status).map(_.id)
       instance <- fetchInstance(instanceId)
-      _ <- db.run(instanceTable.table += instance.copy(statusId = statusId, endTime = Some(currentTimeStamp)))
+      _ <- db.run(instanceTable.table.filter(_.instanceId === instanceId)
+        .update(instance.copy(statusId = statusId, endTime = Some(currentTimeStamp))))
     } yield ()
   }
 

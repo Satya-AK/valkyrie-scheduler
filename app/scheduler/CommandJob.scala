@@ -17,6 +17,7 @@ class CommandJob extends Job {
   val instanceRepository = GlobalContext.injector.getInstance(classOf[InstanceRepository])
 
   override def execute(context: JobExecutionContext): Unit = {
+    println("=" * 100)
     val instanceId = uuid
     instanceRepository.createInstance(
       instanceId

@@ -1,6 +1,6 @@
 package util
 
-import com.google.inject.{AbstractModule, Inject, Injector, Singleton}
+import com.google.inject.{Inject, Injector, Singleton}
 
 /**
   * Created by chlr on 5/29/17.
@@ -13,12 +13,5 @@ class GlobalContext @Inject()(injector: Injector) {
 }
 
 object GlobalContext {
-
    var injector: Injector = null
-
-  class Module extends AbstractModule {
-    override def configure() = {
-      bind(classOf[GlobalContext]).asEagerSingleton()
-    }
-  }
 }
