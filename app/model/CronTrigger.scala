@@ -1,6 +1,6 @@
 package model
 
-import scheduler.CronParser
+import scheduler.SchedulerParser
 
 /**
   * Created by chlr on 5/27/17.
@@ -15,5 +15,5 @@ import scheduler.CronParser
 case class CronTrigger(triggerName: String,
                        triggerGroup: String,
                        cron: String) {
-  def linuxCron = CronParser.quartzToLinux(cron)
+  def linuxCron = SchedulerParser.quartzToLinux(cron)
 }

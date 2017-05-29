@@ -8,7 +8,7 @@ import org.quartz.{Job, JobExecutionContext}
 class CommandJob extends Job {
 
   override def execute(context: JobExecutionContext): Unit = {
-    println("=" * 40)
+      context.getJobDetail.getJobDataMap
   }
 
 }

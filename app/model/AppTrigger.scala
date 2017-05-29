@@ -2,7 +2,7 @@ package model
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads, Writes}
-import scheduler.CronParser
+import scheduler.SchedulerParser
 
 /**
   * Created by chlr on 5/28/17.
@@ -23,7 +23,7 @@ case class AppTrigger(triggerName: String,
                       cron: String,
                       desc: Option[String]) {
 
-  def quartzCron = CronParser.linuxToQuartz(cron)
+  def quartzCron = SchedulerParser.linuxToQuartz(cron)
 
 }
 

@@ -3,7 +3,7 @@ package scheduler
 /**
   * Created by chlr on 5/28/17.
   */
-object CronParser {
+object SchedulerParser {
 
   def quartzToLinux(cron: String) = {
     cron.split("\\s").filterNot(_.length == 0) match {
