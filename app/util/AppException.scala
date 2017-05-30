@@ -12,6 +12,10 @@ object AppException {
 
   class ParseException(message: String) extends AppException(message)
 
+  class JobSetUpException(message: String) extends AppException(message)
+
+  class JobExecutionException(message: String) extends AppException(message)
+
 }
 
 
