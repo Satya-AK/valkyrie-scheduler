@@ -21,3 +21,5 @@ GET      /trigger/group/:groupName/trigger/:jobName  @controllers.TriggerControl
 
 POST     /instance/kill/request/:instanceId          @controllers.InstanceController.requestInstanceKill(instanceId: String)
 POST     /instance/kill/:instanceId                  @controllers.InstanceController.instanceKill(instanceId: String)
+GET      /instance/logs/request/:instanceId          @controllers.InstanceController.requestShowLog(instanceId: String)
+GET      /instance/logs/:instanceId                  @controllers.InstanceController.showLog(instanceId: String)

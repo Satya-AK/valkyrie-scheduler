@@ -2,16 +2,27 @@ package scheduler
 
 import java.io.File
 import java.util.StringTokenizer
+
 import util.AppException.{JobExecutionException, JobSetUpException}
+
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
-import CommandExecutor.Command
+import CommandExecutor.{Command, CommandResponse}
+import model.AppInstanceLog
+import util.Keyword
+
+import scala.io.Source
 
 /**
   * Created by chlr on 5/29/17.
   */
 
 class CommandExecutor(command: Command, processCache: ProcessCache) {
+
+
+  private val stdoutFile = new File(command.tmpDir, "stdout.log")
+
+  private val stderrFile = new File(command.tmpDir, "stderr.log")
 
   /**
     * build process builder
@@ -21,8 +32,8 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
     println(new File(command.tmpDir, "stdout.log"))
     val processBuilder = new ProcessBuilder(parseCommand)
       .directory(new File(command.workingDir))
-      .redirectOutput(new File(command.tmpDir, "stdout.log"))
-      .redirectError(new File(command.tmpDir, "stderr.log"))
+      .redirectOutput(stdoutFile)
+      .redirectError(stderrFile)
     command.env.foreach({case (key, value) => processBuilder.environment.put(key, value)})
     processBuilder
   }
@@ -50,10 +61,25 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
     * execute command
     * @return
     */
-  def execute() = {
+  def execute(): CommandResponse = {
     setupJob.flatMap(_ => run) match {
-      case _ => processCache.remove(command.instanceId); ()
+      case Success(_) => processCache.remove(command.instanceId); makeLogResponse()
+      case Failure(th) => processCache.remove(command.instanceId); makeLogResponse(Some(th))
     }
+  }
+
+  /**
+    * make log response object
+    * @return
+    */
+  private def makeLogResponse(throwable: Option[Throwable]=None) = {
+    val stdout = AppInstanceLog(command.instanceId,
+      Keyword.AppLog.stdout,
+      if(stdoutFile.exists) Some(Source.fromFile(stdoutFile).mkString) else None)
+    val stderr = AppInstanceLog(command.instanceId,
+      Keyword.AppLog.stderr,
+      if(stdoutFile.exists) Some(Source.fromFile(stderrFile).mkString) else None)
+    CommandResponse(stdout, stderr, throwable)
   }
 
   /**
@@ -66,9 +92,9 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
         processCache.save(command.instanceId, process)
         process.waitFor() match {
           case 0 => Success(0)
-          case retCode => Failure(new JobExecutionException(s"command failed with return code $retCode"))
+          case retCode => Failure(new JobExecutionException(retCode, s"command failed with return code $retCode"))
         }
-      case Failure(th) => Failure(new JobExecutionException(th.getMessage))
+      case Failure(th) => Failure(new JobExecutionException(-1, th.getMessage))
     }
   }
 
@@ -98,5 +124,16 @@ object CommandExecutor {
                      workingDir: String,
                      tmpDir: String,
                      env: Map[String, String])
+
+
+  /**
+    *
+    * @param stdout
+    * @param stderr
+    * @param exception
+    */
+  case class CommandResponse(stdout: AppInstanceLog,
+                             stderr: AppInstanceLog,
+                             exception: Option[Throwable] = None)
 
 }

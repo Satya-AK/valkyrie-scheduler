@@ -1,16 +1,17 @@
 package repo
 
 import com.google.inject.Inject
-import model.{AppInstance, AppStatus}
+import model.{AppInstance, AppInstanceLog, AppStatus}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import repo.AppStatusRepository.Status
 import slick.driver.JdbcProfile
 import table.AppInstanceTable
-import util.Util.{uuid, _}
-import AppStatusRepository.Status
-import play.api.Application
 import util.AppException.EntityNotFoundException
-import scala.concurrent.Future
+import util.ServiceHelper
+import util.Util.{uuid, _}
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/29/17.
@@ -19,7 +20,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider,
                                       protected val instanceTable: AppInstanceTable,
                                       protected val statusRepository: AppStatusRepository,
-                                      protected val application: Application)
+                                      protected val appInstanceLogRepository: AppInstanceLogRepository,
+                                      protected val serviceHelper: ServiceHelper)
  extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
@@ -40,7 +42,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       .sortBy(_.seqId.desc).map(_.seqId).result.headOption flatMap {
        x => instanceTable.table +=
          AppInstance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
-           x.getOrElse(0L)+1, status.id, 1, accessPoint)
+           x.getOrElse(0L)+1, status.id, 1, serviceHelper.accessPoint)
     }
     for {
       status <- statusRepository.getStatusName(Status.running)
@@ -61,27 +63,19 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     *
     * @param instanceId
     * @param status
+    * @param stdout
+    * @param stderr
     * @return
     */
-  def endInstance(instanceId: String, status: String) = {
+  def endInstance(instanceId: String, status: String, stdout: AppInstanceLog, stderr: AppInstanceLog) = {
     for {
-      statusId <- statusRepository.getStatusName(status).map(_.id)
-      instance <- fetchInstance(instanceId)
-      _ <- db.run(instanceTable.table.filter(_.instanceId === instanceId)
+        statusId <- statusRepository.getStatusName(status).map(_.id)
+        instance <- fetchInstance(instanceId)
+        _ <- db.run(instanceTable.table.filter(_.instanceId === instanceId)
         .update(instance.copy(statusId = statusId, endTime = Some(currentTimeStamp))))
+        _ <- appInstanceLogRepository.save(stdout)
+        _ <- appInstanceLogRepository.save(stderr)
     } yield ()
   }
-
-
-
-
-  /**
-    *
-    * @return
-    */
-  private def accessPoint = {
-    s"$hostName:${application.configuration.getString("http.port")}"
-  }
-
 
 }

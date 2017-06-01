@@ -2,20 +2,21 @@ package controllers
 
 import com.google.inject.Inject
 import play.api.libs.json.Json
-import play.api.libs.ws.WSClient
-import play.api.mvc.{Action, Controller, Results}
-import repo.AppInstanceRepository
+import play.api.mvc.{Action, Controller}
+import repo.{AppInstanceLogRepository, AppInstanceRepository}
+import scheduler.InstanceAction.{FetchLogAction, KillAction}
 import scheduler.ProcessCache
+import util.{Keyword, ServiceHelper}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/31/17.
   */
 class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
+                                    appInstanceLogRepository: AppInstanceLogRepository,
                                     processCache: ProcessCache,
-                                    ws: WSClient) extends Controller {
+                                    serviceHelper: ServiceHelper) extends Controller {
 
 
   /**
@@ -26,7 +27,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
   def requestInstanceKill(instanceId: String) = Action {
     processCache.remove(instanceId) match {
       case Some(x) => x.destroyForcibly(); Ok(Json.obj("success" -> "process killed"))
-      case None => BadRequest(Json.obj("failed" -> "process handler not found"))
+      case None => BadRequest(Json.obj("failed" -> s"process handler not found for instance id $instanceId"))
     }
   }
 
@@ -37,13 +38,35 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     */
   def instanceKill(instanceId: String) = Action.async {
     instanceRepository.fetchInstance(instanceId) flatMap {
-      x => ws
-          .url(s"http://${x.agent}"+controllers.routes.InstanceController.requestInstanceKill(instanceId).path)
-          .post(Results.EmptyContent())
-    } flatMap {
-      case x if x.status == 200 => Future.successful(Ok(Json.parse(x.body)))
-      case x => Future.successful(InternalServerError(Json.parse(x.body)))
+      x => serviceHelper.requestAction(KillAction(instanceId, x.agent), None)
+    } map {
+        _ => Ok(Json.obj("success" -> s"killed instance with id $instanceId successfully"))
     }
+  }
+
+  /**
+    * request instance log
+    * @param instanceId
+    * @return
+    */
+  def requestShowLog(instanceId: String) = Action.async {
+    for {
+      stdout <- appInstanceLogRepository.fetch(instanceId, Keyword.AppLog.stdout)
+      stderr <- appInstanceLogRepository.fetch(instanceId, Keyword.AppLog.stderr)
+    } yield {
+      Ok(Json.obj(Keyword.AppLog.stdout -> stdout, Keyword.AppLog.stderr -> stderr))
+    }
+  }
+
+  /**
+    * show instance log
+    * @param instanceId
+    * @return
+    */
+  def showLog(instanceId: String) = Action.async {
+    instanceRepository.fetchInstance(instanceId) flatMap {
+      x => serviceHelper.requestAction(FetchLogAction(instanceId, x.agent), None)
+    } map {x =>  Ok(x) }
   }
 
 }

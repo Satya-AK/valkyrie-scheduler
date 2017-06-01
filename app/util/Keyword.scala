@@ -16,4 +16,9 @@ object Keyword {
     val tmpDir = "temp_dir"
   }
 
+  object AppLog {
+    val stdout = "stdout"
+    val stderr = "stderr"
+  }
+
 }

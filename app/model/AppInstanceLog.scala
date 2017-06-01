@@ -10,4 +10,4 @@ package model
   * @param logType
   * @param log
   */
-case class AppInstanceLog(instanceId: String, logType: String, log: String)
+case class AppInstanceLog(instanceId: String, logType: String, log: Option[String])
