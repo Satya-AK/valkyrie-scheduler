@@ -1,22 +1,17 @@
 package scheduler
 
-import java.util.concurrent.ConcurrentHashMap
-
 /**
   * Created by chlr on 5/29/17.
   */
-object ProcessCache {
 
-  private val cache = new ConcurrentHashMap[String, Process]()
+trait ProcessCache {
 
   /**
     * get process for instanceId
     * @param instanceId
     * @return
     */
-  def fetch(instanceId: String): Process = {
-    cache.get(instanceId)
-  }
+  def fetch(instanceId: String): Option[Process]
 
   /**
     * save process with instanceId
@@ -24,17 +19,14 @@ object ProcessCache {
     * @param process
     * @return
     */
-  def save(instanceId: String, process: Process) = {
-    cache.put(instanceId, process)
-  }
+  def save(instanceId: String, process: Process): Unit
+
 
   /**
     * remove process from cache
     * @param instanceId
     * @return
     */
-  def remove(instanceId: String) = {
-    cache.remove(instanceId)
-  }
+  def remove(instanceId: String): Option[Process]
 
 }

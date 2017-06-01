@@ -3,7 +3,7 @@ package repo
 import com.google.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-import table.StatusTable
+import table.AppStatusTable
 import util.AppException.EntityNotFoundException
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -12,8 +12,8 @@ import scala.concurrent.Future
   * Created by chlr on 5/29/17.
   */
 
-class StatusRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider,
-                                  protected val statusTable: StatusTable)
+class AppStatusRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider,
+                                    protected val statusTable: AppStatusTable)
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
@@ -33,7 +33,7 @@ class StatusRepository @Inject() (protected val dbConfigProvider: DatabaseConfig
 
 }
 
-object StatusRepository {
+object AppStatusRepository {
 
   object Status {
     val success = "succeeded"

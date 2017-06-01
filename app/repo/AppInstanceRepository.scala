@@ -1,14 +1,14 @@
 package repo
 
 import com.google.inject.Inject
-import model.{AppStatus, Instance}
+import model.{AppInstance, AppStatus}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-import table.InstanceTable
+import table.AppInstanceTable
 import util.Util.{uuid, _}
-import StatusRepository.Status
+import AppStatusRepository.Status
+import play.api.Application
 import util.AppException.EntityNotFoundException
-
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,9 +16,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   * Created by chlr on 5/29/17.
   */
 
-class InstanceRepository @Inject() (protected val dbConfigProvider: DatabaseConfigProvider,
-                                    protected val instanceTable: InstanceTable,
-                                    protected val statusRepository: StatusRepository)
+class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider,
+                                      protected val instanceTable: AppInstanceTable,
+                                      protected val statusRepository: AppStatusRepository,
+                                      protected val application: Application)
  extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
@@ -38,8 +39,8 @@ class InstanceRepository @Inject() (protected val dbConfigProvider: DatabaseConf
       .filter(x => x.jobName === jobName && x.groupName === groupName)
       .sortBy(_.seqId.desc).map(_.seqId).result.headOption flatMap {
        x => instanceTable.table +=
-         Instance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
-           x.getOrElse(0L)+1, status.id, 1, hostName)
+         AppInstance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
+           x.getOrElse(0L)+1, status.id, 1, accessPoint)
     }
     for {
       status <- statusRepository.getStatusName(Status.running)
@@ -71,6 +72,16 @@ class InstanceRepository @Inject() (protected val dbConfigProvider: DatabaseConf
     } yield ()
   }
 
+
+
+
+  /**
+    *
+    * @return
+    */
+  private def accessPoint = {
+    s"$hostName:${application.configuration.getString("http.port")}"
+  }
 
 
 }

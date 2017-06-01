@@ -10,7 +10,7 @@ import slick.driver.JdbcProfile
   */
 
 
-class StatusTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+class AppStatusTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._

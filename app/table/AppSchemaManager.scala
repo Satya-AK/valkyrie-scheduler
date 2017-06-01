@@ -8,8 +8,8 @@ import com.google.inject.Inject
   * Created by chlr on 5/29/17.
   */
 
-class AppSchemaManager @Inject() (instanceTable: InstanceTable,
-                                  statusTable: StatusTable) {
+class AppSchemaManager @Inject() (instanceTable: AppInstanceTable,
+                                  statusTable: AppStatusTable) {
 
   val schemas = instanceTable.schema :: statusTable.schema :: Nil
 

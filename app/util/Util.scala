@@ -1,5 +1,6 @@
 package util
 
+import java.io.File
 import java.sql.Timestamp
 import java.util.Properties
 
@@ -15,11 +16,32 @@ import scala.concurrent.Future
 object Util {
 
 
+  /**
+    * uuid generator
+    * @return
+    */
   def uuid = java.util.UUID.randomUUID.toString.replace("-", "")
 
+  /**
+    * get hostname
+    * @return
+    */
   def hostName = java.net.InetAddress.getLocalHost.getHostName
 
+  /**
+    * current timestamp
+    * @return
+    */
   def currentTimeStamp = new Timestamp(new java.util.Date().getTime)
+
+  /**
+    * join paths
+    * @param paths
+    * @return
+    */
+  def joinPath(paths: String *): String = {
+    paths.foldLeft(System.getProperty("file.separator"))((acc: String, path: String) => new File(acc, path).toString)
+  }
 
   /**
     * play configuration to java properties object.

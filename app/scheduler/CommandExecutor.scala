@@ -2,33 +2,28 @@ package scheduler
 
 import java.io.File
 import java.util.StringTokenizer
-
 import util.AppException.{JobExecutionException, JobSetUpException}
-
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
+import CommandExecutor.Command
 
 /**
   * Created by chlr on 5/29/17.
   */
 
-class CommandExecutor(instanceId: String,
-                      command: String,
-                      workingDir: String,
-                      tmpDir: String,
-                      env: Map[String, String]) {
-
+class CommandExecutor(command: Command, processCache: ProcessCache) {
 
   /**
     * build process builder
     * @return
     */
-  private def processBuilder = {
+  private val processBuilder = {
+    println(new File(command.tmpDir, "stdout.log"))
     val processBuilder = new ProcessBuilder(parseCommand)
-      .directory(new File(workingDir))
-      .redirectOutput(new File(workingDir, "stdout"))
-      .redirectError(new File(workingDir, "stderr"))
-    env.foreach({case (key, value) => processBuilder.environment.put(key, value)})
+      .directory(new File(command.workingDir))
+      .redirectOutput(new File(command.tmpDir, "stdout.log"))
+      .redirectError(new File(command.tmpDir, "stderr.log"))
+    command.env.foreach({case (key, value) => processBuilder.environment.put(key, value)})
     processBuilder
   }
 
@@ -36,7 +31,7 @@ class CommandExecutor(instanceId: String,
     * create temporary directory
     */
   private def createTempDir() = {
-    if(! new File(tmpDir).mkdirs()) {
+    if(! new File(command.tmpDir).mkdirs()) {
       throw new JobSetUpException("failed to create tmp directory")
     }
   }
@@ -57,7 +52,7 @@ class CommandExecutor(instanceId: String,
     */
   def execute() = {
     setupJob.flatMap(_ => run) match {
-      case _ => ProcessCache.remove(instanceId); ()
+      case _ => processCache.remove(command.instanceId); ()
     }
   }
 
@@ -68,7 +63,7 @@ class CommandExecutor(instanceId: String,
   private def run = {
     Try(processBuilder.start()) match {
       case Success(process) =>
-        ProcessCache.save(instanceId, process)
+        processCache.save(command.instanceId, process)
         process.waitFor() match {
           case 0 => Success(0)
           case retCode => Failure(new JobExecutionException(s"command failed with return code $retCode"))
@@ -82,8 +77,26 @@ class CommandExecutor(instanceId: String,
     * @return
     */
   private def parseCommand = {
-    val tokenizer = new StringTokenizer(command)
-    (0 to tokenizer.countTokens).map(_ => tokenizer.nextToken()).toList.asJava
+    val tokenizer = new StringTokenizer(command.command)
+    (0 until tokenizer.countTokens).map(_ => tokenizer.nextToken()).toList.asJava
   }
+
+}
+
+object CommandExecutor {
+
+  /**
+    * Command info object
+    * @param instanceId
+    * @param command
+    * @param workingDir
+    * @param tmpDir
+    * @param env
+    */
+  case class Command(instanceId: String,
+                     command: String,
+                     workingDir: String,
+                     tmpDir: String,
+                     env: Map[String, String])
 
 }
