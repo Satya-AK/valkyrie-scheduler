@@ -1,11 +1,13 @@
 package scheduler
 
-import com.google.inject.{Inject, Singleton}
+import java.io.File
+
+import com.google.inject.Inject
 import model.{AppJob, AppTrigger}
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
-import play.api.Application
-import util.Util
+import play.api.{Application, Logger}
+import util.{GlobalContext, Util}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
@@ -14,9 +16,11 @@ import scala.concurrent.Future
   * Created by chlr on 5/27/17.
   */
 
-@Singleton()
 class Scheduler @Inject() (application: Application) {
 
+  val logger: Logger = Logger(this.getClass)
+
+  createCacheDirectory()
 
   val scheduler = {
     val schedulerFactory = new StdSchedulerFactory()
@@ -24,8 +28,24 @@ class Scheduler @Inject() (application: Application) {
       ,application.configuration))
     val _scheduler = schedulerFactory.getScheduler()
     _scheduler.start()
-    println("the scheduler has been started")
+    logger.info("the scheduler has been started")
     _scheduler
+  }
+
+
+  /**
+    * create the app directory
+    */
+  def createCacheDirectory() = {
+    val tmpDirectory = new File(GlobalContext.tmpDirectory)
+    if(tmpDirectory.exists()) {
+      logger.info(s"app directory ${GlobalContext.tmpDirectory} already exists")
+      require(tmpDirectory.canWrite, s"app directory ${GlobalContext.tmpDirectory} is not writeable")
+    } else {
+      logger.info(s"attempting to create app directory ${GlobalContext.tmpDirectory}")
+      require(new File(GlobalContext.tmpDirectory).mkdirs(),
+        s"failed to create app directory ${GlobalContext.tmpDirectory}")
+    }
   }
 
   def createJob(job: AppJob) = {

@@ -60,8 +60,7 @@ class CommandJob extends Job {
     */
   def buildCommand(dataMap: JobDataMap) = {
     Command(instanceId, dataMap.getString(JobData.command), getWorkingDir(dataMap),
-      GlobalContext.application.configuration
-        .getString(s"app.${AppSetting.tmpDir}")
+      GlobalContext.application.configuration.getString(s"app.${AppSetting.tmpDir}")
         .map(joinPath(_, instanceId)).get, getEnvironment(dataMap))
   }
 

@@ -21,6 +21,7 @@ class AppInstanceLogRepository @Inject() (protected val dbConfigProvider: Databa
     * @return
     */
   def save(appInstanceLog: AppInstanceLog) = {
+    println("*" * 60)
     db.run(appInstanceLogTable.table += appInstanceLog)
   }
 

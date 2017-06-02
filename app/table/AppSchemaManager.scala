@@ -9,9 +9,10 @@ import com.google.inject.Inject
   */
 
 class AppSchemaManager @Inject() (instanceTable: AppInstanceTable,
-                                  statusTable: AppStatusTable) {
+                                  statusTable: AppStatusTable,
+                                  instanceLogTable: AppInstanceLogTable) {
 
-  val schemas = instanceTable.schema :: statusTable.schema :: Nil
+  val schemas = instanceTable.schema :: statusTable.schema :: instanceLogTable.schema :: Nil
 
   def evolution = {
     val writer = new StringWriter()

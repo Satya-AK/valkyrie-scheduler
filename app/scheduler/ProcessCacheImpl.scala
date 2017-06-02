@@ -2,6 +2,8 @@ package scheduler
 
 import java.util.concurrent.ConcurrentHashMap
 
+import com.google.inject.Singleton
+
 /**
   * Created by chlr on 6/1/17.
   */
@@ -9,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
 /**
   * implementation of ProcessCache that uses `java.util.concurrent.ConcurrentHashMap`
   */
+@Singleton
 class ProcessCacheImpl extends ProcessCache {
 
   private val cache = new ConcurrentHashMap[String, Process]()

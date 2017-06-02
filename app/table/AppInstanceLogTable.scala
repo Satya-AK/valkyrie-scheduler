@@ -17,10 +17,10 @@ class AppInstanceLogTable @Inject()(protected val dbConfigProvider: DatabaseConf
   val table: TableQuery[TableDef] = TableQuery[TableDef]
   val schema = table.schema
 
-  class TableDef(tag: Tag) extends Table[AppInstanceLog](tag, "APP_INSTANCE") {
+  class TableDef(tag: Tag) extends Table[AppInstanceLog](tag, "APP_INSTANCE_LOG") {
     def instanceId =  column[String]("INSTANCE_ID", O.SqlType("varchar(40)"))
     def logType = column[String]("LOG_TYPE", O.SqlType("varchar(10)"))
     def logData = column[Option[String]]("LOG_DATA", O.SqlType("TEXT"))
-    override def * = (instanceId, instanceId, logData) <> (AppInstanceLog.tupled, AppInstanceLog.unapply)
+    override def * = (instanceId, logType, logData) <> (AppInstanceLog.tupled, AppInstanceLog.unapply)
   }
 }

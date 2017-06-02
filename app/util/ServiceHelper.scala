@@ -27,6 +27,7 @@ class ServiceHelper @Inject() (wSClient: WSClient
     */
   def requestAction(action: InstanceAction, body: Option[JsValue], statusCode: Int = 200) = {
     val url = s"http://${action.accessPoint}${action.requestCall.path}"
+    println(url)
     val response = action.requestCall.method match {
       case "POST" => body match {
         case Some(x) => wSClient.url(url).post(x)
@@ -43,7 +44,7 @@ class ServiceHelper @Inject() (wSClient: WSClient
     * @return
     */
   def accessPoint = {
-    s"$hostName:${application.configuration.getString("http.port")}"
+    s"$hostName:${application.configuration.getString("http.port").getOrElse(9000)}"
   }
 
 

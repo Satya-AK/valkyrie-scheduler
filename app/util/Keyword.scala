@@ -13,7 +13,7 @@ object Keyword {
   }
 
   object AppSetting {
-    val tmpDir = "temp_dir"
+    val tmpDir = "directory"
   }
 
   object AppLog {

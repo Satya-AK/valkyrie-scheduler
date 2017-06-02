@@ -16,6 +16,8 @@ object AppException {
 
   class JobExecutionException(val returnCode: Int, message: String) extends AppException(message)
 
+  class AppSetupException(message: String) extends AppException(message)
+
 }
 
 
