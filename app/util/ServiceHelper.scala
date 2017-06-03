@@ -1,14 +1,12 @@
 package util
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSClient
 import play.api.mvc.Results
 import play.api.{Application, Logger}
 import scheduler.InstanceAction
 import util.Util.hostName
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

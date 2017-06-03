@@ -4,7 +4,7 @@ import model.AppInstanceLog
 import org.quartz.{Job, JobDataMap, JobExecutionContext}
 import play.api.libs.json.{JsObject, Json}
 import repo.AppStatusRepository.Status
-import repo.{AppInstanceLogRepository, AppInstanceRepository}
+import repo.{AppGroupRepository, AppInstanceRepository}
 import scheduler.CommandExecutor.{Command, CommandResponse}
 import util.AppException.JobExecutionException
 import util.{GlobalContext, Keyword}
@@ -23,7 +23,7 @@ class CommandJob extends Job {
   val instanceRepository = GlobalContext.injector.getInstance(classOf[AppInstanceRepository])
   val processCache = GlobalContext.injector.getInstance(classOf[ProcessCache])
   val instanceId = uuid
-  val appInstanceLogRepository = GlobalContext.injector.getInstance(classOf[AppInstanceLogRepository])
+  val appInstanceLogRepository = GlobalContext.injector.getInstance(classOf[AppGroupRepository])
 
   /**
     * execute

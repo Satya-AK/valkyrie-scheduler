@@ -3,19 +3,19 @@ package util
 import java.io.File
 import java.sql.Timestamp
 import java.util.Properties
+
 import play.api.Configuration
 import play.api.libs.json._
+import _root_.util.AppException.AppSetupException
+import _root_.util.Keyword.AppSetting
+
 import scala.concurrent.Future
-import Keyword.AppSetting
-import AppException.AppSetupException
 
 
 /**
   * Created by chlr on 5/27/17.
   */
 object Util {
-
-
 
   /**
     * get hostname

@@ -7,7 +7,6 @@ import repo.{AppInstanceLogRepository, AppInstanceRepository}
 import scheduler.InstanceAction.{FetchLogAction, KillAction}
 import scheduler.ProcessCache
 import util.{ErrRecoveryAction, Keyword, ServiceHelper}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**

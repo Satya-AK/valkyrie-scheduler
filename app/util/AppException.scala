@@ -18,6 +18,8 @@ object AppException {
 
   class AppSetupException(message: String) extends AppException(message)
 
+  class InvalidJsonFormatException(message: String) extends AppException(message)
+
 }
 
 

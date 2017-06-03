@@ -1,7 +1,6 @@
 package scheduler
 
 import java.util.concurrent.ConcurrentHashMap
-import scala.collection.JavaConverters._
 import com.google.inject.Singleton
 import play.api.Logger
 
@@ -46,7 +45,6 @@ class ProcessCacheImpl extends ProcessCache {
     * @return
     */
   def remove(instanceId: String) = {
-    println(cache.keys().asScala.toList)
     logger.info(s"popping process handler for instance id $instanceId")
     Option(cache.remove(instanceId))
   }
