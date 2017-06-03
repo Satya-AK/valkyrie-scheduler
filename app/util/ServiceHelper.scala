@@ -1,13 +1,16 @@
 package util
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.Application
-import play.api.libs.json.JsValue
+
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSClient
 import play.api.mvc.Results
+import play.api.{Application, Logger}
 import scheduler.InstanceAction
 import util.Util.hostName
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by chlr on 6/1/17.
@@ -17,6 +20,7 @@ import util.Util.hostName
 class ServiceHelper @Inject() (wSClient: WSClient
                               ,application: Application) {
 
+  val logger = Logger(getClass)
 
   /**
     * make remote REST call to another agent to perform an action
@@ -35,7 +39,13 @@ class ServiceHelper @Inject() (wSClient: WSClient
       }
       case "GET" => wSClient.url(url).get()
     }
-    response.filter(x => x.status == statusCode).map(_.json)
+    response flatMap {
+      case x if x.status == statusCode =>
+        Future.successful(x.json)
+      case x =>
+        logger.error(Json.stringify(x.json))
+        Future.failed(new RuntimeException("status code failed"))
+    }
   }
 
 
