@@ -3,11 +3,11 @@ package util
 import java.io.File
 import java.sql.Timestamp
 import java.util.Properties
-
 import play.api.Configuration
 import play.api.libs.json._
-
 import scala.concurrent.Future
+import Keyword.AppSetting
+import AppException.AppSetupException
 
 
 /**
@@ -16,17 +16,23 @@ import scala.concurrent.Future
 object Util {
 
 
-  /**
-    * uuid generator
-    * @return
-    */
-  def uuid = java.util.UUID.randomUUID.toString.replace("-", "")
 
   /**
     * get hostname
     * @return
     */
-  def hostName = java.net.InetAddress.getLocalHost.getHostName
+  def hostName = {
+    GlobalContext.application.configuration.getString(s"app.${AppSetting.hostName}") match {
+      case None => java.net.InetAddress.getLocalHost.getHostName
+      case Some(x) => x
+    }
+  }
+
+  /**
+    * uuid generator
+    * @return
+    */
+  def uuid = java.util.UUID.randomUUID.toString.replace("-", "")
 
   /**
     * current timestamp
@@ -78,5 +84,24 @@ object Util {
       case JsError(th) => Future.failed(new AppException.ParseException(""))
     }
   }
+
+  /**
+    *
+    * @return
+    */
+  def appDirectory = {
+    GlobalContext.application.configuration.getString(s"app.${AppSetting.tmpDir}") match {
+      case None => throw new AppSetupException(s"key app.${AppSetting.tmpDir} not defined in application conf")
+      case Some(x) => x
+    }
+  }
+
+
+  /**
+    *
+    * @param instanceId
+    * @return
+    */
+  def instanceLogDirectory(instanceId: String) = joinPath(appDirectory, "logs", instanceId)
 
 }

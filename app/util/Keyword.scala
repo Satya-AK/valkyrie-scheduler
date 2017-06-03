@@ -14,6 +14,7 @@ object Keyword {
 
   object AppSetting {
     val tmpDir = "directory"
+    val hostName = "hostname"
   }
 
   object AppLog {

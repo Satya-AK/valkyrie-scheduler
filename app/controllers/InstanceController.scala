@@ -2,11 +2,11 @@ package controllers
 
 import com.google.inject.Inject
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 import repo.{AppInstanceLogRepository, AppInstanceRepository}
 import scheduler.InstanceAction.{FetchLogAction, KillAction}
 import scheduler.ProcessCache
-import util.{Keyword, ServiceHelper}
+import util.{ErrRecoveryAction, Keyword, ServiceHelper}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,7 +24,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     * @param instanceId
     * @return
     */
-  def requestInstanceKill(instanceId: String) = Action {
+  def requestInstanceKill(instanceId: String) = ErrRecoveryAction {
     processCache.remove(instanceId) match {
       case Some(x) => x.destroyForcibly(); Ok(Json.obj("success" -> "process killed"))
       case None => BadRequest(Json.obj("failed" -> s"process handler not found for instance id $instanceId"))
@@ -36,7 +36,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     * @param instanceId
     * @return
     */
-  def instanceKill(instanceId: String) = Action.async {
+  def instanceKill(instanceId: String) = ErrRecoveryAction.async {
     instanceRepository.fetchInstance(instanceId) flatMap {
       x => serviceHelper.requestAction(KillAction(instanceId, x.agent), None)
     } map {
@@ -49,7 +49,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     * @param instanceId
     * @return
     */
-  def requestShowLog(instanceId: String) = Action.async {
+  def requestShowLog(instanceId: String) = ErrRecoveryAction.async {
     for {
       stdout <- appInstanceLogRepository.fetch(instanceId, Keyword.AppLog.stdout)
       stderr <- appInstanceLogRepository.fetch(instanceId, Keyword.AppLog.stderr)
@@ -63,7 +63,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     * @param instanceId
     * @return
     */
-  def showLog(instanceId: String) = Action.async {
+  def showLog(instanceId: String) = ErrRecoveryAction.async {
     instanceRepository.fetchInstance(instanceId) flatMap {
       x => serviceHelper.requestAction(FetchLogAction(instanceId, x.agent), None)
     } map {x =>  Ok(x) }

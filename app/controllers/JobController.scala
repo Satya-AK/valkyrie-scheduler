@@ -7,7 +7,8 @@ import play.api.libs.json.{JsArray, JsValue, Json}
 import play.api.mvc.{Action, Controller}
 import repo.{JobRepository, TriggerRepository}
 import scheduler.Scheduler
-import util.Util
+import util.{ErrRecoveryAction, Util}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -22,7 +23,7 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     * create job
     * @return
     */
-  def createJob: Action[JsValue] = Action.async(parse.json) {
+  def createJob: Action[JsValue] = ErrRecoveryAction.async(parse.json) {
     request =>
       for {
         appJob <- Util.parseJson[AppJob](request.body)
@@ -36,7 +37,7 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     * @param groupName
     * @return
     */
-  def listJobs(groupName: String) = Action.async {
+  def listJobs(groupName: String) = ErrRecoveryAction.async {
     jobRepository.listJobs(groupName)
       .map(x => x.map(Json.toJson(_)))
       .map(x => x.foldLeft(JsArray()){ case (arr, data) => arr :+ data })
@@ -51,7 +52,7 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     * @param jobName
     * @return
     */
-  def fetchJob(groupName: String, jobName: String) = Action.async {
+  def fetchJob(groupName: String, jobName: String) = ErrRecoveryAction.async {
     jobRepository.getJob(jobName, groupName)
       .map(x => Ok(Json.toJson(x)))
   }

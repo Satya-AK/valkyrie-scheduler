@@ -7,7 +7,7 @@ import model.{AppJob, AppTrigger}
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import play.api.{Application, Logger}
-import util.{GlobalContext, Util}
+import util.Util
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
@@ -37,14 +37,14 @@ class Scheduler @Inject() (application: Application) {
     * create the app directory
     */
   def createCacheDirectory() = {
-    val tmpDirectory = new File(GlobalContext.tmpDirectory)
+    val tmpDirectory = new File(Util.appDirectory)
     if(tmpDirectory.exists()) {
-      logger.info(s"app directory ${GlobalContext.tmpDirectory} already exists")
-      require(tmpDirectory.canWrite, s"app directory ${GlobalContext.tmpDirectory} is not writeable")
+      logger.info(s"app directory ${Util.appDirectory} already exists")
+      require(tmpDirectory.canWrite, s"app directory ${Util.appDirectory} is not writeable")
     } else {
-      logger.info(s"attempting to create app directory ${GlobalContext.tmpDirectory}")
-      require(new File(GlobalContext.tmpDirectory).mkdirs(),
-        s"failed to create app directory ${GlobalContext.tmpDirectory}")
+      logger.info(s"attempting to create app directory ${Util.appDirectory}")
+      require(new File(Util.appDirectory).mkdirs(),
+        s"failed to create app directory ${Util.appDirectory}")
     }
   }
 

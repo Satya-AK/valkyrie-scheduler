@@ -3,15 +3,13 @@ package scheduler
 import java.io.File
 import java.util.StringTokenizer
 
-import util.AppException.{JobExecutionException, JobSetUpException}
-
-import scala.collection.JavaConverters._
-import scala.util.{Failure, Success, Try}
-import CommandExecutor.{Command, CommandResponse}
 import model.AppInstanceLog
-import util.Keyword
-
+import scheduler.CommandExecutor.{Command, CommandResponse}
+import util.AppException.{JobExecutionException, JobSetUpException}
+import util.{Keyword, Util}
+import scala.collection.JavaConverters._
 import scala.io.Source
+import scala.util.{Failure, Success, Try}
 
 /**
   * Created by chlr on 5/29/17.
@@ -20,16 +18,16 @@ import scala.io.Source
 class CommandExecutor(command: Command, processCache: ProcessCache) {
 
 
-  private val stdoutFile = new File(command.tmpDir, "stdout.log")
 
-  private val stderrFile = new File(command.tmpDir, "stderr.log")
+  private val stdoutFile = new File(Util.instanceLogDirectory(command.instanceId), "stdout.log")
+
+  private val stderrFile = new File(Util.instanceLogDirectory(command.instanceId), "stderr.log")
 
   /**
     * build process builder
     * @return
     */
   private val processBuilder = {
-    println(new File(command.tmpDir, "stdout.log"))
     val processBuilder = new ProcessBuilder(parseCommand)
       .directory(new File(command.workingDir))
       .redirectOutput(stdoutFile)
@@ -52,8 +50,9 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
     * @return
     */
   private def setupJob = Try {
-      createTempDir()
-      processBuilder
+    stdoutFile.getParentFile.mkdirs(); stdoutFile.createNewFile()
+    stderrFile.getParentFile.mkdirs(); stderrFile.createNewFile()
+    processBuilder
   }
 
 

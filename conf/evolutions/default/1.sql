@@ -3,11 +3,11 @@
 -- Thanks to Amir Kibbar and Peter Rietzler for contributing the schema for H2 database,
 -- and verifying that it works with Quartz's StdJDBCDelegate
 --
--- Note, Quartz depends on row-level locking which means you must use the MVCC=TRUE 
+-- Note, Quartz depends on row-level locking which means you must use the MVCC=TRUE
 -- setting on your H2 database, or you will experience dead-locks
 --
 --
--- In your Quartz properties file, you'll need to set 
+-- In your Quartz properties file, you'll need to set
 -- org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 
 CREATE TABLE QRTZ_CALENDARS (
@@ -254,4 +254,14 @@ COMMIT;
 # --- !Downs
 
 
+drop table QRTZ_CALENDARS;
+drop table QRTZ_BLOB_TRIGGERS;
+drop table QRTZ_CRON_TRIGGERS;
+drop table QRTZ_FIRED_TRIGGERS;
+drop table QRTZ_JOB_DETAILS;
+drop table QRTZ_LOCKS;
+drop table QRTZ_PAUSED_TRIGGER_GRPS;
+drop table QRTZ_SCHEDULER_STATE;
+drop table QRTZ_SIMPLE_TRIGGERS;
+drop table QRTZ_SIMPROP_TRIGGERS;
 drop table QRTZ_TRIGGERS;

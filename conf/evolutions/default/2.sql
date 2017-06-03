@@ -14,3 +14,4 @@ INSERT INTO "APP_STATUS" VALUES (3, 'error');
 
 drop table "APP_INSTANCE";
 drop table "APP_STATUS";
+drop table "APP_INSTANCE_LOG";
