@@ -23,23 +23,23 @@ class JobRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProv
   /**
     * get job
     * @param jobName
-    * @param groupName
+    * @param groupId
     * @return
     */
-  def getJob(jobName: String, groupName: String) = {
+  def getJob(groupId: String, jobName: String) = {
     db.run(jobTable.table
-      .filter(x => x.groupName === groupName && x.jobName === jobName)
+      .filter(x => x.groupId === groupId && x.jobName === jobName)
       .result.headOption) flatMap {
       case Some(x) => Future.successful(AppJob.create(x))
-      case None => Future.failed(new EntityNotFoundException(s"job $jobName not not found in group $groupName"))
+      case None => Future.failed(new EntityNotFoundException(s"job $jobName not not found in group $groupId"))
     }
   }
 
 
 
 
-  def listJobs(groupName: String) = {
-    db.run(jobTable.table.filter(x => x.groupName === groupName).result)
+  def listJobs(groupId: String) = {
+    db.run(jobTable.table.filter(x => x.groupId === groupId).result)
     .map(x => x.map(x => AppJob.create(x)))
   }
 

@@ -13,27 +13,23 @@ import play.api.libs.functional.syntax._
   * @param groupName
   * @param description
   */
-case class AppGroup(id: Option[Int], groupName: String, description: String)
+case class AppGroup(id: String, groupName: String, description: String)
 
 object AppGroup {
 
   def tupled = (AppGroup.apply _).tupled
 
-  def unravel(arg: AppGroup): Option[(Option[Int], String, String)] = {
-    Some((arg.id, arg.groupName, arg.description))
-  }
-
-  def create(groupName: String, description: String) = new AppGroup(None, groupName, description)
 
   implicit val jsonWriter: Writes[AppGroup] = (
-    (JsPath \ "id").writeNullable[Int] and
+    (JsPath \ "id").write[String] and
     (JsPath \ "name").write[String] and
     (JsPath \ "description").write[String]
-  ) (unlift(AppGroup.unravel))
+  ) (unlift(AppGroup.unapply))
 
   implicit val jsonReader: Reads[AppGroup] = (
+    (JsPath \ "id").read[String] and
     (JsPath \ "name").read[String] and
     (JsPath \ "description").read[String]
-  ) (AppGroup.create _)
+  ) (AppGroup.apply _)
 
 }

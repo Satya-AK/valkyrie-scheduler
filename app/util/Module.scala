@@ -1,7 +1,7 @@
 package util
 
 import com.google.inject.AbstractModule
-import scheduler.{ProcessCache, ProcessCacheImpl, Scheduler}
+import scheduler.{ProcessCache, ProcessCacheImpl, QuartzScheduler, Scheduler}
 
 /**
   * Created by chlr on 5/29/17.
@@ -11,7 +11,7 @@ import scheduler.{ProcessCache, ProcessCacheImpl, Scheduler}
 class Module extends AbstractModule {
   override def configure() = {
     bind(classOf[GlobalContext]).asEagerSingleton()
-    bind(classOf[Scheduler]).asEagerSingleton()
     bind(classOf[ProcessCache]).to(classOf[ProcessCacheImpl])
+    bind(classOf[Scheduler]).to(classOf[QuartzScheduler]).asEagerSingleton()
   }
 }

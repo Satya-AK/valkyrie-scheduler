@@ -2,9 +2,9 @@ package controllers
 
 import com.google.inject.Inject
 import model.AppTrigger
-import play.api.libs.json.{JsArray, JsValue, Json}
-import play.api.mvc.{Action, Controller}
-import repo.TriggerRepository
+import play.api.libs.json.{JsArray, Json}
+import play.api.mvc.Controller
+import repo.{AppGroupRepository, TriggerRepository}
 import scheduler.Scheduler
 import util.{ErrRecoveryAction, Util}
 
@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class TriggerController @Inject()(triggerRepository: TriggerRepository,
+                                  groupRepository: AppGroupRepository,
                                   scheduler: Scheduler)
   extends Controller {
 
@@ -23,11 +24,12 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
     * create trigger
     * @return
     */
-  def createTrigger: Action[JsValue] = ErrRecoveryAction.async(parse.json) {
+  def createTrigger(groupName: String) = ErrRecoveryAction.async(parse.json) {
     request =>
       for {
+        group <- groupRepository.getGroupByName(groupName)
         appTrigger <- Util.parseJson[AppTrigger](request.body)
-        _ <- scheduler.createTrigger(appTrigger)
+        _ <- scheduler.createTrigger(group.id, appTrigger)
       } yield Ok(Json.obj("success" -> "trigger created"))
   }
 

@@ -7,7 +7,6 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.11"
 
-libraryDependencies += filters
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test
 
 // Adds additional packages into Twirl
@@ -27,3 +26,5 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
   "org.quartz-scheduler" % "quartz" % "2.3.0"
 )
+
+javaOptions in Test += "-Dconfig.file=conf/application-test.conf"

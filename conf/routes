@@ -9,17 +9,20 @@ GET     /                           controllers.HomeController.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET      /app/evolution                              @controllers.HomeController.evolutions
+GET      /app/evolution                                 @controllers.HomeController.evolutions
 
-POST     /job/create                                 @controllers.JobController.createJob
-GET      /job/group/:groupName                       @controllers.JobController.listJobs(groupName: String)
-GET      /job/group/:groupName/job/:jobName          @controllers.JobController.fetchJob(groupName: String, jobName: String)
+POST     /job/create/:groupName                         @controllers.JobController.createJob(groupName: String)
+GET      /job/group/:groupName                          @controllers.JobController.listJobs(groupName: String)
+GET      /job/group/:groupName/job/:jobName             @controllers.JobController.fetchJob(groupName: String, jobName: String)
 
-POST     /trigger/create                             @controllers.TriggerController.createTrigger
-GET      /trigger/group/:groupName                   @controllers.TriggerController.listTriggers(groupName: String)
-GET      /trigger/group/:groupName/trigger/:jobName  @controllers.TriggerController.fetchTrigger(groupName: String, jobName: String)
+POST     /trigger/create/:groupName                     @controllers.TriggerController.createTrigger(groupName: String)
+GET      /trigger/group/:groupName                      @controllers.TriggerController.listTriggers(groupName: String)
+GET      /trigger/group/:groupName/trigger/:triggerName @controllers.TriggerController.fetchTrigger(groupName: String, triggerName: String)
 
-POST     /instance/kill/request/:instanceId          @controllers.InstanceController.requestInstanceKill(instanceId: String)
-POST     /instance/kill/:instanceId                  @controllers.InstanceController.instanceKill(instanceId: String)
-GET      /instance/logs/request/:instanceId          @controllers.InstanceController.requestShowLog(instanceId: String)
-GET      /instance/logs/:instanceId                  @controllers.InstanceController.showLog(instanceId: String)
+POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
+POST     /instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)
+GET      /instance/logs/request/:instanceId             @controllers.InstanceController.requestShowLog(instanceId: String)
+GET      /instance/logs/:instanceId                     @controllers.InstanceController.showLog(instanceId: String)
+
+POST      /group/create                                 @controllers.GroupController.createGroup
+GET       /group                                        @controllers.GroupController.listGroups

@@ -29,7 +29,7 @@ class TriggerRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
     */
   def getTrigger(triggerName: String, groupName: String) = {
     val action = for {
-      mainTrigger <- triggerTable.table.filter(x => x.groupName === groupName && x.triggerName === triggerName)
+      mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupName && x.triggerName === triggerName)
       cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupName && x.triggerName === triggerName)
     } yield mainTrigger -> cronTrigger
 
@@ -42,7 +42,7 @@ class TriggerRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
 
   def listTriggers(groupName: String) = {
     val action = for {
-      mainTrigger <- triggerTable.table.filter(x => x.groupName === groupName)
+      mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupName)
       cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupName && x.triggerName === mainTrigger.triggerName)
     } yield mainTrigger -> cronTrigger
     db.run(action.result).map(x => x.map(y => AppTrigger.create(y._1, y._2)))

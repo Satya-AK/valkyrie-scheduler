@@ -3,10 +3,11 @@ package controllers
 import com.google.inject.Inject
 import model.AppGroup
 import model.AppGroup.jsonReader
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
 import repo.AppGroupRepository
 import util.{ErrRecoveryAction, Util}
+import util.Util._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,16 +20,16 @@ class GroupController @Inject() (groupRepository: AppGroupRepository)
 
   /**
     * create group
-    * @param groupName
     * @return
     */
-  def createGroup(groupName: String) = ErrRecoveryAction.async(parse.json) {
+  def createGroup = ErrRecoveryAction.async(parse.json) {
     request =>
+      val groupId = uuid
       for {
-        appGroup <- Util.parseJson[AppGroup](request.body)
+        appGroup <- Util.parseJson[AppGroup](request.body.as[JsObject].update("id" -> groupId))
         _ <- groupRepository.createGroup(appGroup)
       } yield {
-        Ok(Json.obj("success" -> "group create"))
+        Ok(Json.obj("id" -> s"$groupId"))
       }
   }
 

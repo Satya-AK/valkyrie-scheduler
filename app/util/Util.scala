@@ -104,4 +104,26 @@ object Util {
     */
   def instanceLogDirectory(instanceId: String) = joinPath(appDirectory, "logs", instanceId)
 
+
+  /**
+    * JsObject implicit adapter class
+    * @param jsObject
+    */
+  implicit class JsObjectEnhancer(jsObject: JsObject) {
+
+    /**
+      * update JsObject
+      * @param args
+      * @return
+      */
+    def update(args: (String, Json.JsValueWrapper)*): JsObject = {
+      jsObject ++ Json.obj(args: _*)
+    }
+
+    def remove(fields: String *): JsObject = {
+      fields.foldLeft(jsObject)((acc,x) => acc - x)
+    }
+
+  }
+
 }

@@ -18,7 +18,6 @@ import scheduler.SchedulerParser
   * @param desc
   */
 case class AppTrigger(triggerName: String,
-                      groupName: String,
                       jobName: String,
                       cron: String,
                       desc: Option[String]) {
@@ -31,7 +30,6 @@ object AppTrigger {
 
   implicit val jsonWriter: Writes[AppTrigger] = (
       (JsPath \ "trigger_name").write[String] and
-      (JsPath \ "group_name").write[String] and
       (JsPath \ "job_name").write[String] and
       (JsPath \ "cron").write[String] and
       (JsPath \ "description").writeNullable[String]
@@ -39,14 +37,13 @@ object AppTrigger {
 
   implicit val jsonReader: Reads[AppTrigger] = (
       (JsPath \ "trigger_name").read[String] and
-      (JsPath \ "group_name").read[String] and
       (JsPath \ "job_name").read[String] and
       (JsPath \ "cron").read[String] and
       (JsPath \ "description").readNullable[String]
     )(AppTrigger.apply _)
 
   def create(trigger: Trigger, cronTrigger: CronTrigger) = {
-    AppTrigger(trigger.triggerName, trigger.groupName, trigger.jobName, cronTrigger.linuxCron, trigger.desc)
+    AppTrigger(trigger.triggerName, trigger.jobName, cronTrigger.linuxCron, trigger.desc)
   }
 
 }

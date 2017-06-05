@@ -21,10 +21,10 @@ class JobTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   class TableDef(tag: Tag) extends Table[Job](tag, "QRTZ_JOB_DETAILS") {
     def jobName =  column[String]("JOB_NAME")
-    def groupName = column[String]("JOB_GROUP")
+    def groupId = column[String]("JOB_GROUP")
     def description = column[Option[String]]("DESCRIPTION")
     def jobData = column[Option[Blob]]("JOB_DATA")
-    override def * = (jobName, groupName, description, jobData) <> (Job.tupled, Job.unapply)
+    override def * = (jobName, groupId, description, jobData) <> (Job.tupled, Job.unapply)
   }
 
 }

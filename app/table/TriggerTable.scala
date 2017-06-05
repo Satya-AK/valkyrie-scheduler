@@ -19,13 +19,13 @@ class TriggerTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvi
 
   class TableDef(tag: Tag) extends Table[Trigger](tag, "QRTZ_TRIGGERS") {
     def triggerName =  column[String]("TRIGGER_NAME")
-    def groupName = column[String]("TRIGGER_GROUP")
+    def tgrGroupId = column[String]("TRIGGER_GROUP")
     def jobName =  column[String]("JOB_NAME")
-    def jobGroup = column[String]("JOB_GROUP")
+    def jobGroupId = column[String]("JOB_GROUP")
     def description = column[Option[String]]("DESCRIPTION")
     def nextFireTime = column[Option[Long]]("NEXT_FIRE_TIME")
     def previousFireTime = column[Option[Long]]("PREV_FIRE_TIME")
-    override def * = (triggerName, groupName, jobName, jobGroup, description, nextFireTime, previousFireTime) <>
+    override def * = (triggerName, tgrGroupId, jobName, jobGroupId, description, nextFireTime, previousFireTime) <>
       (Trigger.tupled, Trigger.unapply)
   }
 
