@@ -40,10 +40,16 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
     * @return
     */
   def listTriggers(groupName: String) = ErrRecoveryAction.async {
-    triggerRepository.listTriggers(groupName)
-      .map(x => x.map(Json.toJson(_)))
-      .map(x => x.foldLeft(JsArray()){ case (arr, data) => arr :+ data })
-      .map(x => Ok(x))
+    for {
+      group <- groupRepository.getGroupByName(groupName)
+      triggers <- triggerRepository.listTriggers(group.id)
+    } yield {
+      Ok {
+        triggers
+          .map(x => Json.toJson(x))
+          .foldLeft(JsArray())({ case (arr, data) => arr :+ data })
+      }
+    }
   }
 
   /**
@@ -53,8 +59,10 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
     * @return
     */
   def fetchTrigger(groupName: String, jobName: String) = ErrRecoveryAction.async {
-    triggerRepository.getTrigger(jobName, groupName)
-      .map(x => Ok(Json.toJson(x)))
+    for {
+      group <- groupRepository.getGroupByName(groupName)
+      trigger <- triggerRepository.getTrigger(jobName, group.id)
+    } yield Ok(Json.toJson(trigger))
   }
 
 }
