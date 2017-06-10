@@ -27,6 +27,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
   import driver.api._
 
 
+
   /**
     *
     * @param jobName
@@ -40,8 +41,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     def query(status: AppStatus, instanceId: String) = instanceTable.table
       .filter(x => x.jobName === jobName && x.groupName === groupName)
       .sortBy(_.seqId.desc).map(_.seqId).result.headOption flatMap {
-       x => instanceTable.table +=
-         AppInstance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
+       x => instanceTable.table += AppInstance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
            x.getOrElse(0L)+1, status.id, 1, serviceHelper.accessPoint)
     }
     for {
@@ -56,6 +56,11 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       case Some(x) => Future.successful(x)
       case None => Future.failed(new EntityNotFoundException(s"instance id $instanceId not found"))
     }
+  }
+
+
+  def deleteMe = {
+    db.run(instanceTable.table.result)
   }
 
 

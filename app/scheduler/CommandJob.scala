@@ -2,28 +2,29 @@ package scheduler
 
 import model.AppInstanceLog
 import org.quartz.{Job, JobDataMap, JobExecutionContext}
+import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
+import repo.AppInstanceRepository
 import repo.AppStatusRepository.Status
-import repo.{AppGroupRepository, AppInstanceRepository}
 import scheduler.CommandExecutor.{Command, CommandResponse}
 import util.AppException.JobExecutionException
-import util.{GlobalContext, Keyword}
 import util.Keyword.{AppSetting, JobData}
-import util.Util._
+import util.Util.joinPath
+import util.{GlobalContext, Keyword}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, blocking}
 import scala.util.{Failure, Success}
 
 /**
-  * Created by chlr on 5/27/17.
+  * Created by chlr on 6/10/17.
   */
-class CommandJob extends Job {
+abstract class CommandJob extends Job {
 
-  val instanceRepository = GlobalContext.injector.getInstance(classOf[AppInstanceRepository])
-  val processCache = GlobalContext.injector.getInstance(classOf[ProcessCache])
-  val instanceId = uuid
-  val appInstanceLogRepository = GlobalContext.injector.getInstance(classOf[AppGroupRepository])
+  private val logger = Logger(this.getClass)
+  protected val instanceRepository: AppInstanceRepository
+  protected val processCache: ProcessCache
+  protected val instanceId: String
 
   /**
     * execute
@@ -35,20 +36,26 @@ class CommandJob extends Job {
     val jobName = context.getJobDetail.getKey.getName
     val triggerName = Some(context.getTrigger.getKey.getName)
     instanceRepository.createInstance(instanceId, groupName, jobName, triggerName) flatMap {
-      _ => Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
+      _ =>
+        Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
     } onComplete {
       case Success(CommandResponse(stdout, stderr, None)) =>
+        logger.info(s"instance $instanceId execution completed successfully")
         instanceRepository.endInstance(instanceId, Status.success, stdout, stderr)
       case Success(CommandResponse(stdout, stderr, Some(_: JobExecutionException))) =>
+        logger.info(s"instance $instanceId execution failed")
         instanceRepository.endInstance(instanceId, Status.fail, stdout, stderr)
-      case Success(CommandResponse(stdout, stderr, Some(_))) =>
+      case Success(CommandResponse(stdout, stderr, Some(x))) =>
+        logger.error(s"fatal error invoking instance $instanceId", x)
         instanceRepository.endInstance(instanceId, Status.error, stdout, stderr)
-      case Failure(_) => instanceRepository.endInstance(
-        instanceId,
-        Status.error,
-        AppInstanceLog(instanceId, Keyword.AppLog.stdout, None),
-        AppInstanceLog(instanceId, Keyword.AppLog.stdout, None)
-      )
+      case Failure(th) =>
+        logger.warn(s"instance $instanceId failed with exception", th)
+        instanceRepository.endInstance(
+          instanceId,
+          Status.error,
+          AppInstanceLog(instanceId, Keyword.AppLog.stdout, None),
+          AppInstanceLog(instanceId, Keyword.AppLog.stdout, None)
+        )
     }
   }
 
@@ -58,7 +65,7 @@ class CommandJob extends Job {
     * @param dataMap
     * @return
     */
-  def buildCommand(dataMap: JobDataMap) = {
+  protected def buildCommand(dataMap: JobDataMap) = {
     Command(instanceId, dataMap.getString(JobData.command), getWorkingDir(dataMap),
       GlobalContext.application.configuration.getString(s"app.${AppSetting.tmpDir}")
         .map(joinPath(_, instanceId)).get, getEnvironment(dataMap))
@@ -70,7 +77,7 @@ class CommandJob extends Job {
     * @param dataMap
     * @return
     */
-  def getWorkingDir(dataMap: JobDataMap) = {
+  protected def getWorkingDir(dataMap: JobDataMap) = {
     if (dataMap.containsKey(JobData.workingDir))
       dataMap.getString(JobData.workingDir)
     else
@@ -82,7 +89,7 @@ class CommandJob extends Job {
     * @param dataMap
     * @return
     */
-  def getEnvironment(dataMap: JobDataMap) = {
+  protected def getEnvironment(dataMap: JobDataMap) = {
     if (dataMap.containsKey(JobData.environment)) {
       Json.parse(dataMap.getString(JobData.environment))
         .as[JsObject].value

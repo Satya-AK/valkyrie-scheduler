@@ -8,7 +8,6 @@ import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import play.api.{Application, Logger}
 import util.{GlobalContext, Util}
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
@@ -55,7 +54,7 @@ class QuartzScheduler @Inject() (application: Application,
   }
 
   def createJob(groupId: String, job: AppJob) = {
-    val jobDetail = JobBuilder.newJob(classOf[CommandJob])
+    val jobDetail = JobBuilder.newJob(classOf[CommandJobImpl])
       .withIdentity(new JobKey(job.jobName, groupId))
       .setJobData(new JobDataMap(Map("command" -> job.cmd).asJava))
       .storeDurably(true)

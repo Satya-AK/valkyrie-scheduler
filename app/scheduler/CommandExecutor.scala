@@ -62,7 +62,8 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
     */
   def execute(): CommandResponse = {
     setupJob.flatMap(_ => run) match {
-      case Success(_) => processCache.remove(command.instanceId); makeLogResponse()
+      case Success(_) =>
+        processCache.remove(command.instanceId); makeLogResponse()
       case Failure(th) => processCache.remove(command.instanceId); makeLogResponse(Some(th))
     }
   }
