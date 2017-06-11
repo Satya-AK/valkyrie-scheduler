@@ -1,5 +1,6 @@
 package scheduler
 
+import repo.impl.TestAppInstanceRepository
 import util.Util._
 import util.{AppSpec, Keyword}
 /**
@@ -14,7 +15,7 @@ class CommandExecutorSpec extends AppSpec {
       val testInstanceId = uuid
       val commandJob = new CommandJob {
         override val instanceId = testInstanceId
-        override val instanceRepository = testAppInstanceRepository
+        override val instanceRepository = new TestAppInstanceRepository()
         override val processCache = new ProcessCacheImpl()
       }
       val jobName = "job_command_executor_test"
