@@ -2,7 +2,7 @@ package controllers
 
 import com.google.inject.Inject
 import model.AppJob
-import model.AppJob.jsonReader
+import model.AppJob.jsonFormatter
 import play.api.libs.json.{JsArray, Json}
 import play.api.mvc.Controller
 import repo.{AppGroupRepository, JobRepository, TriggerRepository}

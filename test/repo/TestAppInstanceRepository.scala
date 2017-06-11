@@ -1,19 +1,18 @@
-package repo.impl
+package repo
 
 import java.sql.Timestamp
 import java.util.Date
-
 import model.{AppInstance, AppInstanceLog}
-import repo.AppInstanceRepository
+import play.api.db.slick.DatabaseConfigProvider
 import util.AppException.EntityNotFoundException
-
 import scala.collection.mutable
 import scala.concurrent.Future
 
 /**
   * Created by chlr on 6/10/17.
   */
-class TestAppInstanceRepository extends AppInstanceRepository {
+class TestAppInstanceRepository(dbConfigProvider: DatabaseConfigProvider)
+  extends AppInstanceRepository(dbConfigProvider, null, null, null, null) {
 
   private val data: mutable.Map[String, AppInstance] = mutable.Map()
 

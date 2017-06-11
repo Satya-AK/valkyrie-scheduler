@@ -2,13 +2,12 @@ package controllers
 
 import com.google.inject.Inject
 import model.AppGroup
-import model.AppGroup.jsonReader
+import model.AppGroup.formatter
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
 import repo.AppGroupRepository
 import util.{ErrRecoveryAction, Util}
 import util.Util._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**

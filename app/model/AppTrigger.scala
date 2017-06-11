@@ -1,7 +1,7 @@
 package model
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Reads, Writes}
+import play.api.libs.json.{Format, JsPath, Reads, Writes}
 import scheduler.SchedulerParser
 
 /**
@@ -28,19 +28,12 @@ case class AppTrigger(triggerName: String,
 
 object AppTrigger {
 
-  implicit val jsonWriter: Writes[AppTrigger] = (
-      (JsPath \ "trigger_name").write[String] and
-      (JsPath \ "job_name").write[String] and
-      (JsPath \ "cron").write[String] and
-      (JsPath \ "description").writeNullable[String]
-    )(unlift(AppTrigger.unapply))
-
-  implicit val jsonReader: Reads[AppTrigger] = (
-      (JsPath \ "trigger_name").read[String] and
-      (JsPath \ "job_name").read[String] and
-      (JsPath \ "cron").read[String] and
-      (JsPath \ "description").readNullable[String]
-    )(AppTrigger.apply _)
+  implicit val jsonFormatter: Format[AppTrigger] = (
+    (JsPath \ "trigger_name").format[String] and
+    (JsPath \ "job_name").format[String] and
+    (JsPath \ "cron").format[String] and
+    (JsPath \ "description").formatNullable[String]
+  )(AppTrigger.apply, unlift(AppTrigger.unapply))
 
   def create(trigger: Trigger, cronTrigger: CronTrigger) = {
     AppTrigger(trigger.triggerName, trigger.jobName, cronTrigger.linuxCron, trigger.desc)

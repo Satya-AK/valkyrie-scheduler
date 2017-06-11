@@ -1,7 +1,7 @@
 package model
 
-import play.api.libs.json.{JsPath, Reads, Writes}
 import play.api.libs.functional.syntax._
+import play.api.libs.json.{Format, JsPath}
 import util.Keyword.JobData
 
 /**
@@ -21,18 +21,11 @@ case class AppJob(jobName: String,
 
 object AppJob {
 
-  implicit val jsonWriter: Writes[AppJob] = (
-    (JsPath \ "job_name").write[String] and
-    (JsPath \ JobData.command).write[String] and
-    (JsPath \ "description").writeNullable[String]
-  )(unlift(AppJob.unapply))
-
-  implicit val jsonReader: Reads[AppJob] = (
-    (JsPath \ "job_name").read[String] and
-    (JsPath \ JobData.command).read[String] and
-    (JsPath \ "description").readNullable[String]
-  )(AppJob.apply _)
-
+  implicit val jsonFormatter: Format[AppJob] = (
+    (JsPath \ "job_name").format[String] and
+    (JsPath \ JobData.command).format[String] and
+    (JsPath \ "description").formatNullable[String]
+  )(AppJob.apply, unlift(AppJob.unapply))
 
   def create(job: Job) = {
     AppJob(job.jobName, job.data.get(JobData.command), job.desc)

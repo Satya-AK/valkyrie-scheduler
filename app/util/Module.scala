@@ -2,8 +2,6 @@ package util
 
 import com.google.inject.AbstractModule
 import net.codingwell.scalaguice.ScalaModule
-import repo.AppInstanceRepository
-import repo.impl.AppInstanceRepositoryImpl
 import scheduler.{ProcessCache, ProcessCacheImpl, QuartzScheduler, Scheduler}
 
 /**
@@ -16,6 +14,5 @@ class Module extends AbstractModule with ScalaModule {
     bind(classOf[GlobalContext]).asEagerSingleton()
     bind(classOf[ProcessCache]).to(classOf[ProcessCacheImpl])
     bind(classOf[Scheduler]).to(classOf[QuartzScheduler]).asEagerSingleton()
-    bind[AppInstanceRepository].to[AppInstanceRepositoryImpl]
   }
 }

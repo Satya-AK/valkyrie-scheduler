@@ -1,7 +1,7 @@
 package model
 
-import play.api.libs.json.{JsPath, Reads, Writes}
 import play.api.libs.functional.syntax._
+import play.api.libs.json.{Format, JsPath}
 
 /**
   * Created by chlr on 6/3/17.
@@ -19,17 +19,10 @@ object AppGroup {
 
   def tupled = (AppGroup.apply _).tupled
 
-
-  implicit val jsonWriter: Writes[AppGroup] = (
-    (JsPath \ "id").write[String] and
-    (JsPath \ "name").write[String] and
-    (JsPath \ "description").write[String]
-  ) (unlift(AppGroup.unapply))
-
-  implicit val jsonReader: Reads[AppGroup] = (
-    (JsPath \ "id").read[String] and
-    (JsPath \ "name").read[String] and
-    (JsPath \ "description").read[String]
-  ) (AppGroup.apply _)
+  implicit val formatter: Format[AppGroup] = (
+    (JsPath \ "id").format[String] and
+    (JsPath \ "name").format[String] and
+    (JsPath \ "description").format[String]
+  )(AppGroup.apply, unlift(AppGroup.unapply))
 
 }
