@@ -11,10 +11,9 @@ import util.AppException.JobExecutionException
 import util.Keyword.{AppSetting, JobData}
 import util.Util.joinPath
 import util.{GlobalContext, Keyword}
-
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, blocking}
-import scala.util.{Failure, Success}
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Future, blocking}
 
 /**
   * Created by chlr on 6/10/17.
@@ -31,30 +30,37 @@ abstract class CommandJob extends Job {
     * @param context
     */
   override def execute(context: JobExecutionContext): Unit = {
+    Await.result[Unit](run(context), Duration.Inf)
+  }
+
+
+  def run(context: JobExecutionContext): Future[Unit] = {
     val dataMap = context.getJobDetail.getJobDataMap
     val groupName = context.getJobDetail.getKey.getGroup
     val jobName = context.getJobDetail.getKey.getName
     val triggerName = Some(context.getTrigger.getKey.getName)
-    instanceRepository.createInstance(instanceId, groupName, jobName, triggerName) flatMap {
-      _ =>
-        Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
-    } onComplete {
-      case Success(CommandResponse(stdout, stderr, None)) =>
+    instanceRepository.createInstance(instanceId, jobName, groupName, triggerName) flatMap {
+      _ => Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
+    } flatMap {
+      case CommandResponse(stdout, stderr, None) =>
         logger.info(s"instance $instanceId execution completed successfully")
-        instanceRepository.endInstance(instanceId, Status.success, stdout, stderr)
-      case Success(CommandResponse(stdout, stderr, Some(_: JobExecutionException))) =>
-        logger.info(s"instance $instanceId execution failed")
-        instanceRepository.endInstance(instanceId, Status.fail, stdout, stderr)
-      case Success(CommandResponse(stdout, stderr, Some(x))) =>
+        instanceRepository.endInstance(instanceId, Status.success, stdout, stderr, Some(0), None)
+      case CommandResponse(stdout, stderr, Some(x: JobExecutionException)) =>
+        logger.info(s"instance $instanceId execution failed with status code ${x.returnCode}")
+        instanceRepository.endInstance(instanceId, Status.fail, stdout, stderr, Some(x.returnCode), Some(x.getMessage))
+      case CommandResponse(stdout, stderr, Some(x)) =>
         logger.error(s"fatal error invoking instance $instanceId", x)
-        instanceRepository.endInstance(instanceId, Status.error, stdout, stderr)
-      case Failure(th) =>
+        instanceRepository.endInstance(instanceId, Status.error, stdout, stderr, Some(-1), Some(x.getMessage))
+    } recoverWith {
+      case th =>
         logger.warn(s"instance $instanceId failed with exception", th)
         instanceRepository.endInstance(
           instanceId,
           Status.error,
           AppInstanceLog(instanceId, Keyword.AppLog.stdout, None),
-          AppInstanceLog(instanceId, Keyword.AppLog.stdout, None)
+          AppInstanceLog(instanceId, Keyword.AppLog.stdout, None),
+          Some(-1),
+          Some(th.getMessage)
         )
     }
   }

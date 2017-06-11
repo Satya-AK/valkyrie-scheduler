@@ -18,7 +18,6 @@ import scala.util.{Failure, Success, Try}
 class CommandExecutor(command: Command, processCache: ProcessCache) {
 
 
-
   private val stdoutFile = new File(Util.instanceLogDirectory(command.instanceId), "stdout.log")
 
   private val stderrFile = new File(Util.instanceLogDirectory(command.instanceId), "stderr.log")
@@ -86,7 +85,7 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
     * run process
     * @return
     */
-  private def run = {
+  private def run  = {
     Try(processBuilder.start()) match {
       case Success(process) =>
         processCache.save(command.instanceId, process)

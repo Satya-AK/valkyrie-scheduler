@@ -1,8 +1,6 @@
 package scheduler
 
-import play.api.Application
-import play.api.db.slick.DatabaseConfigProvider
-import repo.TestAppInstanceRepository
+import play.api.test.Helpers._
 import util.Util._
 import util.{AppSpec, Keyword}
 /**
@@ -10,24 +8,49 @@ import util.{AppSpec, Keyword}
   */
 class CommandExecutorSpec extends AppSpec {
 
+  val testAppInstanceRepository = instanceRepository
+  val testInstanceId = uuid
+  val commandJob = new CommandJob {
+    override val instanceId = testInstanceId
+    override val instanceRepository = testAppInstanceRepository
+    override val processCache = new ProcessCacheImpl()
+  }
+  val jobName = "job_command_executor_test"
+  val groupName = "group_command_executor_group_id_test"
+  val triggerName = "trigger_command_executor_test"
 
   "CommandExecutor" must {
-    "executor job" in {
-      val testInstanceId = uuid
-      val dbConfigProvider = Application.instanceCache[DatabaseConfigProvider].apply(app)
-      val commandJob = new CommandJob {
-        override val instanceId = testInstanceId
-        override val instanceRepository = new TestAppInstanceRepository(dbConfigProvider)
-        override val processCache = new ProcessCacheImpl()
-      }
-      val jobName = "job_command_executor_test"
-      val groupId = "group_command_executor_group_id_test"
-      val triggerName = "trigger_command_executor_test"
+    "execute job that completes successfuly" in {
       commandJob.execute(new TestJobExecutionContext(jobName,
-        groupId,
+        groupName,
         triggerName,
         Map(Keyword.JobData.command -> "echo hello world"))
       )
+      val instance = await(instanceRepository.fetchInstance(testInstanceId))
+      instance.statusId must be (2)
+      instance.jobName must be (jobName)
+      instance.groupName must be (groupName)
+      instance.triggerName.get must be (triggerName)
+      val instanceLog = await(instanceLogRepository.fetch(testInstanceId, "stdout"))
+      instanceLog.get must be ("hello world\n")
+    }
+  }
+
+
+  it must {
+    "handle jobs that fails execution" in  {
+      commandJob.execute(new TestJobExecutionContext(jobName,
+        groupName,
+        triggerName,
+        Map(Keyword.JobData.command -> "echo1 hello world"))
+      )
+      val instance = await(instanceRepository.fetchInstance(testInstanceId))
+      instance.statusId must be (3)
+      instance.jobName must be (jobName)
+      instance.groupName must be (groupName)
+      instance.triggerName.get must be (triggerName)
+      val instanceLog = await(instanceLogRepository.fetch(testInstanceId, "stderr"))
+      info("stderr is "+instanceLog.get)
     }
   }
 

@@ -42,7 +42,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       .filter(x => x.jobName === jobName && x.groupName === groupName)
       .sortBy(_.seqId.desc).map(_.seqId).result.headOption flatMap {
       x => instanceTable.table += AppInstance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
-        x.getOrElse(0L)+1, status.id, 1, serviceHelper.accessPoint)
+        None, None, x.getOrElse(0L)+1, status.id, 1, serviceHelper.accessPoint)
     }
     for {
       status <- statusRepository.getStatusName(Status.running)
@@ -51,6 +51,11 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
   }
 
 
+  /**
+    * fetch instance by instanceId
+    * @param instanceId
+    * @return
+    */
   def fetchInstance(instanceId: String) = {
     db.run(instanceTable.table.filter(_.instanceId === instanceId).result.headOption) flatMap {
       case Some(x) => Future.successful(x)
@@ -65,9 +70,16 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     * @param status
     * @param stdout
     * @param stderr
+    * @param retCode
+    * @param message
     * @return
     */
-  def endInstance(instanceId: String, status: String, stdout: AppInstanceLog, stderr: AppInstanceLog) = {
+  def endInstance(instanceId: String,
+                  status: String,
+                  stdout: AppInstanceLog,
+                  stderr: AppInstanceLog,
+                  retCode: Option[Int],
+                  message: Option[String]) = {
     for {
       statusId <- statusRepository.getStatusName(status).map(_.id)
       instance <- fetchInstance(instanceId)
