@@ -10,6 +10,7 @@ class AppInstanceRepositorySpec extends AppSpec {
 
   "AppInstanceRepository" must {
     "create an instance" in {
+      app
       val instanceId = uuid
       await(instanceRepository
       .createInstance(instanceId, "instance_repo_test_job", "instance_repo_test_group", None))

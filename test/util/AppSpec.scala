@@ -11,6 +11,7 @@ import scheduler.Scheduler
   */
 trait AppSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
+  app
 
   lazy val triggerRepository = Application.instanceCache[TriggerRepository].apply(app)
 

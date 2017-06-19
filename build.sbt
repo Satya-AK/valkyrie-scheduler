@@ -1,4 +1,5 @@
 
+
 name := """valkyrie"""
 organization := "com.github.rogue-one"
 
@@ -29,3 +30,25 @@ libraryDependencies ++= Seq(
 )
 
 javaOptions in Test += "-Dconfig.file=conf/application-test.conf"
+
+lazy val buildNg2App = taskKey[Unit]("build ng2 application")
+
+buildNg2App := {
+  val rootPath: File = baseDirectory.value / "public"
+  val nodeModules: File = baseDirectory.value / "public" / "node_modules"
+  if (!nodeModules.exists())
+     Process("npm" :: "install" :: Nil, rootPath).!
+  Process("ng" :: "build" :: Nil, rootPath).!
+}
+
+(compile in Compile) <<= (compile in Compile) dependsOn buildNg2App
+
+(stage in Universal) <<= (stage in Universal) dependsOn buildNg2App
+
+watchSources := watchSources.value.filter { x => BuildUtils.isParentFile(baseDirectory.value / "public" / "dist", x) }
+
+cleanFiles <+= baseDirectory { base => base / "public" / "dist" }
+
+
+
+
