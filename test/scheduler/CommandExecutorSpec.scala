@@ -31,6 +31,7 @@ class CommandExecutorSpec extends AppSpec {
       instance.jobName must be (jobName)
       instance.groupName must be (groupName)
       instance.triggerName.get must be (triggerName)
+      instance.returnCode must be (Some(0))
       val instanceLog = await(instanceLogRepository.fetch(testInstanceId, "stdout"))
       instanceLog.get must be ("hello world\n")
     }
@@ -49,8 +50,8 @@ class CommandExecutorSpec extends AppSpec {
       instance.jobName must be (jobName)
       instance.groupName must be (groupName)
       instance.triggerName.get must be (triggerName)
-      val instanceLog = await(instanceLogRepository.fetch(testInstanceId, "stderr"))
-      info("stderr is "+instanceLog.get)
+      instance.returnCode must be (Some(-1))
+      instance.message must be (Some("Cannot run program \"echo1\" (in directory \".\"): error=2, No such file or directory"))
     }
   }
 

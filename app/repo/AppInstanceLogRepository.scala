@@ -30,6 +30,10 @@ class AppInstanceLogRepository @Inject() (protected val dbConfigProvider: Databa
     db.run(appInstanceLogTable.table += appInstanceLog)
   }
 
+  def save(data: Seq[AppInstanceLog]) = {
+    db.run(appInstanceLogTable.table ++= data)
+  }
+
   /**
     * fetch instance log
     * @param instanceId
@@ -50,6 +54,7 @@ class AppInstanceLogRepository @Inject() (protected val dbConfigProvider: Databa
           None
     }
   }
+
 
 
 }

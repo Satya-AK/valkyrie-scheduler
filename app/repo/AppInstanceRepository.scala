@@ -84,7 +84,8 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       statusId <- statusRepository.getStatusName(status).map(_.id)
       instance <- fetchInstance(instanceId)
       _ <- db.run(instanceTable.table.filter(_.instanceId === instanceId)
-        .update(instance.copy(statusId = statusId, endTime = Some(currentTimeStamp))))
+        .update(instance.copy(statusId = statusId, endTime = Some(currentTimeStamp), returnCode=retCode,
+          message=message)))
       _ <- appInstanceLogRepository.save(stdout)
       _ <- appInstanceLogRepository.save(stderr)
     } yield ()

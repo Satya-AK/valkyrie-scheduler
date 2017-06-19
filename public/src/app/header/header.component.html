@@ -1,0 +1,41 @@
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;
+    background-color: black;
+    position: absolute">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span>
+            <span class="icon-bar"></span> <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" style="color: white;" href="/#/">OPTIMUS</a>
+    </div>
+    <div data-ng-controller="HeaderCtrl" class="ng-scope">
+        <ul class="nav navbar-top-links navbar-right">
+            <li class="nav-top-right-bar-link-font">
+                <a style="color: white;
+                    cursor: pointer;" class="navbar-brand nav-top-right-bar-link nav-top-right-bar-link-font" onclick="return optimusTour();" target="_blank"> Optimus Tour <i class="fa fa-play-circle fa-fw"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="nav navbar-top-links navbar-right optimus_manual">
+            <li class="nav-top-right-bar-link-font">
+                <a style="color: white;" class="navbar-brand nav-top-right-bar-link nav-top-right-bar-link-font" target="_blank" href="https://edwrunbook.groupondev.com/EDWProdIssueTracker/findissues.edw?search=issues&amp;areaofissue=optimus">
+                    Runbook <i class="fa fa-book fa-fw"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="nav navbar-top-links navbar-right optimus_manual">
+            <li class="nav-top-right-bar-link-font">
+                <a style="color: white;" class="navbar-brand nav-top-right-bar-link nav-top-right-bar-link-font" target="_blank" href="https://docs.google.com/a/groupon.com/presentation/d/1sBdE_YdUcrqhhpYpIQF_YQ4fp3FMmkffCSSNuvsmtIg">
+                    User Manual <i class="fa fa-book fa-fw"></i>
+                </a>
+            </li>
+        </ul>
+        <ul class="nav navbar-top-links navbar-right user_api_info">
+            <li class="nav-top-right-bar-link-font">
+                <a style="color: white;
+                    cursor: pointer;" class="navbar-brand nav-top-right-bar-link nav-top-right-bar-link-font" data-ng-click="showUserInfo()" target="_blank"> User API Token <i class="fa fa-info fa-fw"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -6,3 +6,45 @@ target
 /.project
 /.settings
 /RUNNING_PID
+
+
+
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+public/dist
+public/tmp
+
+# dependencies
+public/node_modules
+
+# IDEs and editors
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+public/.sass-cache
+public/connect.lock
+public/coverage/*
+public/libpeerconnection.log
+npm-debug.log
+testem.log
+public/typings
+
+# e2e
+public/e2e/*.js
+public/e2e/*.map
+
+#System Files
+.DS_Store
+Thumbs.db

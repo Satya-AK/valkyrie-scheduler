@@ -1,0 +1,21 @@
+<div id="page-wrapper">
+   <!-- /.row -->
+   <div class="row">
+      <br /> <br />
+      <div class="col-lg-12">
+         <!-- MAIN ANGULAR CONTENT START HERE -->
+         <div style="margin-top: 5%;" align="center">
+            <div>
+               <div class="toggle  alert alert-danger alert-dismissible fade in" id="FLASH"  role="alert">
+                  <button type="button" class="close" ng-click="close()">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+                  <p style="white-space: pre;" ng-bind="flash.getMessage()"></p>
+               </div>
+               <p>Here goes your content</p>
+            </div>
+            <div autoscroll="true" class="view-in"></div>
+         </div>
+      </div>
+   </div>
+</div>
