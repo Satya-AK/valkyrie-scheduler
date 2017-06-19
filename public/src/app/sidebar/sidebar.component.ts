@@ -6,16 +6,11 @@ import { Component } from '@angular/core';
     styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent {
-    isActive = false;
-    showMenu = '';
-    eventCalled() {
-        this.isActive = !this.isActive;
-    }
-    addExpandClass(element: any) {
-        if (element === this.showMenu) {
-            this.showMenu = '0';
-        } else {
-            this.showMenu = element;
-        }
-    }
+
+    items = [
+      {name: "Instances", path: "instances", icon: "fa fa-wrench fa-fw"},
+      {name: "Jobs", path: "jobs", icon: "fa fa-wrench fa-fw"},
+      {name: "Triggers", path: "triggers", icon: "fa fa-wrench fa-fw"},
+      {name: "Agents", path: "agents", icon: "fa fa-wrench fa-fw"},
+    ];
 }
