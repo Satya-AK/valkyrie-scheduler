@@ -41,11 +41,11 @@ buildNg2App := {
   Process("ng" :: "build" :: Nil, rootPath).!
 }
 
-(compile in Compile) <<= (compile in Compile) dependsOn buildNg2App
+//(compile in Compile) <<= (compile in Compile) dependsOn buildNg2App
 
 (stage in Universal) <<= (stage in Universal) dependsOn buildNg2App
 
-watchSources := watchSources.value.filter { x => BuildUtils.isParentFile(baseDirectory.value / "public" / "dist", x) }
+watchSources := watchSources.value.filterNot { x => BuildUtils.isParentFile(baseDirectory.value / "public" / "dist", x) }
 
 cleanFiles <+= baseDirectory { base => base / "public" / "dist" }
 
