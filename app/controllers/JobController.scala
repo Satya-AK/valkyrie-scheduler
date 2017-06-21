@@ -8,7 +8,9 @@ import play.api.mvc.Controller
 import repo.{AppGroupRepository, JobRepository, TriggerRepository}
 import scheduler.Scheduler
 import util.{ErrRecoveryAction, Util}
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/27/17.
@@ -44,6 +46,15 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     } yield {
       Ok(jobs.map(Json.toJson(_)).foldLeft(JsArray())({ case (arr, data) => arr :+ data }))
     }
+  }
+
+
+  def listDummyJobs = ErrRecoveryAction.async {
+    val list = Seq(AppJob("job_1", "echo Hello world", Some("this is testJob")),
+      AppJob("job_2", "echo Hello world", Some("this is testJob")),
+      AppJob("job_3", "echo Hello world", Some("this is testJob")),
+      AppJob("job_4", "echo Hello world", Some("this is testJob")))
+    Future.successful(Ok(Json.toJson(list)))
   }
 
 

@@ -11,18 +11,19 @@ GET      /assets/*file               controllers.Assets.versioned(path="/public"
 
 GET      /app/evolution                                     @controllers.HomeController.evolutions
 
-POST     /api/job/create/:groupName                         @controllers.JobController.createJob(groupName: String)
-GET      /api/job/group/:groupName                          @controllers.JobController.listJobs(groupName: String)
-GET      /api/job/group/:groupName/job/:jobName             @controllers.JobController.fetchJob(groupName: String, jobName: String)
+POST     /job/create/:groupName                         @controllers.JobController.createJob(groupName: String)
+GET      /job/group/:groupName                          @controllers.JobController.listJobs(groupName: String)
+GET      /job/group/:groupName/job/:jobName             @controllers.JobController.fetchJob(groupName: String, jobName: String)
+GET      /job/list                                      @controllers.JobController.listDummyJobs
 
-POST     /api/trigger/create/:groupName                     @controllers.TriggerController.createTrigger(groupName: String)
-GET      /api/trigger/group/:groupName                      @controllers.TriggerController.listTriggers(groupName: String)
-GET      /api/trigger/group/:groupName/trigger/:triggerName @controllers.TriggerController.fetchTrigger(groupName: String, triggerName: String)
+POST     /trigger/create/:groupName                     @controllers.TriggerController.createTrigger(groupName: String)
+GET      /trigger/group/:groupName                      @controllers.TriggerController.listTriggers(groupName: String)
+GET      /trigger/group/:groupName/trigger/:triggerName @controllers.TriggerController.fetchTrigger(groupName: String, triggerName: String)
 
-POST     /api/instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
-POST     /api/instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)
-GET      /api/instance/logs/request/:instanceId             @controllers.InstanceController.requestShowLog(instanceId: String)
-GET      /api/instance/logs/:instanceId                     @controllers.InstanceController.showLog(instanceId: String)
+POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
+POST     /instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)
+GET      /instance/logs/request/:instanceId             @controllers.InstanceController.requestShowLog(instanceId: String)
+GET      /instance/logs/:instanceId                     @controllers.InstanceController.showLog(instanceId: String)
 
-POST     /api/api/group/create                              @controllers.GroupController.createGroup
-GET      /api/group                                         @controllers.GroupController.listGroups
+POST     /group/create                                  @controllers.GroupController.createGroup
+GET      /group                                         @controllers.GroupController.listGroups

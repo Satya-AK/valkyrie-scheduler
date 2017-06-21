@@ -4,5 +4,18 @@
 }
 
 td th tr {
-  border: 1px solid #dddddd
+  border: 1px solid #dddddd;
+  display: table-cell;
+  text-align: center;
+}
+
+tbody {
+  border: 1px solid #dddddd;
+  display: table-row-group;
+  vertical-align: middle;
+}
+
+.ctrl-panel {
+  margin-bottom: 40px;
+  margin-left: 20px;
 }

@@ -37,7 +37,6 @@ class JobRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProv
 
 
 
-
   def listJobs(groupId: String) = {
     db.run(jobTable.table.filter(x => x.groupId === groupId).result)
     .map(x => x.map(x => AppJob.create(x)))

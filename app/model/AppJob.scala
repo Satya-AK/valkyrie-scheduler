@@ -22,9 +22,9 @@ case class AppJob(jobName: String,
 object AppJob {
 
   implicit val jsonFormatter: Format[AppJob] = (
-    (JsPath \ "job_name").format[String] and
+    (JsPath \ "name").format[String] and
     (JsPath \ JobData.command).format[String] and
-    (JsPath \ "description").formatNullable[String]
+    (JsPath \ "desc").formatNullable[String]
   )(AppJob.apply, unlift(AppJob.unapply))
 
   def create(job: Job) = {

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {Job, JobService} from "../job.service";
+
 
 @Component({
   selector: 'app-job-list',
@@ -7,26 +9,27 @@ import { Component, OnInit } from '@angular/core';
 })
 export class JobListComponent implements OnInit {
 
-  constructor() { }
+  rows: Job[] = [];
 
-  ngOnInit() {
+  constructor(private jobService: JobService) { }
+
+  dtOptions: DataTables.Settings = {
+    pagingType: 'full_numbers',
+    columns: [{ orderable: true}, {orderable: true}]
+  };
+
+
+  ngOnInit(): void {
+    this.fetchJobs()
   }
 
-  rows = [
-    { name: 'Austin', gender: 'Male', company: 'Swimlane' },
-    { name: 'Dany', gender: 'Male', company: 'KFC' },
-    { name: 'Molly', gender: 'Female', company: 'Burger King' },
-  ];
-
-  columns = [
-    { prop: 'name' },
-    { name: 'Gender' },
-    { name: 'Company' }
-  ];
-
-
-  setSelectedEntities(event) {
-    console.log(event);
+  /**
+   * fetch jobs from service
+   */
+  fetchJobs() {
+    this.jobService
+      .getJobs()
+      .subscribe(rows => { console.log("I am called"); console.log(rows) ;this.rows = rows});
   }
 
 }
