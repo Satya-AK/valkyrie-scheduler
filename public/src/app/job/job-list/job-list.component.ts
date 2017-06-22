@@ -20,7 +20,8 @@ export class JobListComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.fetchJobs()
+    this.fetchJobs();
+    console.log("init called");
   }
 
   /**
