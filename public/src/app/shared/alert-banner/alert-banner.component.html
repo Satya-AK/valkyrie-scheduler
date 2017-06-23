@@ -4,7 +4,7 @@
       <div [ngClass]="alertService.messageClass" style="position: relative">
         <div>
           <span><strong>{{alertService.message}}</strong></span>
-          <button class="btn btn-default" style="position: absolute; right: 5px;" (click)="close()">
+          <button [ngClass]="alertService.buttonClass" style="position: absolute; right: 5px;" (click)="close()">
             Acknowledge
           </button>
         </div>

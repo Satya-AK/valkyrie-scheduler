@@ -23,7 +23,6 @@ export class JobListComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchJobs();
-    console.log("init called");
   }
 
   /**
@@ -32,7 +31,8 @@ export class JobListComponent implements OnInit {
   fetchJobs() {
     this.jobService
       .getJobs()
-      .subscribe(rows => this.rows = rows, error => this.alertService.showErrorMessage(error));
-  }
+      .subscribe(rows => this.rows = rows,
+        error => this.alertService.showErrorMessage(error))
+    }
 
 }

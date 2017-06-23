@@ -35,6 +35,7 @@ export class JobService extends BaseApiService {
   createJob(job: Job): Observable<string> {
     return this.http.post("/job/create/test", job.json())
           .map(x => "job created successfully")
+          .catch(x => this.handleError(x))
   }
 
 }
