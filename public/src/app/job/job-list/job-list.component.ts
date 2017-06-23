@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {Job, JobService} from "../job.service";
+import {JobService} from "../job.service";
+import {Job} from "../job";
+import {AlertService} from "../../shared/alert-service.service";
 
 
 @Component({
@@ -11,7 +13,7 @@ export class JobListComponent implements OnInit {
 
   rows: Job[] = [];
 
-  constructor(private jobService: JobService) { }
+  constructor(private jobService: JobService, private alertService: AlertService) { }
 
   dtOptions: DataTables.Settings = {
     pagingType: 'full_numbers',
@@ -30,7 +32,7 @@ export class JobListComponent implements OnInit {
   fetchJobs() {
     this.jobService
       .getJobs()
-      .subscribe(rows => { console.log("I am called"); console.log(rows) ;this.rows = rows});
+      .subscribe(rows => this.rows = rows, error => this.alertService.showErrorMessage(error));
   }
 
 }

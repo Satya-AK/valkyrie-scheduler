@@ -9,6 +9,7 @@ import {JobModule} from "./job/job.module";
 import {TriggerModule} from "./trigger/trigger.module";
 import {AppRoutingModule} from "./app-routing.module";
 import { HttpModule } from '@angular/http';
+import {SharedModule} from "./shared/shared.module";
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { HttpModule } from '@angular/http';
   ],
   imports: [
     AppRoutingModule,
+    SharedModule,
     JobModule,
     TriggerModule,
     BrowserModule,

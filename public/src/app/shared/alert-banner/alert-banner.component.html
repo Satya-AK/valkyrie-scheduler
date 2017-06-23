@@ -1,0 +1,14 @@
+<div class="container" [hidden]="!alertService.show">
+  <div class="col-md-12">
+    <div id="errorsViewAndAck">
+      <div [ngClass]="alertService.messageClass" style="position: relative">
+        <div>
+          <span><strong>{{alertService.message}}</strong></span>
+          <button class="btn btn-default" style="position: absolute; right: 5px;" (click)="close()">
+            Acknowledge
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

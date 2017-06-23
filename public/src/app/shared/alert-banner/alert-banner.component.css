@@ -1,0 +1,13 @@
+.alert-danger .btn-danger {
+  float: right;
+}
+
+.alert-danger span {
+  line-height: 34px;
+}
+
+.alert-danger > div:after {
+  clear: both;
+  content: '';
+  display: table;
+}

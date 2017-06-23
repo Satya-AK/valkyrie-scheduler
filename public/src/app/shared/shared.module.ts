@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpModule, JsonpModule } from '@angular/http';
+import { AlertBannerComponent } from './alert-banner/alert-banner.component';
+import {AlertService} from "./alert-service.service";
 
 
 @NgModule({
@@ -9,6 +11,8 @@ import { HttpModule, JsonpModule } from '@angular/http';
     HttpModule,
     JsonpModule,
   ],
-  declarations: []
+  declarations: [AlertBannerComponent],
+  exports: [AlertBannerComponent],
+  providers: [AlertService]
 })
 export class SharedModule { }
