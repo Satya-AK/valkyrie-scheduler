@@ -18,12 +18,15 @@
       "tsconfig": "tsconfig.json",
       "prefix": "app",
       "styles": [
+        "../node_modules/selectize/dist/css/selectize.css",
+        "../node_modules/selectize/dist/css/selectize.bootstrap3.css",
         "../node_modules/datatables.net-dt/css/jquery.dataTables.css",
         "styles.css"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.js",
-        "../node_modules/datatables.net/js/jquery.dataTables.js"
+        "../node_modules/datatables.net/js/jquery.dataTables.js",
+        "../node_modules/ng-selectize/selectize/selectize.standalone.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

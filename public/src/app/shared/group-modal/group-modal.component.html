@@ -1,0 +1,41 @@
+<div bsModal #groupModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" [config]="modalOptions">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Set Group Context</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-sm-7">
+            <label class="col-sm-3">Select Group</label>
+            <ng-selectize [config]="ngSelectOptions" [options] = "groups" [(ngModel)]="selectedGroup"
+                          placeholder="Select Group">
+            </ng-selectize>
+          </div>
+        </div>
+        <hr>
+        <div>
+          <div class="row">
+            <h3 style="align-content: left">Create Group</h3>
+          </div>
+          <form  #groupForm="ngForm">
+            <div class="form-group row">
+              <label for="group_name">Group Name</label>
+              <input type="text" name="group_name" #group_name ngModel required>
+              <label for="group_email">Group Email</label>
+              <input type="email" name="group_email"
+                     required pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+                     #group_email ngModel>
+              <button class="btn btn-default" [disabled]="groupForm.invalid">Create Group</button>
+            </div>
+          </form>
+        </div>
+        <div class="row">
+          <button type="button" class="btn btn-primary pull-right" (click)="createGroup(group_name.value, group_email.value)"
+                  [disabled]="!selectedGroup" aria-label="Submit">Submit</button>
+        </div>
+          </div>
+    </div>
+  </div>
+</div>
+
