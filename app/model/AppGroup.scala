@@ -13,7 +13,7 @@ import play.api.libs.json.{Format, JsPath}
   * @param groupName
   * @param description
   */
-case class AppGroup(id: String, groupName: String, description: String)
+case class AppGroup(id: String, groupName: String, groupEmail: String, description: String)
 
 object AppGroup {
 
@@ -22,7 +22,8 @@ object AppGroup {
   implicit val formatter: Format[AppGroup] = (
     (JsPath \ "id").format[String] and
     (JsPath \ "name").format[String] and
-    (JsPath \ "description").format[String]
+    (JsPath \ "email").format[String] and
+    (JsPath \ "desc").format[String]
   )(AppGroup.apply, unlift(AppGroup.unapply))
 
 }

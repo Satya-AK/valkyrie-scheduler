@@ -1,15 +1,26 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Group, GroupContextService} from "../group-context.service";
 
 @Component({
   selector: 'app-group-modal',
   templateUrl: './group-modal.component.html',
   styleUrls: ['./group-modal.component.css']
 })
-export class GroupModalComponent implements AfterViewInit {
+export class GroupModalComponent  {
 
-  @ViewChild('groupModal') model: any;
+  @ViewChild('groupModal') private model: any;
 
-  selectedGroup: string = null;
+  @Input() show: boolean;
+
+  ngInitViewDone: boolean = false;
+
+  groups: Group[] = null;
+
+  error: string;
+
+  constructor(private groupContextService: GroupContextService) {}
+
+  selectedGroup: Group = this.groupContextService.getCurrentGroup();
 
   new_group_request = {
     group_name: null,
@@ -23,24 +34,46 @@ export class GroupModalComponent implements AfterViewInit {
   };
 
   ngSelectOptions = {
-    labelField: 'label',
-    valueField: 'value',
+    labelField: 'name',
+    valueField: 'name',
     maxItems: 1,
-    searchField: 'value'
+    searchField: 'name'
   };
 
-  ngAfterViewInit() {
-    this.model.show();
+  ngDoCheck() {
+    if (this.ngInitViewDone) {
+      if(this.show) {
+        this.model.show();
+      } else {
+        this.model.hide();
+      }
+    }
   }
 
-  groups = [{ value: "test_group_1", label: "test_group_1"},
-    { value: "test_group_2", label: "test_group_2"},
-    { value: "test_group_3", label: "test_group_3"},
-    { value: "test_group_4", label: "test_group_4"}];
+  ngAfterViewInit (): void {
+    this.fetchGroups();
+    this.ngInitViewDone = true;
+  }
 
-  submit() {
+  fetchGroups() {
+    this.groupContextService
+      .listGroups()
+      .subscribe(data => {console.log(data); this.groups = data}, err => this.error = err);
+  }
+
+  createNUse(data) {
+    var group = new Group(null ,data.group_name, data.group_email, "this is a description");
+    this.groupContextService
+      .createGroup(group)
+      .subscribe(data => { this.groupContextService.setCurrentGroup(data) ;this.model.hide() },
+        error => this.error = error);
+  }
+
+
+  setGroup() {
     if (this.selectedGroup) {
-      this.model.hide();
+      this.groupContextService.setCurrentGroup(this.selectedGroup);
+      this.groupContextService.showUiFlag = false;
     }
   }
 

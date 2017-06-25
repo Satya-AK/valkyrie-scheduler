@@ -26,4 +26,4 @@ GET      /instance/logs/request/:instanceId             @controllers.InstanceCon
 GET      /instance/logs/:instanceId                     @controllers.InstanceController.showLog(instanceId: String)
 
 POST     /group/create                                  @controllers.GroupController.createGroup
-GET      /group                                         @controllers.GroupController.listGroups
+GET      /groups                                        @controllers.GroupController.listGroups

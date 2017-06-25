@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {GroupContextService} from "../shared/group-context.service";
 
 @Component({
   selector: 'app-mainbody',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainbodyComponent implements OnInit {
 
-  constructor() { }
+  constructor(public groupContextService: GroupContextService) { }
+
+  bingo = "Bingo!!!";
 
   ngOnInit() {
+  }
+
+
+  flipModalShow()  {
+    this.groupContextService.showUiFlag = ! this.groupContextService.showUiFlag;
   }
 
 }

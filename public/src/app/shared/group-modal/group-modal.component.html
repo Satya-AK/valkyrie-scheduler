@@ -2,21 +2,23 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title pull-left">Set Group Context</h4>
+        <h4 class="modal-title pull-left">Choose or create Group</h4>
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-sm-7">
-            <label class="col-sm-3">Select Group</label>
-            <ng-selectize [config]="ngSelectOptions" [options] = "groups" [(ngModel)]="selectedGroup"
-                          placeholder="Select Group">
+          <div class="col-sm-8">
+            <label class="col-sm-4">Select existing group</label>
+            <ng-selectize class="col-sm-4" [config]="ngSelectOptions" [options] = "groups" [(ngModel)]="selectedGroup"
+                          [disabled]="!groups" placeholder="Select Group">
             </ng-selectize>
+            <button type="button" class="btn btn-primary pull-right" (click)="setGroup()"
+                    [disabled]="!selectedGroup" aria-label="Submit">Choose Group</button>
           </div>
         </div>
         <hr>
         <div>
           <div class="row">
-            <h3 style="align-content: left">Create Group</h3>
+            <h3 style="align-content: left">Create and use group</h3>
           </div>
           <form  #groupForm="ngForm">
             <div class="form-group row">
@@ -26,13 +28,11 @@
               <input type="email" name="group_email"
                      required pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
                      #group_email ngModel>
-              <button class="btn btn-default" [disabled]="groupForm.invalid">Create Group</button>
+              <button class="btn btn-default" [disabled]="groupForm.invalid" (click)="createNUse(groupForm.value)">Create Group</button>
             </div>
           </form>
         </div>
         <div class="row">
-          <button type="button" class="btn btn-primary pull-right" (click)="createGroup(group_name.value, group_email.value)"
-                  [disabled]="!selectedGroup" aria-label="Submit">Submit</button>
         </div>
           </div>
     </div>
