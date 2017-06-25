@@ -4,14 +4,15 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import {Job} from "./job";
-import {ApiError, APIResponse, APISuccess} from "../shared/api-error";
 import {BaseApiService} from "../shared/base-api-service";
+import {GroupContextService} from "../shared/group-context.service";
 
 
 @Injectable()
 export class JobService extends BaseApiService {
 
-  constructor (private http: Http) {
+  constructor (private http: Http,
+               private groupContextService: GroupContextService) {
     super();
   }
 
@@ -22,9 +23,13 @@ export class JobService extends BaseApiService {
    * @param groupId
    */
   getJobs(): Observable<Job[]> {
-    return this.http.get("/job/list")
+    if (this.groupContextService.getCurrentGroup()) {
+      return this.http.get("/job/list/group/"+this.groupContextService.getCurrentGroup().name)
         .map(x => x.json().map( x => Job.fromJson(x)))
         .catch(x => this.handleError(x))
+    } else {
+      return Observable.of([]);
+    }
   }
 
   /**
@@ -33,7 +38,7 @@ export class JobService extends BaseApiService {
    * @returns {Observable<R>}
    */
   createJob(job: Job): Observable<string> {
-    return this.http.post("/job/create/test", job.json())
+    return this.http.post("/job/create/"+this.groupContextService.getCurrentGroup().name, job.json())
           .map(x => "job created successfully")
           .catch(x => this.handleError(x))
   }

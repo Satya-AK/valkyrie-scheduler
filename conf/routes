@@ -12,7 +12,7 @@ GET      /assets/*file               controllers.Assets.versioned(path="/public"
 GET      /app/evolution                                     @controllers.HomeController.evolutions
 
 POST     /job/create/:groupName                         @controllers.JobController.createJob(groupName: String)
-GET      /job/group/:groupName                          @controllers.JobController.listJobs(groupName: String)
+GET      /job/list/group/:groupName                     @controllers.JobController.listJobs(groupName: String)
 GET      /job/group/:groupName/job/:jobName             @controllers.JobController.fetchJob(groupName: String, jobName: String)
 GET      /job/list                                      @controllers.JobController.listDummyJobs
 

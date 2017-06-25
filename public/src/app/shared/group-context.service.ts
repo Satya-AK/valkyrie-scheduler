@@ -9,6 +9,8 @@ export class GroupContextService extends BaseApiService {
 
   private currentGroup: Group = null;
 
+  private groupContextObservable: Observable<String> = Observable.create();
+
   showUiFlag: boolean = !this.currentGroup;
 
   constructor(private http: Http) {
@@ -34,6 +36,7 @@ export class GroupContextService extends BaseApiService {
       .map(x => group)
       .catch(err => this.handleError(err))
   }
+
 
   setCurrentGroup(group: Group) {
     this.currentGroup = group;

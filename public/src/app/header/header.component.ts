@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
 
   getCurrentGroupName() {
     if (this.groupContextService.getCurrentGroup()) {
-      return this.groupContextService.getCurrentGroup();
+      return this.groupContextService.getCurrentGroup().name;
     }
     else {
       return "";

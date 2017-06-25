@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Job} from "../job";
 import {JobService} from "../job.service";
 import {AlertService} from "../../shared/alert-service.service";
+import {GroupContextService} from "../../shared/group-context.service";
 
 @Component({
   selector: 'app-job-new',
@@ -12,7 +13,8 @@ export class JobNewComponent implements OnInit {
 
   job: Job;
 
-  constructor(private jobService: JobService, private alertService: AlertService) {}
+  constructor(private jobService: JobService,
+              private alertService: AlertService) {}
 
   ngOnInit() {
     this.job = new Job("", "", "", "");
@@ -21,7 +23,7 @@ export class JobNewComponent implements OnInit {
   createJob() {
     this.jobService
       .createJob(this.job)
-      .subscribe(data => this.alertService.showSuccessMessage(data),
+      .subscribe(data => {this.alertService.showSuccessMessage(data); window.location.href='#/jobs';},
         data => this.alertService.showErrorMessage(data))
   }
 
