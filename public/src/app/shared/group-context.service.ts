@@ -11,10 +11,19 @@ export class GroupContextService extends BaseApiService {
 
   private groupContextObservable: Observable<String> = Observable.create();
 
-  showUiFlag: boolean = !this.currentGroup;
+  showUiFlag: boolean = true;
 
   constructor(private http: Http) {
     super();
+    let groupData = localStorage.getItem("app-current-group")
+    if(groupData) {
+       try {
+         this.currentGroup = Group.fromJson(JSON.parse(groupData));
+      } catch (e) {
+         this.currentGroup = null;
+       }
+    }
+    this.showUiFlag = !this.currentGroup;
   }
 
   /**
@@ -40,6 +49,7 @@ export class GroupContextService extends BaseApiService {
 
   setCurrentGroup(group: Group) {
     this.currentGroup = group;
+    localStorage.setItem("app-current-group", JSON.stringify(group.json()));
   }
 
   getCurrentGroup() {
