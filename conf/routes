@@ -9,11 +9,11 @@ GET     /                           controllers.HomeController.index
 # Map static resources from the /public folder to the /assets URL path
 GET      /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
-GET      /app/evolution                                     @controllers.HomeController.evolutions
+GET      /app/evolution                                 @controllers.HomeController.evolutions
 
 POST     /job/create/:groupName                         @controllers.JobController.createJob(groupName: String)
 GET      /job/list/group/:groupName                     @controllers.JobController.listJobs(groupName: String)
-GET      /job/group/:groupName/job/:jobName             @controllers.JobController.fetchJob(groupName: String, jobName: String)
+GET      /job/fetch/group/:groupName/job/:jobName       @controllers.JobController.fetchJob(groupName: String, jobName: String)
 GET      /job/list                                      @controllers.JobController.listDummyJobs
 
 POST     /trigger/create/:groupName                     @controllers.TriggerController.createTrigger(groupName: String)

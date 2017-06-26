@@ -8,17 +8,25 @@
     </div>
   </div>
   <div>
-  <table datatable="ng" class="row-border hover">
+  <table datatable="ng" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="table table-bordered table-striped">
     <thead>
     <tr>
-      <th class="sorting_disabled">JobName</th>
-      <th class="sorting_disabled">Description</th>
+      <th><input type="checkbox" (click)="selectAll()" [(ngModel)]="selectAllState" class="sorting_disabled"></th>
+      <th>JobName</th>
+      <th>Description</th>
+      <th>Edit</th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let item of rows">
+      <td><input type="checkbox" [(ngModel)]="item.checked"></td>
       <td>{{item.name}}</td>
       <td>{{item.desc}}</td>
+      <td>
+        <a [href]="jobEditUrl(item.name)" class="btn btn-default btn-small">
+          <span class="glyphicon glyphicon-edit"></span>
+        </a>
+      </td>
     </tr>
     </tbody>
   </table>

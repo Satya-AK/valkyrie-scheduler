@@ -5,6 +5,8 @@
  */
 export class Job {
 
+  checked: boolean = false;
+
   constructor(
     public name: string,
     public desc: string,
@@ -22,7 +24,7 @@ export class Job {
   }
 
   static fromJson(json: any): Job {
-      return new Job(json.name, json.desc, json.command, json.workDir)
+      return new Job(json.name, json.desc, json.command, "/var/tmp")
   }
 
 }

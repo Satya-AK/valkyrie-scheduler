@@ -18,6 +18,19 @@ export class JobService extends BaseApiService {
 
   errorJobs = [{ name: "error_job_1", desc: "this is a error job" }];
 
+
+  getJobByName(jobName: string): Observable<Job> {
+     if (this.groupContextService.getCurrentGroup()) {
+       return this.http
+         .get("/job/fetch/group/"+this.groupContextService.getCurrentGroup().name+"/job/"+jobName)
+         .map(x => Job.fromJson(x.json()))
+         .catch(err => this.handleError(err));
+     } else {
+       return Observable.of(new Job("", "", "", ""));
+     }
+  }
+
+
   /**
    * list jobs
    * @param groupId

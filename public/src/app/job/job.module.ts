@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { JobListComponent } from './job-list/job-list.component';
 import { DataTablesModule } from 'angular-datatables';
 import {JobService} from "./job.service";
-import { JobNewComponent } from './job-new/job-new.component';
+import { JobEditComponent } from './job-edit/job-edit.component';
 import {FormsModule} from "@angular/forms";
 
 @NgModule({
@@ -12,7 +12,7 @@ import {FormsModule} from "@angular/forms";
     DataTablesModule,
     FormsModule
   ],
-  declarations: [JobListComponent, JobNewComponent],
+  declarations: [JobListComponent, JobEditComponent],
   providers: [JobService]
 })
 export class JobModule { }
