@@ -30,7 +30,20 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
         group <- groupRepository.getGroupByName(groupName)
         appJob <- Util.parseJson[AppJob](request.body)
         _ <- scheduler.createJob(group.id, appJob)
-      } yield Ok(Json.obj("success" -> "job created"))
+      } yield Ok(Json.obj("message" -> "job created"))
+  }
+
+  /**
+    * delete job
+    * @param groupName
+    * @param jobName
+    * @return
+    */
+  def deleteJob(groupName: String, jobName: String) = ErrRecoveryAction.async {
+    for {
+      group <- groupRepository.getGroupByName(groupName)
+      _ <- scheduler.deleteJob(group.id, jobName)
+    } yield Ok(Json.obj("message" -> s"job $jobName in group $groupName deleted successfully"))
   }
 
 

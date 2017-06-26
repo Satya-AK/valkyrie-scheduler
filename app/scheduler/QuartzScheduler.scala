@@ -83,5 +83,15 @@ class QuartzScheduler @Inject() (application: Application,
     scheduler.shutdown()
   }
 
-
+  /**
+    * delete job in group
+    *
+    * @param groupId
+    * @param jobName
+    * @return
+    */
+  override def deleteJob(groupId: String, jobName: String): Future[Unit] = {
+    val jobKey = new JobKey(jobName, groupId)
+    Future.successful(scheduler.deleteJob(jobKey));
+  }
 }

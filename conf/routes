@@ -15,6 +15,7 @@ POST     /job/create/:groupName                         @controllers.JobControll
 GET      /job/list/group/:groupName                     @controllers.JobController.listJobs(groupName: String)
 GET      /job/fetch/group/:groupName/job/:jobName       @controllers.JobController.fetchJob(groupName: String, jobName: String)
 GET      /job/list                                      @controllers.JobController.listDummyJobs
+POST     /job/delete/group/:groupName/job/:jobName      @controllers.JobController.deleteJob(groupName: String, jobName: String)
 
 POST     /trigger/create/:groupName                     @controllers.TriggerController.createTrigger(groupName: String)
 GET      /trigger/group/:groupName                      @controllers.TriggerController.listTriggers(groupName: String)

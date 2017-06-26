@@ -5,12 +5,14 @@ import { DataTablesModule } from 'angular-datatables';
 import {JobService} from "./job.service";
 import { JobEditComponent } from './job-edit/job-edit.component';
 import {FormsModule} from "@angular/forms";
+import {ModalModule} from "ngx-bootstrap";
 
 @NgModule({
   imports: [
     CommonModule,
     DataTablesModule,
-    FormsModule
+    FormsModule,
+    ModalModule.forRoot(),
   ],
   declarations: [JobListComponent, JobEditComponent],
   providers: [JobService]

@@ -7,24 +7,46 @@
       </a>
     </div>
   </div>
+  <div bsModal #delConfirmationModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Delete Job</h4>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete {{selectedJobName}}?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteJob(selectedJobName)">Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" (click)="delConfirmationModal.hide()">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div>
   <table datatable="ng" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="table table-bordered table-striped">
     <thead>
     <tr>
       <th><input type="checkbox" (click)="selectAll()" [(ngModel)]="selectAllState" class="sorting_disabled"></th>
-      <th>JobName</th>
+      <th>Job Name</th>
       <th>Description</th>
       <th>Edit</th>
+      <th>Delete</th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let item of rows">
-      <td><input type="checkbox" [(ngModel)]="item.checked"></td>
+      <td style="text-align: center"><input type="checkbox" [(ngModel)]="item.checked"></td>
       <td>{{item.name}}</td>
       <td>{{item.desc}}</td>
       <td>
         <a [href]="jobEditUrl(item.name)" class="btn btn-default btn-small">
           <span class="glyphicon glyphicon-edit"></span>
+        </a>
+      </td>
+      <td style="text-align: center;">
+        <a (click)="confirmDeleteJob(item.name)" class="btn btn-danger btn-small">
+          <span class="glyphicon glyphicon-trash"></span>
         </a>
       </td>
     </tr>

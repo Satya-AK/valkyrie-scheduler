@@ -19,6 +19,11 @@ export class JobService extends BaseApiService {
   errorJobs = [{ name: "error_job_1", desc: "this is a error job" }];
 
 
+  /**
+   * get job by name.
+   * @param jobName
+   * @returns {any}
+   */
   getJobByName(jobName: string): Observable<Job> {
      if (this.groupContextService.getCurrentGroup()) {
        return this.http
@@ -28,6 +33,18 @@ export class JobService extends BaseApiService {
      } else {
        return Observable.of(new Job("", "", "", ""));
      }
+  }
+
+  /**
+   * delete job by name
+   * @param jobName
+   * @returns {Observable<R|T>}
+   */
+  deleteJobByName(jobName: string): Observable<any> {
+    return this.http
+      .post("/job/delete/group/"+this.groupContextService.getCurrentGroup().name+"/job/"+jobName, {})
+      .map(x => x.json().message)
+      .catch(err => this.handleError(err));
   }
 
 
