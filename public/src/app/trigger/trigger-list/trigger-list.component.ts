@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {GroupContextService} from "../../shared/group-context.service";
+import {AlertService} from "../../shared/alert-service.service";
 
 @Component({
   selector: 'app-trigger-list',
@@ -7,7 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TriggerListComponent implements OnInit {
 
-  constructor() { }
+  constructor(private groupContextService: GroupContextService,
+              private alertService: AlertService) { }
 
   ngOnInit() {
   }

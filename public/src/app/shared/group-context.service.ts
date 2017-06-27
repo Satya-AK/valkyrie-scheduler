@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Http} from "@angular/http";
 import {BaseApiService} from "./base-api-service";
 import {Observable} from "rxjs/Observable";
+import {Subject} from "rxjs/Subject";
 
 
 @Injectable()
@@ -9,13 +10,13 @@ export class GroupContextService extends BaseApiService {
 
   private currentGroup: Group = null;
 
-  private groupContextObservable: Observable<String> = Observable.create();
+  public groupContextObservable = new Subject();
 
   showUiFlag: boolean = true;
 
   constructor(private http: Http) {
     super();
-    let groupData = localStorage.getItem("app-current-group")
+    let groupData = localStorage.getItem("app-current-group");
     if(groupData) {
        try {
          this.currentGroup = Group.fromJson(JSON.parse(groupData));
@@ -46,10 +47,14 @@ export class GroupContextService extends BaseApiService {
       .catch(err => this.handleError(err))
   }
 
-
+  /**
+   * set group
+   * @param group
+   */
   setCurrentGroup(group: Group) {
     this.currentGroup = group;
     localStorage.setItem("app-current-group", JSON.stringify(group.json()));
+    this.groupContextObservable.next(group);
   }
 
   getCurrentGroup() {

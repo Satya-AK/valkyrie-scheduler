@@ -85,7 +85,6 @@ export class GroupModalComponent  {
     if (this.selectedGroup) {
       this.groupContextService.setCurrentGroup(this.groups.filter(x => x.name == this.selectedGroup)[0]);
       this.groupContextService.showUiFlag = false;
-      window.location.href='#/jobs';
     }
   }
 

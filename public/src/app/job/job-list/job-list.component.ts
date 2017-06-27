@@ -3,7 +3,9 @@ import {JobService} from "../job.service";
 import {Job} from "../job";
 import {AlertService} from "../../shared/alert-service.service";
 import {Subject} from "rxjs/Subject";
+import {GroupContextService} from "../../shared/group-context.service";
 import {DataTableDirective} from "angular-datatables";
+import {Subscription} from "rxjs/Subscription";
 
 
 @Component({
@@ -18,10 +20,17 @@ export class JobListComponent implements OnInit {
   selectAllState: boolean = false;
   selectedJobName: string = null;
   dtTrigger: Subject<any> = new Subject();
+  private groupContextSubscription: Subscription = null;
 
   @ViewChild("delConfirmationModal") private  modal: any;
 
-  constructor(private jobService: JobService, private alertService: AlertService) { }
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective;
+
+
+
+  constructor(private jobService: JobService,
+              private alertService: AlertService,
+              private groupContextService: GroupContextService) { }
 
   dtOptions: DataTables.Settings = {
     order: [2],
@@ -41,18 +50,30 @@ export class JobListComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.fetchJobs();
+    this.groupContextSubscription = this.groupContextService.groupContextObservable
+      .subscribe(x => this.jobService.getJobs().subscribe(x => this.refreshData(x)));
+    this.jobService.getJobs()
+      .subscribe(rows => { this.rows = rows; this.dtTrigger.next()},
+        error => this.alertService.showErrorMessage(error))
   }
 
-  /**
-   * fetch jobs from service
-   */
-  fetchJobs() {
-    this.jobService
-      .getJobs()
-      .subscribe(rows => { this.rows = rows; this.dtTrigger.next()},
-                 error => this.alertService.showErrorMessage(error))
+
+  refreshData(data: Job[]) {
+    console.log("refreshing data");
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy();
+      this.rows = data;
+      this.dtTrigger.next();
+    });
+  }
+
+
+  ngOnDestroy() {
+    if (this.groupContextSubscription) {
+      this.groupContextSubscription.unsubscribe();
     }
+  }
+
 
   /**
    *

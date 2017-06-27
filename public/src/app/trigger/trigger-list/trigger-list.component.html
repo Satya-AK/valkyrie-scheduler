@@ -1,3 +1,30 @@
-<p>
-  trigger-list works!
-</p>
+<div>
+  <table datatable="ng" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th><input type="checkbox" (click)="selectAll()" [(ngModel)]="selectAllState" class="sorting_disabled"></th>
+      <th>Trigger Name</th>
+      <th>Description</th>
+      <th>Edit</th>
+      <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of rows">
+      <td style="text-align: center"><input type="checkbox" [(ngModel)]="item.checked"></td>
+      <td>{{item.name}}</td>
+      <td>{{item.desc}}</td>
+      <td>
+        <a [href]="jobEditUrl(item.name)" class="btn btn-default btn-small">
+          <span class="glyphicon glyphicon-edit"></span>
+        </a>
+      </td>
+      <td style="text-align: center;">
+        <a (click)="confirmDeleteJob(item.name)" class="btn btn-danger btn-small">
+          <span class="glyphicon glyphicon-trash"></span>
+        </a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
