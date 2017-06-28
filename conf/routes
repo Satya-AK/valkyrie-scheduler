@@ -17,9 +17,10 @@ GET      /job/fetch/group/:groupName/job/:jobName       @controllers.JobControll
 GET      /job/list                                      @controllers.JobController.listDummyJobs
 POST     /job/delete/group/:groupName/job/:jobName      @controllers.JobController.deleteJob(groupName: String, jobName: String)
 
-POST     /trigger/create/group/:groupName               @controllers.TriggerController.createTrigger(groupName: String)
-GET      /trigger/list/group/:groupName                 @controllers.TriggerController.listTriggers(groupName: String)
-GET      /trigger/group/:groupName/trigger/:triggerName @controllers.TriggerController.fetchTrigger(groupName: String, triggerName: String)
+POST     /trigger/create/group/:groupName                       @controllers.TriggerController.createTrigger(groupName: String)
+GET      /trigger/list/group/:groupName                         @controllers.TriggerController.listTriggers(groupName: String)
+GET      /trigger/fetch/group/:groupName/trigger/:triggerName   @controllers.TriggerController.fetchTrigger(groupName: String, triggerName: String)
+POST     /trigger/delete/group/:groupName/trigger/:triggerName  @controllers.TriggerController.deleteTrigger(groupName: String, triggerName: String)
 
 POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
 POST     /instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)

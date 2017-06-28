@@ -65,4 +65,18 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
     } yield Ok(Json.toJson(trigger))
   }
 
+
+  /**
+    * delete a trigger
+    * @param groupName
+    * @param jobName
+    * @return
+    */
+  def deleteTrigger(groupName: String, jobName: String) = ErrRecoveryAction.async {
+    for {
+      group <- groupRepository.getGroupByName(groupName)
+      trigger <- scheduler.deleteTrigger(group.id, jobName)
+    } yield Ok(Json.obj("message" -> "trigger deleted successfully"))
+  }
+
 }

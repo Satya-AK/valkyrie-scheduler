@@ -1,6 +1,8 @@
 
 export class Trigger {
 
+  checked: boolean = false;
+
   constructor(public name: string, public desc: string, public cron: string, public jobName: string) {}
 
   /**
@@ -9,7 +11,7 @@ export class Trigger {
    * @returns {Trigger}
    */
   public static fromJson(json: any) {
-    return new Trigger(json.trigger_name, json.description, json.cron, json.job_name);
+    return new Trigger(json.name, json.description, json.cron, json.job_name);
   }
 
   /**

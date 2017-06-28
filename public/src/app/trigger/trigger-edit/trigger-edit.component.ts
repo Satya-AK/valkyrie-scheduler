@@ -35,7 +35,7 @@ export class TriggerEditComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.triggerName = this.activatedRoute.snapshot.params["jobName"];
+    this.triggerName = this.activatedRoute.snapshot.params["triggerName"];
     this.trigger = new Trigger("", "", "", "");
     if (this.triggerName) {
       this.triggerService

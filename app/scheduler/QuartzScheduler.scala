@@ -76,6 +76,12 @@ class QuartzScheduler @Inject() (application: Application,
   }
 
 
+  def deleteTrigger(groupId: String, triggerName: String) = {
+    val triggerKey = new TriggerKey(triggerName, groupId)
+    Future.successful(scheduler.unscheduleJob(triggerKey))
+  }
+
+
   def pause() = {
     scheduler.standby()
   }

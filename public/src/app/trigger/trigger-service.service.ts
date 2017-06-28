@@ -29,7 +29,7 @@ export class TriggerService extends BaseApiService {
    */
   fetch(name: string) {
     return this.http
-      .get("/trigger/group/"+this.groupContextService.getCurrentGroup().name+"/trigger/"+name)
+      .get("/trigger/fetch/group/"+this.groupContextService.getCurrentGroup().name+"/trigger/"+name)
       .map(x => Trigger.fromJson(x.json()))
       .catch(err => this.handleError(err))
   }
@@ -44,6 +44,18 @@ export class TriggerService extends BaseApiService {
     return this.http
       .post("/trigger/create/group/"+this.groupContextService.getCurrentGroup().name, trigger.json())
       .map(x => "trigger "+trigger.name+" created successfully")
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @param triggerName
+   * @returns {Observable<R|T>}
+   */
+  remove(triggerName: string) {
+    return this.http
+      .post("/trigger/delete/group/"+this.groupContextService.getCurrentGroup().name+"/trigger/"+triggerName,{})
+      .map(x => "trigger "+triggerName+" successfully deleted")
       .catch(err => this.handleError(err))
   }
 

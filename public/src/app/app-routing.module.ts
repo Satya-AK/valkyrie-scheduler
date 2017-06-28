@@ -13,6 +13,7 @@ const appRoutes: Routes = [
   { path: 'job/edit/:jobName', component: JobEditComponent },
   { path: 'triggers', component: TriggerListComponent },
   { path: 'trigger/new', component: TriggerEditComponent },
+  { path: 'trigger/edit/:triggerName', component: TriggerEditComponent },
   { path: '',   redirectTo: '/jobs', pathMatch: 'full' },
   { path: '**', component: JobListComponent }
 ];
