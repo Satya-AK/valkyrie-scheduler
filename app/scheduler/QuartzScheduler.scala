@@ -64,6 +64,7 @@ class QuartzScheduler @Inject() (application: Application,
   }
 
   def createTrigger(groupId: String, appTrigger: AppTrigger) = {
+    println(("+"* 20) + appTrigger.jobName)
     val triggerDetail = TriggerBuilder
       .newTrigger()
       .withIdentity(new TriggerKey(appTrigger.triggerName, groupId))

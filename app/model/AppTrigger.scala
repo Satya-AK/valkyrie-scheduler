@@ -1,7 +1,7 @@
 package model
 
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{Format, JsPath, Reads, Writes}
+import play.api.libs.json.{Format, JsPath}
 import scheduler.SchedulerParser
 
 /**
@@ -29,7 +29,7 @@ case class AppTrigger(triggerName: String,
 object AppTrigger {
 
   implicit val jsonFormatter: Format[AppTrigger] = (
-    (JsPath \ "trigger_name").format[String] and
+    (JsPath \ "name").format[String] and
     (JsPath \ "job_name").format[String] and
     (JsPath \ "cron").format[String] and
     (JsPath \ "description").formatNullable[String]

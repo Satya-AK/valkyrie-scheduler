@@ -18,7 +18,7 @@ export class Trigger {
    */
   json() {
     return {
-      trigger_name: this.name,
+      name: this.name,
       description: this.desc,
       cron: this.cron,
       job_name: this.jobName,

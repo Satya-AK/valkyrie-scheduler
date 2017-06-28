@@ -1,0 +1,64 @@
+<div class="container">
+  <h3>Create Trigger</h3>
+  <br>
+  <br>
+  <form  #triggerForm="ngForm">
+
+    <div class="form-group">
+      <div class="row">
+        <label for="name" class="col-sm-3 control-label">Trigger Name</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" name="name" required [(ngModel)]="trigger.name" #name="ngModel">
+          <div class="row alert alert-danger"  [hidden]="name.valid || name.pristine">
+            Name field is a mandatory field
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="row">
+        <label for="desc" class="col-sm-3 control-label">Description</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" name="desc" required [(ngModel)]="trigger.desc" #desc="ngModel">
+          <div class="row alert alert-danger" [hidden]="desc.valid || desc.pristine">
+            Description field is a mandatory field
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="row">
+        <label for="cron" class="col-sm-3 control-label">Cron Expression</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" name="cron" required [(ngModel)]="trigger.cron" #cron="ngModel">
+          <div class="row alert alert-danger" [hidden]="cron.valid || cron.pristine">
+            Cron expression is a mandatory field
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="row">
+        <label for="job" class="col-sm-3 control-label">Job</label>
+        <div class="col-sm-6">
+          <ng-selectize name="job" [config]="ngSelectOptions" [options] = "jobs" required
+                        [(ngModel)]="trigger.jobName" [disabled]="!groups" placeholder="Select Job" #jobName="ngModel">
+          </ng-selectize>
+          <div class="row alert alert-danger" [hidden]="!!trigger.jobName || jobName.pristine">
+            Job is a mandatory field
+          </div>
+          {{trigger.job_name}}
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobName"
+            (click)="createTrigger()">
+      Create Trigger
+    </button>
+
+  </form>
+</div>
