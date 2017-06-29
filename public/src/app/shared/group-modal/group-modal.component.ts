@@ -1,5 +1,7 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Group, GroupContextService} from "../group-context.service";
+import { UUID } from 'angular2-uuid';
+
 
 @Component({
   selector: 'app-group-modal',
@@ -70,7 +72,7 @@ export class GroupModalComponent  {
   }
 
   createNUse(data) {
-    let group = new Group(null ,data.group_name, data.group_email, "this is a description");
+    let group = new Group(UUID.UUID().replace(/-/g,"") ,data.group_name, data.group_email, "this is a description");
     this.groupContextService
       .createGroup(group)
       .subscribe(data => { this.groupContextService.setCurrentGroup(data);

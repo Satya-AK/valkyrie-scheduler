@@ -11,11 +11,11 @@ GET      /assets/*file               controllers.Assets.versioned(path="/public"
 
 GET      /app/evolution                                 @controllers.HomeController.evolutions
 
-POST     /job/create/:groupName                         @controllers.JobController.createJob(groupName: String)
-GET      /job/list/group/:groupName                     @controllers.JobController.listJobs(groupName: String)
-GET      /job/fetch/group/:groupName/job/:jobName       @controllers.JobController.fetchJob(groupName: String, jobName: String)
-GET      /job/list                                      @controllers.JobController.listDummyJobs
-POST     /job/delete/group/:groupName/job/:jobName      @controllers.JobController.deleteJob(groupName: String, jobName: String)
+POST     /job/create/:groupId                     @controllers.JobController.createJob(groupId: String)
+GET      /job/list/group/:groupId                 @controllers.JobController.listJobs(groupId: String)
+GET      /job/fetch/group/:groupId/job/:jobId     @controllers.JobController.fetchJob(groupId: String, jobId: String)
+POST     /job/delete/group/:groupId/job/:jobId    @controllers.JobController.deleteJob(groupId: String, jobId: String)
+POST     /job/update/group/:groupId               @controllers.JobController.updateJob(groupId: String)
 
 POST     /trigger/create/group/:groupName                       @controllers.TriggerController.createTrigger(groupName: String)
 GET      /trigger/list/group/:groupName                         @controllers.TriggerController.listTriggers(groupName: String)

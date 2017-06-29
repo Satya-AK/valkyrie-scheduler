@@ -10,7 +10,6 @@ import scheduler.Scheduler
 import util.{ErrRecoveryAction, Util}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/27/17.
@@ -24,64 +23,70 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     * create job
     * @return
     */
-  def createJob(groupName: String) = ErrRecoveryAction.async(parse.json) {
+  def createJob(groupId: String) = ErrRecoveryAction.async(parse.json) {
     request =>
       for {
-        group <- groupRepository.getGroupByName(groupName)
+        group <- groupRepository.getGroupById(groupId)
         appJob <- Util.parseJson[AppJob](request.body)
         _ <- scheduler.createJob(group.id, appJob)
       } yield Ok(Json.obj("message" -> "job created"))
   }
 
   /**
-    * delete job
-    * @param groupName
-    * @param jobName
+    * update the job
+    * @param groupId
     * @return
     */
-  def deleteJob(groupName: String, jobName: String) = ErrRecoveryAction.async {
+  def updateJob(groupId: String) = ErrRecoveryAction.async(parse.json) {
+    request =>
+      for {
+        _ <- groupRepository.getGroupById(groupId)
+        appJob <- Util.parseJson[AppJob](request.body)
+        _ <- scheduler.updateJob(groupId, appJob)
+      } yield Ok(Json.obj("message" -> s"updated job ${appJob.jobName}"))
+  }
+
+
+  /**
+    * delete job
+    * @param groupId
+    * @param jobId
+    * @return
+    */
+  def deleteJob(groupId: String, jobId: String) = ErrRecoveryAction.async {
     for {
-      group <- groupRepository.getGroupByName(groupName)
-      _ <- scheduler.deleteJob(group.id, jobName)
-    } yield Ok(Json.obj("message" -> s"job $jobName in group $groupName deleted successfully"))
+      group <- groupRepository.getGroupById(groupId)
+      job <- jobRepository.getJob(group.id, jobId)
+      _ <- scheduler.deleteJob(group.id, jobId)
+    } yield Ok(Json.obj("message" -> s"job ${job.jobName} in group ${group.groupName} deleted successfully"))
   }
 
 
   /**
     * list jobs in group
-    * @param groupName
+    * @param groupId
     * @return
     */
-  def listJobs(groupName: String) = ErrRecoveryAction.async {
+  def listJobs(groupId: String) = ErrRecoveryAction.async {
     for {
-      group <- groupRepository.getGroupByName(groupName)
-      jobs <- jobRepository.listJobs(group.id)
+      _ <- groupRepository.getGroupById(groupId)
+      jobs <- jobRepository.listJobs(groupId)
     } yield {
       Ok(jobs.map(Json.toJson(_)).foldLeft(JsArray())({ case (arr, data) => arr :+ data }))
     }
   }
 
 
-  def listDummyJobs = ErrRecoveryAction.async {
-    val list = Seq(AppJob("job_1", "echo Hello world", Some("this is testJob")),
-      AppJob("job_2", "echo Hello world", Some("this is testJob")),
-      AppJob("job_3", "echo Hello world", Some("this is testJob")),
-      AppJob("job_4", "echo Hello world", Some("this is testJob")))
-    Future.successful(Ok(Json.toJson(list)))
-  }
-
-
-
   /**
     * fetch job in group
-    * @param groupName
-    * @param jobName
+    * @param groupId
+    * @param jobId
     * @return
     */
-  def fetchJob(groupName: String, jobName: String) = ErrRecoveryAction.async {
+  def fetchJob(groupId: String, jobId: String) = ErrRecoveryAction.async {
     for {
-      group <- groupRepository.getGroupByName(groupName)
-      job <- jobRepository.getJob(group.id, jobName)
+      group <- groupRepository.getGroupById(groupId)
+      job <- jobRepository.getJob(group.id, jobId)
     } yield {
       Ok(Json.toJson(job))
     }

@@ -32,6 +32,15 @@ trait Scheduler {
 
 
   /**
+    * update job
+    * @param groupId
+    * @param job
+    * @return
+    */
+  def updateJob(groupId: String, job: AppJob): Future[Unit]
+
+
+  /**
     * delete job in group
     * @param groupId
     * @param jobName

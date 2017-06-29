@@ -7,7 +7,9 @@ import model.{AppJob, AppTrigger}
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import play.api.{Application, Logger}
+import util.Keyword.JobData
 import util.{GlobalContext, Util}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
@@ -53,18 +55,26 @@ class QuartzScheduler @Inject() (application: Application,
     }
   }
 
-  def createJob(groupId: String, job: AppJob) = {
+
+  def createJob(groupId: String, job: AppJob) = createOrUpdateJob(groupId, job)
+
+  def updateJob(groupId: String, job: AppJob) = createOrUpdateJob(groupId, job, update=true)
+
+  def createOrUpdateJob(groupId: String, job: AppJob, update: Boolean = false) = {
+    val data = Map(JobData.command -> job.cmd,
+      JobData.workingDir -> job.workingDir,
+        JobData.jobName -> job.jobName)
     val jobDetail = JobBuilder.newJob(classOf[CommandJobImpl])
-      .withIdentity(new JobKey(job.jobName, groupId))
-      .setJobData(new JobDataMap(Map("command" -> job.cmd).asJava))
+      .withIdentity(new JobKey(job.id, groupId))
+      .setJobData(new JobDataMap(data.asJava))
       .storeDurably(true)
       .withDescription(job.desc.orNull)
       .build()
-    Future.successful(scheduler.addJob(jobDetail, false))
+    Future.successful(scheduler.addJob(jobDetail, update))
   }
 
+
   def createTrigger(groupId: String, appTrigger: AppTrigger) = {
-    println(("+"* 20) + appTrigger.jobName)
     val triggerDetail = TriggerBuilder
       .newTrigger()
       .withIdentity(new TriggerKey(appTrigger.triggerName, groupId))
@@ -73,6 +83,12 @@ class QuartzScheduler @Inject() (application: Application,
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
       .build()
     Future.successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
+  }
+
+
+  def disableTrigger(groupId: String, triggerName: String) = {
+    val triggerKey = new TriggerKey(triggerName, groupId)
+    scheduler.pauseTrigger(triggerKey)
   }
 
 

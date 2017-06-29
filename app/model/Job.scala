@@ -7,13 +7,12 @@ import java.sql.Blob
   */
 
 /**
-  *
-  * @param jobName
-  * @param jobGroup
+  * @param jobId
+  * @param groupId
   * @param desc
   */
-case class Job(jobName: String,
-               jobGroup: String,
+case class Job(jobId: String,
+               groupId: String,
                desc: Option[String],
                jobData: Option[Blob]) {
 

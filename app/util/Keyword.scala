@@ -10,6 +10,7 @@ object Keyword {
     val command = "command"
     val workingDir = "working_dir"
     val environment = "environment"
+    val jobName = "job_name"
   }
 
   object AppSetting {

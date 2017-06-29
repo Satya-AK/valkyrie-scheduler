@@ -11,40 +11,47 @@ import {GroupContextService} from "../shared/group-context.service";
 @Injectable()
 export class JobService extends BaseApiService {
 
-  constructor (private http: Http,
-               private groupContextService: GroupContextService) {
+  constructor(private http: Http,
+              private groupContextService: GroupContextService) {
     super();
   }
-
-  errorJobs = [{ name: "error_job_1", desc: "this is a error job" }];
 
 
   /**
    * get job by name.
-   * @param jobName
+   * @param jobId
    * @returns {any}
    */
-  getJobByName(jobName: string): Observable<Job> {
-     if (this.groupContextService.getCurrentGroup()) {
-       return this.http
-         .get("/job/fetch/group/"+this.groupContextService.getCurrentGroup().name+"/job/"+jobName)
-         .map(x => Job.fromJson(x.json()))
-         .catch(err => this.handleError(err));
-     } else {
-       return Observable.of(new Job("", "", "", ""));
-     }
+  fetch(jobId: string): Observable<Job> {
+    return this.http
+      .get("/job/fetch/group/"+this.groupContextService.getCurrentGroup().id+"/job/"+jobId)
+      .map(x => Job.fromJson(x.json()))
+      .catch(err => this.handleError(err));
   }
 
   /**
    * delete job by name
-   * @param jobName
+   * @param jobId
    * @returns {Observable<R|T>}
    */
-  deleteJobByName(jobName: string): Observable<any> {
+  remove(jobId: string): Observable<any> {
     return this.http
-      .post("/job/delete/group/"+this.groupContextService.getCurrentGroup().name+"/job/"+jobName, {})
+      .post("/job/delete/group/"+this.groupContextService.getCurrentGroup().id+"/job/"+jobId, {})
       .map(x => x.json().message)
       .catch(err => this.handleError(err));
+  }
+
+
+  /**
+   * update job
+   * @param job
+   * @returns {Observable<R|T>}
+   */
+  update(job: Job): Observable<string> {
+    return this.http
+      .post("/job/update/group/"+this.groupContextService.getCurrentGroup().id, job.json())
+      .map(x => x.json().message)
+      .catch(err => this.handleError(err))
   }
 
 
@@ -52,14 +59,10 @@ export class JobService extends BaseApiService {
    * list jobs
    * @param groupId
    */
-  getJobs(): Observable<Job[]> {
-    if (this.groupContextService.getCurrentGroup()) {
-      return this.http.get("/job/list/group/"+this.groupContextService.getCurrentGroup().name)
-        .map(x => x.json().map( x => Job.fromJson(x)))
-        .catch(x => this.handleError(x))
-    } else {
-      return Observable.of([]);
-    }
+  list(): Observable<Job[]> {
+    return this.http.get("/job/list/group/"+this.groupContextService.getCurrentGroup().id)
+      .map(x => x.json().map( x => Job.fromJson(x)))
+      .catch(x => this.handleError(x))
   }
 
   /**
@@ -67,8 +70,8 @@ export class JobService extends BaseApiService {
    * @param job
    * @returns {Observable<R>}
    */
-  createJob(job: Job): Observable<string> {
-    return this.http.post("/job/create/"+this.groupContextService.getCurrentGroup().name, job.json())
+  create(job: Job): Observable<string> {
+    return this.http.post("/job/create/"+this.groupContextService.getCurrentGroup().id, job.json())
           .map(x => "job created successfully")
           .catch(x => this.handleError(x))
   }

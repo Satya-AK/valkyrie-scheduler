@@ -23,7 +23,7 @@ export class TriggerEditComponent implements OnInit {
               private triggerService: TriggerService,
               private alertService: AlertService,
               private activatedRoute: ActivatedRoute) {
-    this.jobService.getJobs().subscribe(x => this.jobs = x);
+    this.jobService.list().subscribe(x => this.jobs = x);
   }
 
 

@@ -15,20 +15,28 @@ import util.Keyword.JobData
   * @param cmd
   * @param desc
   */
-case class AppJob(jobName: String,
+case class AppJob(id: String,
+                  jobName: String,
+                  desc: Option[String],
                   cmd: String,
-                  desc: Option[String])
+                  workingDir: String)
 
 object AppJob {
 
   implicit val jsonFormatter: Format[AppJob] = (
+    (JsPath \ "id").format[String] and
     (JsPath \ "name").format[String] and
+    (JsPath \ "desc").formatNullable[String] and
     (JsPath \ JobData.command).format[String] and
-    (JsPath \ "desc").formatNullable[String]
+    (JsPath \ JobData.workingDir).format[String]
   )(AppJob.apply, unlift(AppJob.unapply))
 
   def create(job: Job) = {
-    AppJob(job.jobName, job.data.get(JobData.command), job.desc)
+    AppJob(job.jobId,
+      job.data.get(JobData.jobName),
+      job.desc,
+      job.data.get(JobData.command),
+      job.data.get(JobData.workingDir))
   }
 
 }

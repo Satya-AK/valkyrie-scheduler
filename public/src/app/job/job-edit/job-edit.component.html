@@ -52,7 +52,10 @@
       </div>
     </div>
 
-    <button type="submit" class="btn btn-success"  [disabled]="jobForm.invalid" (click)="createJob()">Submit</button>
+    <button type="submit" *ngIf="createMode" class="btn btn-success"  [disabled]="jobForm.invalid"
+            (click)="createJob()">Create Job</button>
+    <button type="submit" *ngIf="!createMode" class="btn btn-success"  [disabled]="jobForm.invalid"
+            (click)="updateJob()">Update Job</button>
 
   </form>
 </div>

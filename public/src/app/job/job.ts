@@ -8,6 +8,7 @@ export class Job {
   checked: boolean = false;
 
   constructor(
+    public id: string,
     public name: string,
     public desc: string,
     public command: string,
@@ -16,15 +17,16 @@ export class Job {
 
   json() {
       return {
+        id: this.id,
         name: this.name,
         desc: this.desc,
         command: this.command,
-        workdir: this.workDir
+        working_dir: this.workDir
       }
   }
 
   static fromJson(json: any): Job {
-      return new Job(json.name, json.desc, json.command, "/var/tmp")
+      return new Job(json.id, json.name, json.desc, json.command, json.working_dir)
   }
 
 }

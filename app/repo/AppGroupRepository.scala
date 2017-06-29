@@ -28,6 +28,18 @@ class AppGroupRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
     db.run(appGroupTable.table += appGroup)
   }
 
+  /**
+    *
+    * @param groupId
+    * @return
+    */
+  def getGroupById(groupId: String) = {
+    db.run(appGroupTable.table.filter(_.id === groupId).result.headOption) flatMap {
+      case Some(x) => Future.successful(x)
+      case None => Future.failed(new EntityNotFoundException(s"group with id $groupId not found"))
+    }
+  }
+
 
   /**
     * get group by Name

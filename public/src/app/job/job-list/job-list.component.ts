@@ -18,7 +18,7 @@ export class JobListComponent implements OnInit {
   rows: Job[] = [];
   selectedRows: Job[] = [];
   selectAllState: boolean = false;
-  selectedJobName: string = null;
+  selectedJobId: string = null;
   dtTrigger: Subject<any> = new Subject();
   private groupContextSubscription: Subscription = null;
 
@@ -44,22 +44,21 @@ export class JobListComponent implements OnInit {
   };
 
 
-  jobEditUrl(jobName: string) {
-    return "#/job/edit/"+jobName;
+  jobEditUrl(jobId: string) {
+    return "#/job/edit/"+jobId;
   }
 
 
   ngOnInit(): void {
     this.groupContextSubscription = this.groupContextService.groupContextObservable
-      .subscribe(x => this.jobService.getJobs().subscribe(x => this.refreshData(x)));
-    this.jobService.getJobs()
+      .subscribe(x => this.jobService.list().subscribe(x => this.refreshData(x)));
+    this.jobService.list()
       .subscribe(rows => { this.rows = rows; this.dtTrigger.next()},
         error => this.alertService.showErrorMessage(error))
   }
 
 
   refreshData(data: Job[]) {
-    console.log("refreshing data");
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
       dtInstance.destroy();
       this.rows = data;
@@ -77,10 +76,10 @@ export class JobListComponent implements OnInit {
 
   /**
    *
-   * @param jobName
+   * @param jobId
    */
-  confirmDeleteJob(jobName) {
-    this.selectedJobName = this.rows.filter(x => x.name == jobName)[0].name;
+  confirmDeleteJob(jobId: string) {
+    this.selectedJobId = this.rows.filter(x => x.id == jobId)[0].id;
     this.modal.show();
   }
 
@@ -89,7 +88,7 @@ export class JobListComponent implements OnInit {
    * @param jobName
    */
   deleteJob(jobName) {
-    this.jobService.deleteJobByName(jobName)
+    this.jobService.remove(jobName)
       .subscribe(x => {
         this.alertService.showSuccessMessage(x);
         this.rows = this.rows.filter(x => !(x.name == jobName));
