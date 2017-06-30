@@ -5,6 +5,7 @@ import {AlertService} from "../../shared/alert-service.service";
 import {ActivatedRoute} from "@angular/router";
 import {Job} from "../../job/job";
 import {JobService} from "../../job/job.service";
+import {UUID} from "angular2-uuid";
 
 @Component({
   selector: 'app-trigger-edit',
@@ -17,29 +18,34 @@ export class TriggerEditComponent implements OnInit {
 
   jobs: Job[];
 
-  private triggerName: string;
+  private triggerId: string;
 
   constructor(private jobService: JobService,
               private triggerService: TriggerService,
               private alertService: AlertService,
               private activatedRoute: ActivatedRoute) {
     this.jobService.list().subscribe(x => this.jobs = x);
+    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""), "", "", "", "");
+    this.triggerId = this.activatedRoute.snapshot.params["triggerId"];
+    if (this.triggerId) {
+      this.triggerService.fetch(this.triggerId)
+        .subscribe(x => this.trigger, x => this.alertService.showErrorMessage(x))
+    }
   }
-
 
   ngSelectOptions = {
     labelField: 'name',
-    valueField: 'name',
+    valueField: 'id',
     maxItems: 1,
     searchField: 'name'
   };
 
   ngOnInit() {
-    this.triggerName = this.activatedRoute.snapshot.params["triggerName"];
-    this.trigger = new Trigger("", "", "", "");
-    if (this.triggerName) {
+    this.triggerId = this.activatedRoute.snapshot.params["triggerId"];
+    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""),"", "", "", "");
+    if (this.triggerId) {
       this.triggerService
-        .fetch(this.triggerName)
+        .fetch(this.triggerId)
         .subscribe(x => this.trigger = x, err => this.alertService.showErrorMessage(err));
     }
   }

@@ -2,13 +2,14 @@ package controllers
 
 import com.google.inject.Inject
 import model.AppTrigger
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
-import repo.{AppGroupRepository, TriggerRepository}
+import repo.{AppGroupRepository, JobRepository, TriggerRepository}
 import scheduler.Scheduler
 import util.{ErrRecoveryAction, Util}
-
+import util.Util.JsObjectEnhancer
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/29/17.
@@ -16,6 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class TriggerController @Inject()(triggerRepository: TriggerRepository,
+                                  jobRepository: JobRepository,
                                   groupRepository: AppGroupRepository,
                                   scheduler: Scheduler)
   extends Controller {
@@ -24,10 +26,10 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
     * create trigger
     * @return
     */
-  def createTrigger(groupName: String) = ErrRecoveryAction.async(parse.json) {
+  def createTrigger(groupId: String) = ErrRecoveryAction.async(parse.json) {
     request =>
       for {
-        group <- groupRepository.getGroupByName(groupName)
+        group <- groupRepository.getGroupById(groupId)
         appTrigger <- Util.parseJson[AppTrigger](request.body)
         _ <- scheduler.createTrigger(group.id, appTrigger)
       } yield Ok(Json.obj("success" -> "trigger created"))
@@ -36,17 +38,18 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
 
   /**
     * list triggers in group
-    * @param groupName
+    * @param groupId
     * @return
     */
-  def listTriggers(groupName: String) = ErrRecoveryAction.async {
+  def listTriggers(groupId: String) = ErrRecoveryAction.async {
     for {
-      group <- groupRepository.getGroupByName(groupName)
+      group <- groupRepository.getGroupById(groupId)
       triggers <- triggerRepository.listTriggers(group.id)
+      jobs <- Future.sequence(triggers.map(x => jobRepository.getJob(groupId, x.jobId)))
     } yield {
       Ok {
-        triggers
-          .map(x => Json.toJson(x))
+        (triggers zip jobs)
+          .map({ case (x,y) => Json.toJson(x).as[JsObject].update("job_name" -> y.jobName)})
           .foldLeft(JsArray())({ case (arr, data) => arr :+ data })
       }
     }
@@ -54,14 +57,14 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
 
   /**
     * fetch trigger in group
-    * @param groupName
-    * @param jobName
+    * @param groupId
+    * @param triggerId
     * @return
     */
-  def fetchTrigger(groupName: String, jobName: String) = ErrRecoveryAction.async {
+  def fetchTrigger(groupId: String, triggerId: String) = ErrRecoveryAction.async {
     for {
-      group <- groupRepository.getGroupByName(groupName)
-      trigger <- triggerRepository.getTrigger(jobName, group.id)
+      group <- groupRepository.getGroupById(groupId)
+      trigger <- triggerRepository.getTrigger(triggerId, group.id)
     } yield Ok(Json.toJson(trigger))
   }
 

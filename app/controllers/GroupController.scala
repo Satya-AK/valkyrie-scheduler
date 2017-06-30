@@ -43,4 +43,15 @@ class GroupController @Inject() (groupRepository: AppGroupRepository)
         .map(Ok(_))
   }
 
+  /**
+    * fetch group info
+    * @param groupId
+    * @return
+    */
+  def fetchGroup(groupId: String) = ErrRecoveryAction.async {
+    groupRepository
+      .getGroupById(groupId)
+      .map(x => Ok(Json.toJson(x)))
+  }
+
 }

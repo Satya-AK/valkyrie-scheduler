@@ -73,15 +73,42 @@ class QuartzScheduler @Inject() (application: Application,
     Future.successful(scheduler.addJob(jobDetail, update))
   }
 
-
   def createTrigger(groupId: String, appTrigger: AppTrigger) = {
     val triggerDetail = TriggerBuilder
       .newTrigger()
-      .withIdentity(new TriggerKey(appTrigger.triggerName, groupId))
-      .forJob(appTrigger.jobName, groupId)
+      .forJob(appTrigger.jobId, groupId)
+      .withIdentity(new TriggerKey(appTrigger.id, groupId))
+      .usingJobData("name", appTrigger.triggerName)
       .withDescription(appTrigger.desc.orNull)
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
       .build()
+    Future.successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
+  }
+
+  def updateTrigger(groupId: String, appTrigger: AppTrigger) = {
+    val triggerKey = new TriggerKey(appTrigger.id, groupId)
+    val triggerDetail = TriggerBuilder
+      .newTrigger()
+      .withIdentity(triggerKey)
+      .forJob(appTrigger.jobId, groupId)
+      .usingJobData("name", appTrigger.triggerName)
+      .withDescription(appTrigger.desc.orNull)
+      .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
+      .build()
+    Future.successful(scheduler.rescheduleJob(triggerKey, triggerDetail)).map(_ => ())
+  }
+
+
+  def createOrUpdateTrigger(groupId: String, appTrigger: AppTrigger, replace: Boolean) = {
+    val triggerDetail = TriggerBuilder
+      .newTrigger()
+      .withIdentity(new TriggerKey(appTrigger.id, groupId))
+      .usingJobData("name", appTrigger.triggerName)
+      .withDescription(appTrigger.desc.orNull)
+      .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
+      .build()
+    val jobDetail = scheduler.getJobDetail(new JobKey(appTrigger.jobId, groupId))
+    scheduler.scheduleJob(jobDetail, Seq(triggerDetail).toSet.asJava, replace)
     Future.successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
   }
 

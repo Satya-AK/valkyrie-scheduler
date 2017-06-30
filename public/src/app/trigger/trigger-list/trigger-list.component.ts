@@ -22,7 +22,7 @@ export class TriggerListComponent implements OnInit {
   rows: Trigger[] = [];
   selectedRows: Trigger[] = [];
   selectAllState: boolean = false;
-  selectedTriggerName: string = null;
+  selectedTrigger: Trigger = null;
   dtTrigger: Subject<any> = new Subject();
   private groupContextSubscription: Subscription = null;
 
@@ -46,8 +46,8 @@ export class TriggerListComponent implements OnInit {
   };
 
 
-  triggerEditUrl(jobName: string) {
-    return "#/trigger/edit/"+jobName;
+  triggerEditUrl(id: string) {
+    return "#/trigger/edit/"+id;
   }
 
 
@@ -78,22 +78,22 @@ export class TriggerListComponent implements OnInit {
 
   /**
    *
-   * @param jobName
+   * @param triggerId
    */
-  confirmDeleteTrigger(jobName: string) {
-    this.selectedTriggerName = this.rows.filter(x => x.name == jobName)[0].name;
+  confirmDeleteTrigger(triggerId: string) {
+    this.selectedTrigger = this.rows.filter(x => x.id == triggerId)[0];
     this.modal.show();
   }
 
   /**
    * remove trigger
-   * @param triggerName
+   * @param trigger
    */
-  deleteTrigger(triggerName: string) {
-    this.triggerService.remove(triggerName)
+  deleteTrigger(trigger: Trigger) {
+    this.triggerService.remove(trigger)
       .subscribe(x => {
         this.alertService.showSuccessMessage(x);
-        this.rows = this.rows.filter(x => !(x.name == triggerName));
+        this.rows = this.rows.filter(x => !(x.id == trigger.id));
       }, x => this.alertService.showErrorMessage(x));
     this.modal.hide();
   }

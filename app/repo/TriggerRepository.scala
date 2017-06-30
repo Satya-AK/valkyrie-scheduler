@@ -23,19 +23,19 @@ class TriggerRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
 
   /**
     * get trigger
-    * @param triggerName
+    * @param triggerId
     * @param groupId
     * @return
     */
-  def getTrigger(triggerName: String, groupId: String) = {
+  def getTrigger(triggerId: String, groupId: String) = {
     val action = for {
-      mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupId && x.triggerName === triggerName)
-      cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupId && x.triggerName === triggerName)
+      mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupId && x.triggerName === triggerId)
+      cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupId && x.triggerName === triggerId)
     } yield mainTrigger -> cronTrigger
 
     db.run(action.result.headOption) flatMap {
       case Some((x,y)) => Future.successful(AppTrigger.create(x,y))
-      case None => Future.failed(new EntityNotFoundException(s"trigger $triggerName not not found in group $groupId"))
+      case None => Future.failed(new EntityNotFoundException(s"trigger $triggerId not not found in group $groupId"))
     }
   }
 

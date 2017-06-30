@@ -29,3 +29,4 @@ GET      /instance/logs/:instanceId                     @controllers.InstanceCon
 
 POST     /group/create                                  @controllers.GroupController.createGroup
 GET      /groups                                        @controllers.GroupController.listGroups
+GET      /group/fetch/:groupId                          @controllers.GroupController.fetchGroup(groupId: String)

@@ -41,6 +41,14 @@ trait Scheduler {
 
 
   /**
+    * update trigger
+    * @param groupId
+    * @param trigger
+    * @return
+    */
+  def updateTrigger(groupId: String, trigger: AppTrigger): Future[Unit]
+
+  /**
     * delete job in group
     * @param groupId
     * @param jobName

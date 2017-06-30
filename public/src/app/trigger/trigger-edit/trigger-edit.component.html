@@ -45,19 +45,23 @@
         <label for="job" class="col-sm-3 control-label">Job</label>
         <div class="col-sm-6">
           <ng-selectize name="job" [config]="ngSelectOptions" [options] = "jobs" required
-                        [(ngModel)]="trigger.jobName" [disabled]="!groups" placeholder="Select Job" #jobName="ngModel">
+                        [(ngModel)]="trigger.jobId" [disabled]="!groups" placeholder="Select Job" #jobName="ngModel">
           </ng-selectize>
-          <div class="row alert alert-danger" [hidden]="!!trigger.jobName || jobName.pristine">
+          <div class="row alert alert-danger" [hidden]="!!trigger.jobId || jobName.pristine">
             Job is a mandatory field
           </div>
-          {{trigger.job_name}}
         </div>
       </div>
     </div>
 
-    <button type="submit" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobName"
+    <button type="submit" *ngIf="!triggerId" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobId"
             (click)="createTrigger()">
       Create Trigger
+    </button>
+
+    <button type="submit" *ngIf="!!triggerId" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobId"
+            (click)="createTrigger()">
+      Update Trigger
     </button>
 
   </form>

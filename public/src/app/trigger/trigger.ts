@@ -3,7 +3,10 @@ export class Trigger {
 
   checked: boolean = false;
 
-  constructor(public name: string, public desc: string, public cron: string, public jobName: string) {}
+  public jobName: string = null;
+
+  constructor(public id: string, public name: string, public desc: string, public cron: string,
+              public jobId: string) {}
 
   /**
    * create Trigger model from json
@@ -11,19 +14,20 @@ export class Trigger {
    * @returns {Trigger}
    */
   public static fromJson(json: any) {
-    return new Trigger(json.name, json.description, json.cron, json.job_name);
+    return new Trigger(json.id ,json.name, json.description, json.cron, json.job_id);
   }
 
   /**
    *
-   * @returns {{trigger_name: string, description: string, cron: string, job_name: string}}
+   * @returns {{id: string, trigger_name: string, description: string, cron: string, job_name: string}}
    */
   json() {
     return {
+      id: this.id,
       name: this.name,
       description: this.desc,
       cron: this.cron,
-      job_name: this.jobName,
+      job_id: this.jobId,
     }
   }
 

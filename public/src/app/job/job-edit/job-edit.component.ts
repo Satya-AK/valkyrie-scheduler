@@ -14,7 +14,7 @@ export class JobEditComponent implements OnInit {
 
   job: Job;
 
-  private jobName: string;
+  private jobId: string;
 
   createMode: boolean = true;
 
@@ -24,12 +24,12 @@ export class JobEditComponent implements OnInit {
 
 
   ngOnInit() {
-    this.jobName = this.activatedRoute.snapshot.params["jobName"];
+    this.jobId = this.activatedRoute.snapshot.params["jobId"];
     this.job = new Job(UUID.UUID().replace(/-/g,""),"", "", "", "");
-    if (this.jobName) {
+    if (this.jobId) {
       this.createMode = false;
       this.jobService
-        .fetch(this.jobName)
+        .fetch(this.jobId)
         .subscribe(x => this.job = x, err => this.alertService.showErrorMessage(err));
     }
   }

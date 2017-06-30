@@ -10,10 +10,10 @@ import {TriggerEditComponent} from "./trigger/trigger-edit/trigger-edit.componen
 const appRoutes: Routes = [
   { path: 'jobs', component: JobListComponent },
   { path: 'job/new', component: JobEditComponent },
-  { path: 'job/edit/:jobName', component: JobEditComponent },
+  { path: 'job/edit/:jobId', component: JobEditComponent },
   { path: 'triggers', component: TriggerListComponent },
   { path: 'trigger/new', component: TriggerEditComponent },
-  { path: 'trigger/edit/:triggerName', component: TriggerEditComponent },
+  { path: 'trigger/edit/:triggerId', component: TriggerEditComponent },
   { path: '',   redirectTo: '/jobs', pathMatch: 'full' },
   { path: '**', component: JobListComponent }
 ];

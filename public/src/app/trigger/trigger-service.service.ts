@@ -17,19 +17,19 @@ export class TriggerService extends BaseApiService {
    */
   list() {
     return this.http
-      .get("/trigger/list/group/"+this.groupContextService.getCurrentGroup().name)
-      .map(x => x.json().map(y => Trigger.fromJson(y)))
+      .get("/trigger/list/group/"+this.groupContextService.getCurrentGroup().id)
+      .map(x => x.json().map(y => { let trigger = Trigger.fromJson(y); trigger.jobName = y.job_name; return trigger }))
       .catch(err => this.handleError(err))
   }
 
   /**
-   * fetch trigger by name
-   * @param name
+   * fetch trigger by id
+   * @param id
    * @returns {Observable<R|T>}
    */
-  fetch(name: string) {
+  fetch(id: string) {
     return this.http
-      .get("/trigger/fetch/group/"+this.groupContextService.getCurrentGroup().name+"/trigger/"+name)
+      .get("/trigger/fetch/group/"+this.groupContextService.getCurrentGroup().id+"/trigger/"+id)
       .map(x => Trigger.fromJson(x.json()))
       .catch(err => this.handleError(err))
   }
@@ -42,20 +42,20 @@ export class TriggerService extends BaseApiService {
    */
   create(trigger: Trigger) {
     return this.http
-      .post("/trigger/create/group/"+this.groupContextService.getCurrentGroup().name, trigger.json())
+      .post("/trigger/create/group/"+this.groupContextService.getCurrentGroup().id, trigger.json())
       .map(x => "trigger "+trigger.name+" created successfully")
       .catch(err => this.handleError(err))
   }
 
   /**
    *
-   * @param triggerName
+   * @param trigger
    * @returns {Observable<R|T>}
    */
-  remove(triggerName: string) {
+  remove(trigger: Trigger) {
     return this.http
-      .post("/trigger/delete/group/"+this.groupContextService.getCurrentGroup().name+"/trigger/"+triggerName,{})
-      .map(x => "trigger "+triggerName+" successfully deleted")
+      .post("/trigger/delete/group/"+this.groupContextService.getCurrentGroup().id+"/trigger/"+trigger.id,{})
+      .map(x => "trigger "+trigger.name+" successfully deleted")
       .catch(err => this.handleError(err))
   }
 

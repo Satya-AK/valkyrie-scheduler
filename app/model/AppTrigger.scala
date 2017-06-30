@@ -11,14 +11,15 @@ import scheduler.SchedulerParser
 
 /**
   *
+  * @param id
   * @param triggerName
-  * @param groupName
-  * @param jobName
+  * @param jobId
   * @param cron
   * @param desc
   */
-case class AppTrigger(triggerName: String,
-                      jobName: String,
+case class AppTrigger(id: String,
+                      triggerName: String,
+                      jobId: String,
                       cron: String,
                       desc: Option[String]) {
 
@@ -29,14 +30,15 @@ case class AppTrigger(triggerName: String,
 object AppTrigger {
 
   implicit val jsonFormatter: Format[AppTrigger] = (
+    (JsPath \ "id").format[String] and
     (JsPath \ "name").format[String] and
-    (JsPath \ "job_name").format[String] and
+    (JsPath \ "job_id").format[String] and
     (JsPath \ "cron").format[String] and
     (JsPath \ "description").formatNullable[String]
   )(AppTrigger.apply, unlift(AppTrigger.unapply))
 
   def create(trigger: Trigger, cronTrigger: CronTrigger) = {
-    AppTrigger(trigger.triggerName, trigger.jobName, cronTrigger.linuxCron, trigger.desc)
+    AppTrigger(trigger.triggerName ,trigger.data.get("name"), trigger.jobName, cronTrigger.linuxCron, trigger.desc)
   }
 
 }

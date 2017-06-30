@@ -3,6 +3,7 @@ import {Http} from "@angular/http";
 import {BaseApiService} from "./base-api-service";
 import {Observable} from "rxjs/Observable";
 import {Subject} from "rxjs/Subject";
+import {AlertService} from "./alert-service.service";
 
 
 @Injectable()
@@ -12,19 +13,21 @@ export class GroupContextService extends BaseApiService {
 
   public groupContextObservable = new Subject();
 
-  showUiFlag: boolean = true;
+  showUiFlag: boolean = false;
 
-  constructor(private http: Http) {
+  constructor(private http: Http, private alertService: AlertService) {
     super();
     let groupData = localStorage.getItem("app-current-group");
     if(groupData) {
        try {
          this.currentGroup = Group.fromJson(JSON.parse(groupData));
-      } catch (e) {
+       } catch (e) {
+         this.showUiFlag = true;
          this.currentGroup = null;
        }
+    } else {
+      this.showUiFlag = true;
     }
-    this.showUiFlag = !this.currentGroup;
   }
 
   /**
@@ -35,6 +38,19 @@ export class GroupContextService extends BaseApiService {
       .map(x => x.json().map(y => Group.fromJson(y)))
       .catch(err => this.handleError(err))
   }
+
+
+  /**
+   * fetch group
+   * @param groupId
+   * @returns {Observable<R|T>}
+   */
+  fetchGroup(groupId: string): Observable<Group> {
+    return this.http.get("/group/fetch/"+groupId)
+      .map(x => Group.fromJson(x.json()))
+      .catch(err => this.handleError(err))
+  }
+
 
   /**
    * create Group
