@@ -2,6 +2,7 @@ package util
 
 import java.io.File
 import java.sql.Timestamp
+import java.text.SimpleDateFormat
 import java.util.Properties
 
 import play.api.Configuration
@@ -10,6 +11,7 @@ import _root_.util.AppException.AppSetupException
 import _root_.util.Keyword.AppSetting
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 
 /**
@@ -123,6 +125,24 @@ object Util {
     def remove(fields: String *): JsObject = {
       fields.foldLeft(jsObject)((acc,x) => acc - x)
     }
+
+  }
+
+  implicit object TimestampJsonParser extends Reads[Timestamp] with Writes[Timestamp] {
+
+    private val sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+    override def reads(json: JsValue): JsResult[Timestamp] = {
+      Try(new Timestamp(sdf.parse(json.as[String]).getTime)) match {
+        case Success(x) => JsSuccess(x)
+        case Failure(th) => JsError(th.getMessage)
+      }
+    }
+    override def writes(o: Timestamp): JsValue = {
+      JsString(sdf.format(o))
+    }
+    def format(time: Timestamp) = sdf.format(time)
+    def parse(time: String) = new Timestamp(sdf.parse(time).getTime)
 
   }
 

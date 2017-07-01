@@ -16,54 +16,58 @@ trait Scheduler {
 
   /**
     * create job
-    * @param groupId
     * @param job
     * @return
     */
-  def createJob(groupId: String, job: AppJob): Future[Unit]
+  def createJob(job: AppJob): Future[Unit]
 
   /**
     * create trigger
-    * @param groupId
     * @param trigger
     * @return
     */
-  def createTrigger(groupId: String, trigger: AppTrigger): Future[Unit]
+  def createTrigger(trigger: AppTrigger): Future[Unit]
 
 
   /**
-    * update job
+    * launch job
     * @param groupId
+    * @param jobId
+    * @return
+    */
+  def launchJob(groupId: String, jobId: String): Future[Unit]
+
+  /**
+    * update job
     * @param job
     * @return
     */
-  def updateJob(groupId: String, job: AppJob): Future[Unit]
+  def updateJob(job: AppJob): Future[Unit]
 
 
   /**
     * update trigger
-    * @param groupId
     * @param trigger
     * @return
     */
-  def updateTrigger(groupId: String, trigger: AppTrigger): Future[Unit]
+  def updateTrigger(trigger: AppTrigger): Future[Unit]
 
   /**
     * delete job in group
     * @param groupId
-    * @param jobName
+    * @param jobId
     * @return
     */
-  def deleteJob(groupId: String, jobName: String): Future[Unit]
+  def deleteJob(groupId: String, jobId: String): Future[Unit]
 
 
   /**
     * delete a trigger
     * @param groupId
-    * @param jobName
+    * @param jobId
     * @return
     */
-  def deleteTrigger(groupId: String, jobName: String): Future[Unit]
+  def deleteTrigger(groupId: String, jobId: String): Future[Unit]
 
   /**
     * destroy the scheduler

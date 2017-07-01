@@ -41,6 +41,7 @@ class AppGroupRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
   }
 
 
+
   /**
     * get group by Name
     * @param groupName

@@ -1,7 +1,7 @@
 package repo
 
 import com.google.inject.{Inject, Singleton}
-import model.{AppInstance, AppInstanceLog, AppStatus}
+import model.{AppInstance, AppInstanceLog, AppJob, AppStatus}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repo.AppStatusRepository.Status
 import slick.driver.JdbcProfile
@@ -20,12 +20,22 @@ import scala.concurrent.Future
 class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider,
                                       protected val instanceTable: AppInstanceTable,
                                       protected val statusRepository: AppStatusRepository,
+                                      protected val jobRepository: JobRepository,
                                       protected val appInstanceLogRepository: AppInstanceLogRepository,
                                       protected val serviceHelper: ServiceHelper)
   extends HasDatabaseConfigProvider[JdbcProfile] {
 
   import driver.api._
 
+
+  /**
+    * list instances of job
+    * @param jobId
+    * @return
+    */
+  def listInstances(jobId: String): Future[Seq[AppInstance]] = {
+    db.run(instanceTable.table.filter(_.jobName === jobId).result)
+  }
 
 
   /**
@@ -89,6 +99,21 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       _ <- appInstanceLogRepository.save(stdout)
       _ <- appInstanceLogRepository.save(stderr)
     } yield ()
+  }
+
+
+  /**
+    * look up job by instanceId
+    * @param instanceId
+    * @return
+    */
+  def lookUpJobByInstance(instanceId: String): Future[AppJob] = {
+    db.run(instanceTable.table.filter(_.instanceId === instanceId).result.headOption) flatMap {
+      case Some(x) => Future.successful(x)
+      case None => Future.failed(new EntityNotFoundException(s"instance-id $instanceId not found"))
+    } flatMap {
+      x => jobRepository.getJob(x.groupId, x.jobId)
+    }
   }
 
 }

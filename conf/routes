@@ -16,6 +16,7 @@ GET      /job/list/group/:groupId                 @controllers.JobController.lis
 GET      /job/fetch/group/:groupId/job/:jobId     @controllers.JobController.fetchJob(groupId: String, jobId: String)
 POST     /job/delete/group/:groupId/job/:jobId    @controllers.JobController.deleteJob(groupId: String, jobId: String)
 POST     /job/update/group/:groupId               @controllers.JobController.updateJob(groupId: String)
+POST     /job/launch/group/:groupId/job/:jobId    @controllers.JobController.launch(groupId: String, jobId: String)
 
 POST     /trigger/create/group/:groupName                       @controllers.TriggerController.createTrigger(groupName: String)
 GET      /trigger/list/group/:groupName                         @controllers.TriggerController.listTriggers(groupName: String)
@@ -25,7 +26,10 @@ POST     /trigger/delete/group/:groupName/trigger/:triggerName  @controllers.Tri
 POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
 POST     /instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)
 GET      /instance/logs/request/:instanceId             @controllers.InstanceController.requestShowLog(instanceId: String)
+GET      /instance/fetch/:instanceId                    @controllers.InstanceController.fetch(instanceId: String)
 GET      /instance/logs/:instanceId                     @controllers.InstanceController.showLog(instanceId: String)
+GET      /instance/job/list/job/:jobId                  @controllers.InstanceController.list(jobId: String)
+GET      /instance/fetch/job/:instanceId                @controllers.InstanceController.lookupJobByInstance(instanceId)
 
 POST     /group/create                                  @controllers.GroupController.createGroup
 GET      /groups                                        @controllers.GroupController.listGroups

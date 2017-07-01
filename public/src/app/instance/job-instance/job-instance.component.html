@@ -1,0 +1,27 @@
+<div>
+  <h3>Job Instances of {{jobId}}</h3>
+  <table datatable="ng" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th>Instance Id</th>
+      <th>Start-Time</th>
+      <th>End-Time</th>
+      <th>SeqId</th>
+      <th>Attempt</th>
+      <th>Status</th>
+      <th>Agent</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of data">
+      <td> <a [href]="viewLogUrl(item.id)">{{item.id}}</a></td>
+      <td>{{item.startTime}}</td>
+      <td>{{item.endTime}}</td>
+      <td>{{item.seqId}}</td>
+      <td>{{item.attempt}}</td>
+      <td>{{item.status}}</td>
+      <td>{{item.agent}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

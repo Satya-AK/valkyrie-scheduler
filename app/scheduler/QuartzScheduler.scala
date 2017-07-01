@@ -56,16 +56,16 @@ class QuartzScheduler @Inject() (application: Application,
   }
 
 
-  def createJob(groupId: String, job: AppJob) = createOrUpdateJob(groupId, job)
+  def createJob(job: AppJob) = createOrUpdateJob(job)
 
-  def updateJob(groupId: String, job: AppJob) = createOrUpdateJob(groupId, job, update=true)
+  def updateJob(job: AppJob) = createOrUpdateJob(job, update=true)
 
-  def createOrUpdateJob(groupId: String, job: AppJob, update: Boolean = false) = {
+  def createOrUpdateJob(job: AppJob, update: Boolean = false) = {
     val data = Map(JobData.command -> job.cmd,
       JobData.workingDir -> job.workingDir,
         JobData.jobName -> job.jobName)
     val jobDetail = JobBuilder.newJob(classOf[CommandJobImpl])
-      .withIdentity(new JobKey(job.id, groupId))
+      .withIdentity(new JobKey(job.id, job.groupId))
       .setJobData(new JobDataMap(data.asJava))
       .storeDurably(true)
       .withDescription(job.desc.orNull)
@@ -73,11 +73,11 @@ class QuartzScheduler @Inject() (application: Application,
     Future.successful(scheduler.addJob(jobDetail, update))
   }
 
-  def createTrigger(groupId: String, appTrigger: AppTrigger) = {
+  def createTrigger(appTrigger: AppTrigger) = {
     val triggerDetail = TriggerBuilder
       .newTrigger()
-      .forJob(appTrigger.jobId, groupId)
-      .withIdentity(new TriggerKey(appTrigger.id, groupId))
+      .forJob(appTrigger.jobId, appTrigger.groupId)
+      .withIdentity(new TriggerKey(appTrigger.id, appTrigger.groupId))
       .usingJobData("name", appTrigger.triggerName)
       .withDescription(appTrigger.desc.orNull)
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
@@ -85,12 +85,12 @@ class QuartzScheduler @Inject() (application: Application,
     Future.successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
   }
 
-  def updateTrigger(groupId: String, appTrigger: AppTrigger) = {
-    val triggerKey = new TriggerKey(appTrigger.id, groupId)
+  def updateTrigger(appTrigger: AppTrigger) = {
+    val triggerKey = new TriggerKey(appTrigger.id, appTrigger.groupId)
     val triggerDetail = TriggerBuilder
       .newTrigger()
       .withIdentity(triggerKey)
-      .forJob(appTrigger.jobId, groupId)
+      .forJob(appTrigger.jobId, appTrigger.groupId)
       .usingJobData("name", appTrigger.triggerName)
       .withDescription(appTrigger.desc.orNull)
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
@@ -99,28 +99,33 @@ class QuartzScheduler @Inject() (application: Application,
   }
 
 
-  def createOrUpdateTrigger(groupId: String, appTrigger: AppTrigger, replace: Boolean) = {
+  def launchJob(groupId: String, jobId: String) = {
+    Future.successful(scheduler.triggerJob(new JobKey(jobId, groupId),
+      new JobDataMap(Map("manual" -> "true").asJava))).map(_ => ())
+  }
+
+  def createOrUpdateTrigger(appTrigger: AppTrigger, replace: Boolean) = {
     val triggerDetail = TriggerBuilder
       .newTrigger()
-      .withIdentity(new TriggerKey(appTrigger.id, groupId))
+      .withIdentity(new TriggerKey(appTrigger.id, appTrigger.groupId))
       .usingJobData("name", appTrigger.triggerName)
       .withDescription(appTrigger.desc.orNull)
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
       .build()
-    val jobDetail = scheduler.getJobDetail(new JobKey(appTrigger.jobId, groupId))
+    val jobDetail = scheduler.getJobDetail(new JobKey(appTrigger.jobId, appTrigger.groupId))
     scheduler.scheduleJob(jobDetail, Seq(triggerDetail).toSet.asJava, replace)
     Future.successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
   }
 
 
-  def disableTrigger(groupId: String, triggerName: String) = {
-    val triggerKey = new TriggerKey(triggerName, groupId)
+  def disableTrigger(groupId: String, triggerId: String) = {
+    val triggerKey = new TriggerKey(triggerId, groupId)
     scheduler.pauseTrigger(triggerKey)
   }
 
 
-  def deleteTrigger(groupId: String, triggerName: String) = {
-    val triggerKey = new TriggerKey(triggerName, groupId)
+  def deleteTrigger(groupId: String, triggerId: String) = {
+    val triggerKey = new TriggerKey(triggerId, groupId)
     Future.successful(scheduler.unscheduleJob(triggerKey))
   }
 
@@ -137,11 +142,11 @@ class QuartzScheduler @Inject() (application: Application,
     * delete job in group
     *
     * @param groupId
-    * @param jobName
+    * @param jobId
     * @return
     */
-  override def deleteJob(groupId: String, jobName: String): Future[Unit] = {
-    val jobKey = new JobKey(jobName, groupId)
+  override def deleteJob(groupId: String, jobId: String): Future[Unit] = {
+    val jobKey = new JobKey(jobId, groupId)
     Future.successful(scheduler.deleteJob(jobKey));
   }
 }

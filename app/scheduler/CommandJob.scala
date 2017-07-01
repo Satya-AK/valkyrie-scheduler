@@ -30,6 +30,7 @@ abstract class CommandJob extends Job {
     * @param context
     */
   override def execute(context: JobExecutionContext): Unit = {
+    throw new RuntimeException("dummy error")
     Await.result[Unit](run(context), Duration.Inf)
   }
 
@@ -38,8 +39,9 @@ abstract class CommandJob extends Job {
     val dataMap = context.getJobDetail.getJobDataMap
     val groupName = context.getJobDetail.getKey.getGroup
     val jobName = context.getJobDetail.getKey.getName
-    val triggerName = Some(context.getTrigger.getKey.getName)
-    instanceRepository.createInstance(instanceId, jobName, groupName, triggerName) flatMap {
+    val triggerId = if(context.getMergedJobDataMap.containsKey("manual"))
+      None else Some(context.getTrigger.getKey.getName)
+    instanceRepository.createInstance(instanceId, jobName, groupName, triggerId) flatMap {
       _ => Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
     } flatMap {
       case CommandResponse(stdout, stderr, None) =>

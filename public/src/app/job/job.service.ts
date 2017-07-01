@@ -76,5 +76,17 @@ export class JobService extends BaseApiService {
           .catch(x => this.handleError(x))
   }
 
+
+  /**
+   * launch job manually
+   * @param job
+   * @returns {Observable<R|T>}
+   */
+  launch(job: Job): Observable<string> {
+    return this.http.post("/job/launch/group/"+this.groupContextService.getCurrentGroup().id+"/job/"+job.id,{})
+      .map(x => x.json().message)
+      .catch(err => this.handleError(err))
+  }
+
 }
 

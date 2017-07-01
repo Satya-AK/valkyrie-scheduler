@@ -29,9 +29,9 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
   def createTrigger(groupId: String) = ErrRecoveryAction.async(parse.json) {
     request =>
       for {
-        group <- groupRepository.getGroupById(groupId)
-        appTrigger <- Util.parseJson[AppTrigger](request.body)
-        _ <- scheduler.createTrigger(group.id, appTrigger)
+        _ <- groupRepository.getGroupById(groupId)
+        appTrigger <- Util.parseJson[AppTrigger](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- scheduler.createTrigger(appTrigger)
       } yield Ok(Json.obj("success" -> "trigger created"))
   }
 
@@ -71,14 +71,14 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
 
   /**
     * delete a trigger
-    * @param groupName
-    * @param jobName
+    * @param groupId
+    * @param triggerId
     * @return
     */
-  def deleteTrigger(groupName: String, jobName: String) = ErrRecoveryAction.async {
+  def deleteTrigger(groupId: String, triggerId: String) = ErrRecoveryAction.async {
     for {
-      group <- groupRepository.getGroupByName(groupName)
-      trigger <- scheduler.deleteTrigger(group.id, jobName)
+      _ <- groupRepository.getGroupByName(groupId)
+      trigger <- scheduler.deleteTrigger(groupId, triggerId)
     } yield Ok(Json.obj("message" -> "trigger deleted successfully"))
   }
 

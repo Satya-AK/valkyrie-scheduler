@@ -17,6 +17,9 @@ export class Trigger {
     return new Trigger(json.id ,json.name, json.description, json.cron, json.job_id);
   }
 
+  test() {
+
+  }
   /**
    *
    * @returns {{id: string, trigger_name: string, description: string, cron: string, job_name: string}}

@@ -16,6 +16,7 @@ import util.Keyword.JobData
   * @param desc
   */
 case class AppJob(id: String,
+                  groupId: String,
                   jobName: String,
                   desc: Option[String],
                   cmd: String,
@@ -25,6 +26,7 @@ object AppJob {
 
   implicit val jsonFormatter: Format[AppJob] = (
     (JsPath \ "id").format[String] and
+    (JsPath \ "group_id").format[String] and
     (JsPath \ "name").format[String] and
     (JsPath \ "desc").formatNullable[String] and
     (JsPath \ JobData.command).format[String] and
@@ -32,7 +34,7 @@ object AppJob {
   )(AppJob.apply, unlift(AppJob.unapply))
 
   def create(job: Job) = {
-    AppJob(job.jobId,
+    AppJob(job.jobId, job.groupId,
       job.data.get(JobData.jobName),
       job.desc,
       job.data.get(JobData.command),

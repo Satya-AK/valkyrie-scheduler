@@ -1,21 +1,59 @@
 package controllers
 
 import com.google.inject.Inject
-import play.api.libs.json.Json
+import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
-import repo.{AppInstanceLogRepository, AppInstanceRepository}
+import repo._
 import scheduler.InstanceAction.{FetchLogAction, KillAction}
 import scheduler.ProcessCache
 import util.{ErrRecoveryAction, Keyword, ServiceHelper}
+import util.Util.JsObjectEnhancer
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * Created by chlr on 5/31/17.
   */
 class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
                                     appInstanceLogRepository: AppInstanceLogRepository,
+                                    groupRepository: AppGroupRepository,
+                                    triggerRepository: TriggerRepository,
+                                    jobRepository: JobRepository,
                                     processCache: ProcessCache,
                                     serviceHelper: ServiceHelper) extends Controller {
+
+
+  /**
+    * list instances
+    * @param jobId
+    * @return
+    */
+  def list(jobId: String) = ErrRecoveryAction.async {
+    instanceRepository.listInstances(jobId)
+      .map(x => x.map(Json.toJson(_)).foldLeft(JsArray())({ case (acc,node) => acc :+ node }))
+      .map(x => Ok(x))
+  }
+
+  /**
+    * fetch instance by id
+    * @param instanceId
+    * @return
+    */
+  def fetch(instanceId: String) = ErrRecoveryAction.async {
+    for {
+      instance <- instanceRepository.fetchInstance(instanceId)
+      job <- jobRepository.getJob(instance.groupId, instance.jobId)
+      trigger <- instance.triggerId match {
+        case Some(x) => triggerRepository.getTrigger(x, job.groupId).map(Some(_))
+        case None => Future.successful(None)
+      }
+    } yield {
+      Ok {
+        Json.toJson(instance).as[JsObject]
+          .update("job_name" -> job.jobName, "trigger_name" -> trigger.map(_.triggerName))
+      }
+    }
+  }
 
 
   /**
@@ -66,6 +104,16 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     instanceRepository.fetchInstance(instanceId) flatMap {
       x => serviceHelper.requestAction(FetchLogAction(instanceId, x.agent), None)
     } map {x =>  Ok(x) }
+  }
+
+  /**
+    * lookup job by instanceId
+    * @param instanceId
+    * @return
+    */
+  def lookupJobByInstance(instanceId: String) = ErrRecoveryAction.async {
+    instanceRepository.lookUpJobByInstance(instanceId)
+      .map(x => Ok(Json.toJson(x)))
   }
 
 }

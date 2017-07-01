@@ -17,8 +17,12 @@
           Are you sure you want to delete {{selectedJobName}}?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteJob(selectedJobName)">Yes</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal" (click)="delConfirmationModal.hide()">No</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteJob(selectedJobName)">
+            Yes
+          </button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" (click)="delConfirmationModal.hide()">
+            No
+          </button>
         </div>
       </div>
     </div>
@@ -30,6 +34,7 @@
       <th><input type="checkbox" (click)="selectAll()" [(ngModel)]="selectAllState" class="sorting_disabled"></th>
       <th>Job Name</th>
       <th>Description</th>
+      <th>Launch</th>
       <th>Edit</th>
       <th>Delete</th>
     </tr>
@@ -37,8 +42,13 @@
     <tbody>
     <tr *ngFor="let item of rows">
       <td style="text-align: center"><input type="checkbox" [(ngModel)]="item.checked"></td>
-      <td>{{item.name}}</td>
+      <td> <a [href]="listInstances(item)">{{item.name}}</a></td>
       <td>{{item.desc}}</td>
+      <td style="width: 10%">
+        <a class="btn btn-default btn-small" (click)="launchJob(item)">
+          <span class="glyphicon glyphicon-play"></span>
+        </a>
+      </td>
       <td>
         <a [href]="jobEditUrl(item.id)" class="btn btn-default btn-small">
           <span class="glyphicon glyphicon-edit"></span>

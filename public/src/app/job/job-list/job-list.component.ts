@@ -33,12 +33,13 @@ export class JobListComponent implements OnInit {
               private groupContextService: GroupContextService) { }
 
   dtOptions: DataTables.Settings = {
-    order: [2],
+    order: [3],
     autoWidth: false,
     pagingType: 'full_numbers',
     columns: [{ orderable: false, width: "3px"},
-      { orderable: true},
       {orderable: true},
+      {orderable: true},
+      {orderable: false, width: "3px"},
       {orderable: false, width: "3px"},
       {orderable: false, width: "3px"}]
   };
@@ -71,6 +72,21 @@ export class JobListComponent implements OnInit {
     if (this.groupContextSubscription) {
       this.groupContextSubscription.unsubscribe();
     }
+  }
+
+  /**
+   * launch job
+   * @param job
+   */
+  launchJob(job: Job) {
+    this.jobService.launch(job)
+      .subscribe(x => this.alertService.showSuccessMessage(x),
+                 x => this.alertService.showErrorMessage(x))
+  }
+
+
+  listInstances(job: Job) {
+    return "#/instance/job/list/"+job.id;
   }
 
 

@@ -3,12 +3,12 @@ package controllers
 import com.google.inject.Inject
 import model.AppJob
 import model.AppJob.jsonFormatter
-import play.api.libs.json.{JsArray, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
-import repo.{AppGroupRepository, JobRepository, TriggerRepository}
+import repo.{AppGroupRepository, AppInstanceRepository, JobRepository, TriggerRepository}
 import scheduler.Scheduler
 import util.{ErrRecoveryAction, Util}
-
+import util.Util.JsObjectEnhancer
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -16,6 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 class JobController @Inject()(triggerRepository: TriggerRepository,
                               jobRepository: JobRepository,
+                              appInstanceRepository: AppInstanceRepository,
                               groupRepository: AppGroupRepository,
                               scheduler: Scheduler) extends Controller {
 
@@ -26,9 +27,9 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
   def createJob(groupId: String) = ErrRecoveryAction.async(parse.json) {
     request =>
       for {
-        group <- groupRepository.getGroupById(groupId)
-        appJob <- Util.parseJson[AppJob](request.body)
-        _ <- scheduler.createJob(group.id, appJob)
+        _ <- groupRepository.getGroupById(groupId)
+        appJob <- Util.parseJson[AppJob](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- scheduler.createJob(appJob)
       } yield Ok(Json.obj("message" -> "job created"))
   }
 
@@ -41,8 +42,8 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     request =>
       for {
         _ <- groupRepository.getGroupById(groupId)
-        appJob <- Util.parseJson[AppJob](request.body)
-        _ <- scheduler.updateJob(groupId, appJob)
+        appJob <- Util.parseJson[AppJob](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- scheduler.updateJob(appJob)
       } yield Ok(Json.obj("message" -> s"updated job ${appJob.jobName}"))
   }
 
@@ -93,5 +94,18 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
   }
 
 
+  /**
+    * launch job manually
+    * @param groupId
+    * @param jobId
+    * @return
+    */
+  def launch(groupId: String, jobId: String) = ErrRecoveryAction.async {
+    for {
+      group <- groupRepository.getGroupById(groupId)
+      job <- jobRepository.getJob(groupId, jobId)
+      _ <- scheduler.launchJob(groupId, jobId)
+    } yield Ok(Json.obj("message" -> s"job ${job.jobName} in group ${group.groupName} triggered successfully"))
+  }
 
 }
