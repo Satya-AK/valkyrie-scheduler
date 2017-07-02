@@ -59,4 +59,27 @@ export class TriggerService extends BaseApiService {
       .catch(err => this.handleError(err))
   }
 
+  /**
+   * disable trigger
+   * @param trigger
+   * @returns {Observable<R|T>}
+   */
+  disable(trigger: Trigger) {
+    return this.http
+      .post("/trigger/disable/group/"+this.groupContextService.getCurrentGroup().id+"/trigger/"+trigger.id, {})
+      .map(x => "trigger "+trigger.name+" successfully disabled")
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   *
+   * @param trigger
+   */
+  enable(trigger: Trigger) {
+    return this.http
+      .post("/trigger/enable/group/"+this.groupContextService.getCurrentGroup().id+"/trigger/"+trigger.id, {})
+      .map(x => "trigger "+trigger.name+" successfully disabled")
+      .catch(err => this.handleError(err))
+  }
+
 }

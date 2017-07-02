@@ -27,7 +27,7 @@ class TriggerRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
     * @param groupId
     * @return
     */
-  def getTrigger(triggerId: String, groupId: String) = {
+  def getTrigger(groupId: String, triggerId: String) = {
     val action = for {
       mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupId && x.triggerName === triggerId)
       cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupId && x.triggerName === triggerId)

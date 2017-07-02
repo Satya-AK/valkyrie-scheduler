@@ -14,11 +14,27 @@
           <h4 class="modal-title pull-left">Delete Trigger</h4>
         </div>
         <div class="modal-body">
-          Are you sure you want to delete {{selectedTriggerName}}?
+          Are you sure you want to delete {{selectedTrigger?selectedTrigger.name:""}}?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteTrigger(selectedTrigger)">Yes</button>
           <button type="button" class="btn btn-default" data-dismiss="modal" (click)="delConfirmationModal.hide()">No</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div bsModal #toggleStateConfirmationModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Disable Trigger</h4>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to {{selectedTrigger?(selectedTrigger.disable?"enable":"disable"):""}} {{selectedTrigger?selectedTrigger.name:""}}?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="toggleTriggerStatus(selectedTrigger)">Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" (click)="toggleStateConfirmationModal.hide()">No</button>
         </div>
       </div>
     </div>
@@ -31,6 +47,7 @@
       <th>Job Name</th>
       <th>Description</th>
       <th>Edit</th>
+      <th>Enable/Disable</th>
       <th>Delete</th>
     </tr>
     </thead>
@@ -44,6 +61,12 @@
         <a [href]="triggerEditUrl(item.id)" class="btn btn-default btn-small">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
+      </td>
+      <td style="text-align: center;">
+        <label class="switch">
+          <input type="checkbox" [ngModel]="!item.disable" (click)="confirmDisableTrigger(item.id)">
+          <div class="slider round"></div>
+        </label>
       </td>
       <td style="text-align: center;">
         <a (click)="confirmDeleteTrigger(item.id)" class="btn btn-danger btn-small">

@@ -21,6 +21,7 @@ case class AppTrigger(id: String,
                       triggerName: String,
                       groupId: String,
                       jobId: String,
+                      disable: Boolean,
                       cron: String,
                       desc: Option[String]) {
 
@@ -35,13 +36,14 @@ object AppTrigger {
     (JsPath \ "name").format[String] and
     (JsPath \ "group_id").format[String] and
     (JsPath \ "job_id").format[String] and
+    (JsPath \ "disable").format[Boolean] and
     (JsPath \ "cron").format[String] and
     (JsPath \ "description").formatNullable[String]
   )(AppTrigger.apply, unlift(AppTrigger.unapply))
 
   def create(trigger: Trigger, cronTrigger: CronTrigger) = {
-    AppTrigger(trigger.triggerName ,trigger.data.get("name"), trigger.groupName, trigger.jobName,
-      cronTrigger.linuxCron, trigger.desc)
+    AppTrigger(trigger.triggerId ,trigger.data.get("name"), trigger.groupId, trigger.jobName,
+      trigger.state == "PAUSED",cronTrigger.linuxCron, trigger.desc)
   }
 
 }

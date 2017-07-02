@@ -6,7 +6,7 @@ export class Trigger {
   public jobName: string = null;
 
   constructor(public id: string, public name: string, public desc: string, public cron: string,
-              public jobId: string) {}
+              public jobId: string, public disable: boolean) {}
 
   /**
    * create Trigger model from json
@@ -14,7 +14,7 @@ export class Trigger {
    * @returns {Trigger}
    */
   public static fromJson(json: any) {
-    return new Trigger(json.id ,json.name, json.description, json.cron, json.job_id);
+    return new Trigger(json.id ,json.name, json.description, json.cron, json.job_id, json.disable);
   }
 
   test() {
@@ -31,6 +31,7 @@ export class Trigger {
       description: this.desc,
       cron: this.cron,
       job_id: this.jobId,
+      disable: this.disable
     }
   }
 

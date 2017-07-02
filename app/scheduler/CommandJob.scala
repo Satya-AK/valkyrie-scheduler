@@ -30,7 +30,6 @@ abstract class CommandJob extends Job {
     * @param context
     */
   override def execute(context: JobExecutionContext): Unit = {
-    throw new RuntimeException("dummy error")
     Await.result[Unit](run(context), Duration.Inf)
   }
 

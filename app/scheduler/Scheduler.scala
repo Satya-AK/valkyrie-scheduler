@@ -69,6 +69,24 @@ trait Scheduler {
     */
   def deleteTrigger(groupId: String, jobId: String): Future[Unit]
 
+
+  /**
+    *
+    * @param groupId
+    * @param jobId
+    * @return
+    */
+  def enableTrigger(groupId: String, jobId: String): Future[Unit]
+
+
+  /**
+    * disable trigger
+    * @param groupId
+    * @param triggerId
+    * @return
+    */
+  def disableTrigger(groupId: String, triggerId: String): Future[Unit]
+
   /**
     * destroy the scheduler
     */

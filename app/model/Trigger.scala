@@ -8,25 +8,27 @@ import java.sql.Blob
 
 /**
   *
-  * @param triggerName
-  * @param groupName
+  * @param triggerId
+  * @param groupId
   * @param jobName
-  * @param jobGroup
+  * @param jobId
   * @param desc
+  * @param state
   * @param nextFireTime
   * @param previousFireTime
   */
-case class Trigger(triggerName: String,
-                   groupName: String,
+case class Trigger(triggerId: String,
+                   groupId: String,
                    jobName: String,
-                   jobGroup: String,
+                   jobId: String,
                    desc: Option[String],
+                   state: String,
                    jobData: Option[Blob],
                    nextFireTime: Option[Long],
                    previousFireTime: Option[Long]) {
 
   def data = jobData
-    .map(x => new String(x.getBytes(0, x.length().asInstanceOf[Int])))
+    .map(x => new String(x.getBytes(1, x.length().asInstanceOf[Int])))
     .map(x => x.split(System.lineSeparator)
       .filterNot(_.startsWith("#"))
       .map(x => x.split("=").toList match {

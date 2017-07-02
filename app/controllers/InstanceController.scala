@@ -44,7 +44,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
       instance <- instanceRepository.fetchInstance(instanceId)
       job <- jobRepository.getJob(instance.groupId, instance.jobId)
       trigger <- instance.triggerId match {
-        case Some(x) => triggerRepository.getTrigger(x, job.groupId).map(Some(_))
+        case Some(x) => triggerRepository.getTrigger(job.groupId, x).map(Some(_))
         case None => Future.successful(None)
       }
     } yield {

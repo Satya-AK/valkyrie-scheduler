@@ -25,7 +25,7 @@ export class TriggerEditComponent implements OnInit {
               private alertService: AlertService,
               private activatedRoute: ActivatedRoute) {
     this.jobService.list().subscribe(x => this.jobs = x);
-    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""), "", "", "", "");
+    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""), "", "", "", "", false);
     this.triggerId = this.activatedRoute.snapshot.params["triggerId"];
     if (this.triggerId) {
       this.triggerService.fetch(this.triggerId)
@@ -42,7 +42,7 @@ export class TriggerEditComponent implements OnInit {
 
   ngOnInit() {
     this.triggerId = this.activatedRoute.snapshot.params["triggerId"];
-    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""),"", "", "", "");
+    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""),"", "", "", "", false);
     if (this.triggerId) {
       this.triggerService
         .fetch(this.triggerId)

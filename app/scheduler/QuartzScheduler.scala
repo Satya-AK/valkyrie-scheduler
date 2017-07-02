@@ -120,7 +120,12 @@ class QuartzScheduler @Inject() (application: Application,
 
   def disableTrigger(groupId: String, triggerId: String) = {
     val triggerKey = new TriggerKey(triggerId, groupId)
-    scheduler.pauseTrigger(triggerKey)
+    Future.successful(scheduler.pauseTrigger(triggerKey))
+  }
+
+  def enableTrigger(groupId: String, triggerId: String) = {
+    val triggerKey = new TriggerKey(triggerId, groupId)
+    Future.successful(scheduler.resumeTrigger(triggerKey))
   }
 
 
@@ -129,7 +134,7 @@ class QuartzScheduler @Inject() (application: Application,
     Future.successful(scheduler.unscheduleJob(triggerKey))
   }
 
-
+  
   def pause() = {
     scheduler.standby()
   }

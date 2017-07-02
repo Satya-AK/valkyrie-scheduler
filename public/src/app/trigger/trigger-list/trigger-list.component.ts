@@ -26,7 +26,8 @@ export class TriggerListComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject();
   private groupContextSubscription: Subscription = null;
 
-  @ViewChild("delConfirmationModal") private  modal: any;
+  @ViewChild("delConfirmationModal") private  delModal: any;
+  @ViewChild("toggleStateConfirmationModal") private  disableModal: any;
 
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
 
@@ -42,6 +43,7 @@ export class TriggerListComponent implements OnInit {
       {orderable: true},
       {orderable: true},
       {orderable: false, width: "3px"},
+      {orderable: false, width: "3px"},
       {orderable: false, width: "3px"}]
   };
 
@@ -50,6 +52,10 @@ export class TriggerListComponent implements OnInit {
     return "#/trigger/edit/"+id;
   }
 
+
+  triggerDisableUrl(triggerId: string) {
+    return "/trigger/disable/group/"+this.groupContextService.getCurrentGroup().id+"/trigger/"+triggerId
+  }
 
   ngOnInit(): void {
     this.groupContextSubscription = this.groupContextService.groupContextObservable
@@ -82,7 +88,16 @@ export class TriggerListComponent implements OnInit {
    */
   confirmDeleteTrigger(triggerId: string) {
     this.selectedTrigger = this.rows.filter(x => x.id == triggerId)[0];
-    this.modal.show();
+    this.delModal.show();
+  }
+
+  /**
+   *
+   * @param triggerId
+   */
+  confirmDisableTrigger(triggerId: string) {
+    this.selectedTrigger = this.rows.filter(x => x.id == triggerId)[0];
+    this.disableModal.show();
   }
 
   /**
@@ -95,7 +110,22 @@ export class TriggerListComponent implements OnInit {
         this.alertService.showSuccessMessage(x);
         this.rows = this.rows.filter(x => !(x.id == trigger.id));
       }, x => this.alertService.showErrorMessage(x));
-    this.modal.hide();
+    this.delModal.hide();
+  }
+
+  /**
+   * disable trigger
+   * @param trigger
+   */
+  toggleTriggerStatus(trigger: Trigger) {
+    if (trigger.disable) {
+      this.triggerService.enable(trigger)
+        .subscribe(x => this.selectedTrigger.disable=false, err => this.alertService.showErrorMessage(err));
+    } else {
+      this.triggerService.disable(trigger)
+        .subscribe(x => this.selectedTrigger.disable=true, err => this.alertService.showErrorMessage(err));
+    }
+    this.disableModal.hide();
   }
 
   /**

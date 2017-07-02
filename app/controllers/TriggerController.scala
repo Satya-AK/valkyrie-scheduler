@@ -64,8 +64,30 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
   def fetchTrigger(groupId: String, triggerId: String) = ErrRecoveryAction.async {
     for {
       group <- groupRepository.getGroupById(groupId)
-      trigger <- triggerRepository.getTrigger(triggerId, group.id)
+      trigger <- triggerRepository.getTrigger(group.id, triggerId)
     } yield Ok(Json.toJson(trigger))
+  }
+
+
+  /**
+    * disable trigger
+    * @param groupId
+    * @param triggerId
+    * @return
+    */
+  def disable(groupId: String, triggerId: String) = ErrRecoveryAction.async {
+    for {
+      trigger <- triggerRepository.getTrigger(groupId, triggerId)
+      _ <- scheduler.disableTrigger(groupId, triggerId)
+    } yield Ok(Json.obj("success" -> s"trigger ${trigger.triggerName} disabled successfully"))
+  }
+
+
+  def enable(groupId: String, triggerId: String) = ErrRecoveryAction.async {
+    for {
+      trigger <- triggerRepository.getTrigger(groupId, triggerId)
+      _ <- scheduler.enableTrigger(groupId, triggerId)
+    } yield Ok(Json.obj("success" -> s"trigger ${trigger.triggerName} disabled successfully"))
   }
 
 

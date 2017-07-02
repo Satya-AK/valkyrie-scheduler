@@ -17,7 +17,7 @@ case class Job(jobId: String,
                jobData: Option[Blob]) {
 
   def data = jobData
-    .map(x => new String(x.getBytes(0, x.length().asInstanceOf[Int])))
+    .map(x => new String(x.getBytes(1, x.length().asInstanceOf[Int])))
     .map(x => x.split(System.lineSeparator)
                .filterNot(_.startsWith("#"))
                .map(x => x.split("=").toList match {

@@ -18,10 +18,12 @@ POST     /job/delete/group/:groupId/job/:jobId    @controllers.JobController.del
 POST     /job/update/group/:groupId               @controllers.JobController.updateJob(groupId: String)
 POST     /job/launch/group/:groupId/job/:jobId    @controllers.JobController.launch(groupId: String, jobId: String)
 
-POST     /trigger/create/group/:groupName                       @controllers.TriggerController.createTrigger(groupName: String)
-GET      /trigger/list/group/:groupName                         @controllers.TriggerController.listTriggers(groupName: String)
-GET      /trigger/fetch/group/:groupName/trigger/:triggerName   @controllers.TriggerController.fetchTrigger(groupName: String, triggerName: String)
-POST     /trigger/delete/group/:groupName/trigger/:triggerName  @controllers.TriggerController.deleteTrigger(groupName: String, triggerName: String)
+POST     /trigger/create/group/:groupId                       @controllers.TriggerController.createTrigger(groupId: String)
+GET      /trigger/list/group/:groupId                         @controllers.TriggerController.listTriggers(groupId: String)
+GET      /trigger/fetch/group/:groupId/trigger/:triggerId     @controllers.TriggerController.fetchTrigger(groupId: String, triggerId: String)
+POST     /trigger/delete/group/:groupId/trigger/:triggerId    @controllers.TriggerController.deleteTrigger(groupId: String, triggerId: String)
+POST     /trigger/disable/group/:groupId/trigger/:triggerId   @controllers.TriggerController.disable(groupId: String, triggerId: String)
+POST     /trigger/enable/group/:groupId/trigger/:triggerId    @controllers.TriggerController.enable(groupId: String, triggerId: String)
 
 POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
 POST     /instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)
