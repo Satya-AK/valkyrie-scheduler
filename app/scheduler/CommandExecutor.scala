@@ -2,7 +2,6 @@ package scheduler
 
 import java.io.File
 import java.util.StringTokenizer
-
 import model.AppInstanceLog
 import scheduler.CommandExecutor.{Command, CommandResponse}
 import util.AppException.{JobExecutionException, JobSetUpException}

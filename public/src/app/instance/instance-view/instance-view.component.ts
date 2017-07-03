@@ -6,9 +6,9 @@ import {Job} from "../../job/job";
 import {Instance} from "../instance";
 
 @Component({
-  selector: 'app-instance-view-log',
-  templateUrl: './instance-view-log.component.html',
-  styleUrls: ['./instance-view-log.component.css']
+  selector: 'app-instance-view',
+  templateUrl: './instance-view.component.html',
+  styleUrls: ['./instance-view.component.css']
 })
 export class InstanceViewLogComponent implements OnInit {
 

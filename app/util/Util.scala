@@ -1,7 +1,7 @@
 package util
 
 import java.io.File
-import java.sql.Timestamp
+import java.sql.{Date, Timestamp}
 import java.text.SimpleDateFormat
 import java.util.Properties
 
@@ -144,6 +144,23 @@ object Util {
     def format(time: Timestamp) = sdf.format(time)
     def parse(time: String) = new Timestamp(sdf.parse(time).getTime)
 
+  }
+
+
+  implicit object DateJsonParser extends Reads[Date] with Writes[Date] {
+
+    private val sdf = new SimpleDateFormat("yyyy-MM-dd")
+
+    override def reads(json: JsValue): JsResult[Date] = {
+      Try(new Date(sdf.parse(json.as[String]).getTime)) match {
+        case Success(x) => JsSuccess(x)
+        case Failure(th) => JsError(th.getMessage)
+      }
+    }
+
+    override def writes(o: Date): JsValue = {
+      JsString(sdf.format(o))
+    }
   }
 
 }

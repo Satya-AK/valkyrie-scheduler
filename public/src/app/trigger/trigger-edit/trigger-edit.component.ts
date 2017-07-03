@@ -36,7 +36,6 @@ export class TriggerEditComponent implements OnInit {
   ngSelectOptions = {
     labelField: 'name',
     valueField: 'id',
-    maxItems: 1,
     searchField: 'name'
   };
 

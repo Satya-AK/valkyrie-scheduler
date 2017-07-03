@@ -1,13 +1,15 @@
 package controllers
 
 import com.google.inject.Inject
+import model.InstanceQuery
 import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
 import repo._
 import scheduler.InstanceAction.{FetchLogAction, KillAction}
 import scheduler.ProcessCache
-import util.{ErrRecoveryAction, Keyword, ServiceHelper}
+import util.{ErrRecoveryAction, Keyword, ServiceHelper, Util}
 import util.Util.JsObjectEnhancer
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -18,6 +20,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
                                     appInstanceLogRepository: AppInstanceLogRepository,
                                     groupRepository: AppGroupRepository,
                                     triggerRepository: TriggerRepository,
+                                    appStatusRepository: AppStatusRepository,
                                     jobRepository: JobRepository,
                                     processCache: ProcessCache,
                                     serviceHelper: ServiceHelper) extends Controller {
@@ -114,6 +117,31 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
   def lookupJobByInstance(instanceId: String) = ErrRecoveryAction.async {
     instanceRepository.lookUpJobByInstance(instanceId)
       .map(x => Ok(Json.toJson(x)))
+  }
+
+  /**
+    * query instances
+    * @return
+    */
+  def queryInstances = ErrRecoveryAction.async(parse.json) {
+    request =>
+      println()
+      for {
+        instanceQuery <- Util.parseJson[InstanceQuery](request.body)
+        instances <- instanceRepository.instanceQuery(instanceQuery)
+      } yield {
+        Ok(instances.map(x => Json.toJson(x)).foldLeft(JsArray())({ case (arr,node) => arr :+ node }))
+      }
+  }
+
+  /**
+    * list status
+    * @return
+    */
+  def status = ErrRecoveryAction.async {
+    appStatusRepository.list
+      .map(x => x.map(x => Json.toJson(x)).foldLeft(JsArray())({case (arr,node) => arr :+ node}))
+      .map(y => Ok(y))
   }
 
 }

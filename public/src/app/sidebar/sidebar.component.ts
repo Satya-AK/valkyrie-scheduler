@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 export class SidebarComponent {
 
     items = [
-      {name: "Instances", path: "instances", icon: "fa fa-wrench fa-fw"},
+      {name: "Instances", path: "instance", icon: "fa fa-wrench fa-fw"},
       {name: "Jobs", path: "jobs", icon: "fa fa-wrench fa-fw"},
       {name: "Triggers", path: "triggers", icon: "fa fa-wrench fa-fw"},
       {name: "Agents", path: "agents", icon: "fa fa-wrench fa-fw"},

@@ -5,7 +5,8 @@ import {TriggerListComponent} from "./trigger/trigger-list/trigger-list.componen
 import {JobEditComponent} from "./job/job-edit/job-edit.component";
 import {TriggerEditComponent} from "./trigger/trigger-edit/trigger-edit.component";
 import {JobInstanceComponent} from "./instance/job-instance/job-instance.component";
-import {InstanceViewLogComponent} from "./instance/instance-view-log/instance-view-log.component";
+import {InstanceViewLogComponent} from "./instance/instance-view/instance-view.component";
+import {InstanceQueryComponent} from "./instance/instance-query/instance-query.component";
 
 
 
@@ -15,6 +16,7 @@ const appRoutes: Routes = [
   { path: 'job/edit/:jobId', component: JobEditComponent },
   { path: 'instance/job/list/:jobId', component: JobInstanceComponent},
   { path: 'instance/job/log/:instanceId', component: InstanceViewLogComponent },
+  { path: 'instance', component: InstanceQueryComponent },
   { path: 'triggers', component: TriggerListComponent },
   { path: 'trigger/new', component: TriggerEditComponent },
   { path: 'trigger/edit/:triggerId', component: TriggerEditComponent },

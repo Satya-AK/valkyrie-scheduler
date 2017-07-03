@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import {Http} from "@angular/http";
+import {Http, Headers} from "@angular/http";
 import {Instance} from "./instance";
 import {BaseApiService} from "../shared/base-api-service";
 import {Observable} from "rxjs/Observable";
+import {InstanceQuery} from "./instance-query";
 
 @Injectable()
 export class InstanceService extends BaseApiService {
@@ -44,6 +45,14 @@ export class InstanceService extends BaseApiService {
     return this.http
       .get("/instance/fetch/"+instanceId)
       .map(x => Instance.fromJson(x.json()))
+      .catch(err => this.handleError(err))
+  }
+
+
+  query(instanceQuery: InstanceQuery): Observable<Instance[]> {
+    return this.http
+      .post("/instance/query",  instanceQuery.json())
+      .map(x => x.json().map(ins => Instance.fromJson(ins)))
       .catch(err => this.handleError(err))
   }
 

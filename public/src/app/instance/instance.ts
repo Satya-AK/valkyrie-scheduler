@@ -1,3 +1,4 @@
+import {InstanceStatus} from "./instance-status";
 /**
  * instance model class
  */
@@ -14,10 +15,14 @@ export class Instance {
               public message: string,
               public returnCode: number,
               public seqId: number,
-              public status: string,
+              public status: number,
               public attempt: string,
               public agent: string) {}
 
+
+  statusName(): string {
+    return InstanceStatus.status.filter(x => x.id == this.status).map(x => x.name)[0]
+  }
 
   /**
    * build instance from JSON
@@ -64,3 +69,5 @@ export class Instance {
  }
 
 }
+
+

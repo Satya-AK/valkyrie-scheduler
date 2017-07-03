@@ -1,10 +1,12 @@
 package repo
 
 import com.google.inject.Inject
+import model.AppStatus
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import table.AppStatusTable
 import util.AppException.EntityNotFoundException
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -29,6 +31,11 @@ class AppStatusRepository @Inject()(protected val dbConfigProvider: DatabaseConf
       case Some(x) => Future.successful(x)
       case None => Future.failed(new EntityNotFoundException(s"status $status not found"))
     }
+  }
+
+
+  def list: Future[Seq[AppStatus]] = {
+    db.run(statusTable.table.result)
   }
 
 }

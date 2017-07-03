@@ -8,12 +8,12 @@ import repo.AppInstanceRepository
 import repo.AppStatusRepository.Status
 import scheduler.CommandExecutor.{Command, CommandResponse}
 import util.AppException.JobExecutionException
+import util.{GlobalContext, Keyword}
 import util.Keyword.{AppSetting, JobData}
 import util.Util.joinPath
-import util.{GlobalContext, Keyword}
+import scala.concurrent.blocking
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Future, blocking}
 
 /**
   * Created by chlr on 6/10/17.
@@ -30,16 +30,17 @@ abstract class CommandJob extends Job {
     * @param context
     */
   override def execute(context: JobExecutionContext): Unit = {
-    Await.result[Unit](run(context), Duration.Inf)
+    run(context)
   }
 
 
-  def run(context: JobExecutionContext): Future[Unit] = {
+  def run(context: JobExecutionContext) = {
     val dataMap = context.getJobDetail.getJobDataMap
     val groupName = context.getJobDetail.getKey.getGroup
     val jobName = context.getJobDetail.getKey.getName
     val triggerId = if(context.getMergedJobDataMap.containsKey("manual"))
       None else Some(context.getTrigger.getKey.getName)
+    new CommandExecutor(buildCommand(dataMap), processCache).execute()
     instanceRepository.createInstance(instanceId, jobName, groupName, triggerId) flatMap {
       _ => Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
     } flatMap {

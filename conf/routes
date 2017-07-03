@@ -32,6 +32,8 @@ GET      /instance/fetch/:instanceId                    @controllers.InstanceCon
 GET      /instance/logs/:instanceId                     @controllers.InstanceController.showLog(instanceId: String)
 GET      /instance/job/list/job/:jobId                  @controllers.InstanceController.list(jobId: String)
 GET      /instance/fetch/job/:instanceId                @controllers.InstanceController.lookupJobByInstance(instanceId)
+POST     /instance/query                                @controllers.InstanceController.queryInstances()
+GET      /instance/status                               @controllers.InstanceController.status()
 
 POST     /group/create                                  @controllers.GroupController.createGroup
 GET      /groups                                        @controllers.GroupController.listGroups

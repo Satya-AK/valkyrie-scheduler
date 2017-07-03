@@ -1,7 +1,7 @@
 package repo
 
 import com.google.inject.{Inject, Singleton}
-import model.{AppInstance, AppInstanceLog, AppJob, AppStatus}
+import model._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repo.AppStatusRepository.Status
 import slick.driver.JdbcProfile
@@ -9,6 +9,7 @@ import table.AppInstanceTable
 import util.AppException.EntityNotFoundException
 import util.ServiceHelper
 import util.Util.{uuid, _}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -36,7 +37,6 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
   def listInstances(jobId: String): Future[Seq[AppInstance]] = {
     db.run(instanceTable.table.filter(_.jobName === jobId).result)
   }
-
 
   /**
     *
@@ -113,6 +113,22 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
       case None => Future.failed(new EntityNotFoundException(s"instance-id $instanceId not found"))
     } flatMap {
       x => jobRepository.getJob(x.groupId, x.jobId)
+    }
+  }
+
+  /**
+    * instance query
+    * @param instanceQuery
+    * @return
+    */
+  def instanceQuery(instanceQuery: InstanceQuery): Future[Seq[AppInstance]] = {
+    val query = instanceTable.table
+      .filter(x => x.startTime.asColumnOf[java.sql.Date] > instanceQuery.startDate)
+      .filter(x => x.endTime.asColumnOf[java.sql.Date] < instanceQuery.endDate)
+    println(query.result.statements.mkString)
+    instanceQuery.status match {
+      case Some(x) => db.run(query.filter(_.statusId === x).result)
+      case None => db.run(query.result)
     }
   }
 

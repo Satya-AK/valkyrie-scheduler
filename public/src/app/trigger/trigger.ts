@@ -9,7 +9,7 @@ export class Trigger {
               public jobId: string, public disable: boolean) {}
 
   /**
-   * create Trigger model from json
+   * create Trigger selectedDateRange from json
    * @param json
    * @returns {Trigger}
    */

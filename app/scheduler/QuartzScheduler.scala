@@ -100,6 +100,7 @@ class QuartzScheduler @Inject() (application: Application,
 
 
   def launchJob(groupId: String, jobId: String) = {
+    println("*" * 40)
     Future.successful(scheduler.triggerJob(new JobKey(jobId, groupId),
       new JobDataMap(Map("manual" -> "true").asJava))).map(_ => ())
   }
@@ -134,7 +135,7 @@ class QuartzScheduler @Inject() (application: Application,
     Future.successful(scheduler.unscheduleJob(triggerKey))
   }
 
-  
+
   def pause() = {
     scheduler.standby()
   }
