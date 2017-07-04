@@ -117,7 +117,7 @@ class DBManager(protected val dBConnection: DBConnection) {
       s"""
         |UPDATE $appInstanceTable
         | SET
-        |   START_TIME = ?
+        |   START_TIME = ?,
         |   END_TIME = ?,
         |   RETURN_CODE = ?,
         |   STATUS_ID = ?

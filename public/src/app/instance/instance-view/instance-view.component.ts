@@ -53,10 +53,22 @@ export class InstanceViewLogComponent implements OnInit {
   }
 
 
+  /**
+   * force finish instance
+   */
   forceFinish() {
     this.instanceService.forceFinish(this.instanceId)
       .subscribe(x => { this.alertService.showSuccessMessage(x); this.refreshData() }
         , err => this.alertService.showErrorMessage(err))
+  }
+
+  /**
+   * restart instance
+   */
+  restartInstance() {
+    this.instanceService.restartInstance(this.instanceId)
+      .subscribe(x => { this.alertService.showSuccessMessage(x); this.refreshData() },
+          err => this.alertService.showErrorMessage(err))
   }
 
 

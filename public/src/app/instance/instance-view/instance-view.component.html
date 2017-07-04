@@ -16,7 +16,7 @@
       <div class="control-panel">
         <label style="float: left;"><strong>Action:</strong></label>
         <button class="btn btn-default" (click)="killInstance()">Kill <span class="glyphicon glyphicon-stop"></span></button>
-        <button class="btn btn-default">Rerun<span class="glyphicon glyphicon-repeat"></span></button>
+        <button class="btn btn-default" (click)="restartInstance()">Rerun<span class="glyphicon glyphicon-repeat"></span></button>
         <button class="btn btn-default" (click)="forceFinish()">Force Finish<span class="glyphicon glyphicon-repeat"></span></button>
       </div>
       <table class="table-fill" *ngIf="instance">

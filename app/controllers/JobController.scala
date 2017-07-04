@@ -8,7 +8,7 @@ import play.api.mvc.Controller
 import repo.{AppGroupRepository, AppInstanceRepository, JobRepository, TriggerRepository}
 import scheduler.Scheduler
 import util.{ErrRecoveryAction, Util}
-import util.Util.JsObjectEnhancer
+import util.Util.{JsObjectEnhancer, uuid}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -104,7 +104,8 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
     for {
       group <- groupRepository.getGroupById(groupId)
       job <- jobRepository.getJob(groupId, jobId)
-      _ <- scheduler.launchJob(groupId, jobId)
+      instanceId = uuid
+      _ <- scheduler.launchJob(groupId, jobId, instanceId)
     } yield Ok(Json.obj("message" -> s"job ${job.jobName} in group ${group.groupName} triggered successfully"))
   }
 

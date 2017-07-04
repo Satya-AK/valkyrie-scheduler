@@ -35,9 +35,9 @@ abstract class CommandJob extends Job {
 
 
   def run(context: JobExecutionContext) = {
-    val dataMap = context.getJobDetail.getJobDataMap
+    val dataMap = context.getMergedJobDataMap
     val command = buildCommand(dataMap)
-    val triggerId = if(context.getMergedJobDataMap.containsKey("manual"))
+    val triggerId = if(dataMap.containsKey("launch-mode"))
       None else Some(context.getTrigger.getKey.getName)
     val appInstance = AppInstance(command.instanceId,
       context.getJobDetail.getKey.getGroup,
@@ -47,11 +47,11 @@ abstract class CommandJob extends Job {
       None, None, None, -1, Status.running, 1, serviceHelper.accessPoint)
     val dBManager = new DBManager(dBConnection)
     try {
-      if (dataMap.containsKey("instance_id"))
+      if (dataMap.getString("launch-mode") == "restart")
         dBManager.restartInstance(appInstance)
       else
         dBManager.startInstance(appInstance)
-      new CommandExecutor(buildCommand(dataMap), processCache).execute() match {
+      new CommandExecutor(command, processCache).execute() match {
          case CommandResponse(stdout, stderr, None) =>
            logger.info(s"instance ${command.instanceId} execution completed successfully")
            dBManager.endInstance(appInstance.copy(endTime = Some(new Timestamp(new Date().getTime)),

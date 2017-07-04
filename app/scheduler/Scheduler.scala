@@ -35,7 +35,7 @@ trait Scheduler {
     * @param jobId
     * @return
     */
-  def launchJob(groupId: String, jobId: String): Future[Unit]
+  def launchJob(groupId: String, jobId: String, instanceId: String): Future[Unit]
 
   /**
     * update job

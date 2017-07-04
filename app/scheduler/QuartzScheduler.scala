@@ -101,9 +101,9 @@ class QuartzScheduler @Inject() (application: Application,
   }
 
 
-  def launchJob(groupId: String, jobId: String) = {
+  def launchJob(groupId: String, jobId: String, instanceId: String) = {
     Future.successful(scheduler.triggerJob(new JobKey(jobId, groupId),
-      new JobDataMap(Map("manual" -> "true").asJava))).map(_ => ())
+      new JobDataMap(Map("launch-mode" -> "manual", "instance_id" -> instanceId).asJava))).map(_ => ())
   }
 
   def createOrUpdateTrigger(appTrigger: AppTrigger, replace: Boolean) = {
@@ -154,7 +154,7 @@ class QuartzScheduler @Inject() (application: Application,
     */
   override def deleteJob(groupId: String, jobId: String): Future[Unit] = {
     val jobKey = new JobKey(jobId, groupId)
-    Future.successful(scheduler.deleteJob(jobKey));
+    Future.successful(scheduler.deleteJob(jobKey))
   }
 
   /**
@@ -167,7 +167,7 @@ class QuartzScheduler @Inject() (application: Application,
     for {
       instance <- appInstanceRepository.fetchInstance(instanceId)
       _ = scheduler.triggerJob(new JobKey(instance.jobId, instance.groupId),
-        new JobDataMap(Map("instance_id" -> instanceId).asJava))
+        new JobDataMap(Map("launch-mode" -> "restart" ,"instance_id" -> instanceId).asJava))
     } yield ()
   }
 }

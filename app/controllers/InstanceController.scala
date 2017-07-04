@@ -159,7 +159,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
 
   def restartInstance(instanceId: String) = ErrRecoveryAction.async {
     for {
-      _ <- instanceRepository.fetchInstance(instanceId)
+      _ <- instanceRepository.fetchInstanceForRestart(instanceId)
       _ <- scheduler.restartInstance(instanceId)
     } yield {
       Ok(Json.obj("message" -> s"instance $instanceId restarted successfully"))

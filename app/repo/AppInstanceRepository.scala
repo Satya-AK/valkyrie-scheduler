@@ -76,6 +76,19 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     }
   }
 
+  /**
+    * fetch instance for restart
+    * @param instanceId
+    * @return
+    */
+  def fetchInstanceForRestart(instanceId: String) = {
+    db.run(instanceTable.table
+      .filter(x => x.instanceId === instanceId && x.statusId =!= Status.running).result.headOption) flatMap {
+      case Some(x) => Future.successful(x)
+      case None => Future.failed(new EntityNotFoundException(s"instance with id $instanceId cannot be restarted"))
+    }
+  }
+
 
   /**
     *
@@ -142,7 +155,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     */
   def forceFinish(instanceId: String) = {
     db.run(instanceTable
-      .table.filter(x => x.instanceId === instanceId && x.statusId === Status.running).result.headOption) flatMap {
+      .table.filter(x => x.instanceId === instanceId && x.statusId =!= Status.finished).result.headOption) flatMap {
       case Some(x) => db.run(instanceTable
         .table.update(x.copy(statusId = Status.finished, endTime = Some(new Timestamp(new Date().getTime)),
         message = Some("Instance is forced"))))

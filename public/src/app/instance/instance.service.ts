@@ -73,9 +73,26 @@ export class InstanceService extends BaseApiService {
   }
 
 
+  /**
+   * force finish instance
+   * @param instanceId
+   * @returns {Observable<R|T>}
+   */
   forceFinish(instanceId: string): Observable<string> {
     return this.http
       .post("/instance/forcefinish/"+instanceId, {})
+      .map(x => x.json().message)
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * restart instance
+   * @param instanceId
+   * @returns {Observable<R|T>}
+   */
+  restartInstance(instanceId: string): Observable<string> {
+    return this.http
+      .post("/instance/restart/"+instanceId, {})
       .map(x => x.json().message)
       .catch(err => this.handleError(err))
   }
