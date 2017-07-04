@@ -15,8 +15,9 @@
     <div class="tab-pane pull-left" *ngIf="activeTab=='info'" [ngClass]="{'active': activeTab=='info'}">
       <div class="control-panel">
         <label style="float: left;"><strong>Action:</strong></label>
-        <button class="btn btn-default">Kill <span class="glyphicon glyphicon-stop"></span></button>
+        <button class="btn btn-default" (click)="killInstance()">Kill <span class="glyphicon glyphicon-stop"></span></button>
         <button class="btn btn-default">Rerun<span class="glyphicon glyphicon-repeat"></span></button>
+        <button class="btn btn-default" (click)="forceFinish()">Force Finish<span class="glyphicon glyphicon-repeat"></span></button>
       </div>
       <table class="table-fill" *ngIf="instance">
         <tbody class="table-hover">
@@ -35,6 +36,10 @@
         <tr>
           <td class="text-left">EndTime</td>
           <td class="text-left">{{instance.endTime}}</td>
+        </tr>
+        <tr>
+          <td class="text-left">Status</td>
+          <td class="text-left">{{instance.statusName()}}</td>
         </tr>
         <tr>
           <td class="text-left">Sequence Id</td>

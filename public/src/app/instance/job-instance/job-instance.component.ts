@@ -42,7 +42,6 @@ export class JobInstanceComponent implements OnInit {
       {orderable: true},
       {orderable: true},
       {orderable: true},
-      {orderable: true},
       {orderable: true}]
   };
 

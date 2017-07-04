@@ -59,6 +59,7 @@ object AppStatusRepository {
     val success = 2
     val fail = 3
     val error = 4
+    val finished = 5
   }
 
 }

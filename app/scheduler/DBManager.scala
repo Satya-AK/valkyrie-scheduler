@@ -26,11 +26,10 @@ class DBManager(protected val dBConnection: DBConnection) {
     connection
   }
 
-  def startInstance(appInstance: AppInstance): Unit = {
+  private def run(body: (Connection =>  Unit)) = {
     implicit val connection = getConnection
     val action = Try {
-      val seqId = this.getSeqId(appInstance)
-      this.insertInstance(appInstance, seqId)
+      body(connection)
     }
     action match {
       case Success(()) => connection.commit(); connection.close()
@@ -38,18 +37,29 @@ class DBManager(protected val dBConnection: DBConnection) {
     }
   }
 
+  def startInstance(appInstance: AppInstance): Unit = {
+    run {
+      implicit connection =>
+      val seqId = this.getSeqId(appInstance)
+      this.insertInstance(appInstance, seqId)
+    }
+  }
+
+  def restartInstance(appInstance: AppInstance): Unit = {
+      run {
+        implicit connection =>
+          restartInstanceUpdate(appInstance)
+      }
+  }
+
 
   def endInstance(appInstance: AppInstance, stdout: Option[String], stderr: Option[String]) = {
-    implicit val connection = getConnection
-    val action = Try {
-      this.updateInstance(appInstance)
+   run {
+     implicit connection =>
+       this.updateInstance(appInstance)
       stdout.foreach(this.updateLog(appInstance, _, "stdout"))
       stderr.foreach(this.updateLog(appInstance, _, "stderr"))
-    }
-    action match {
-      case Success(()) => connection.commit(); connection.close();
-      case Failure(th) => connection.commit(); connection.close(); throw th
-    }
+   }
   }
 
 
@@ -93,6 +103,32 @@ class DBManager(protected val dBConnection: DBConnection) {
     stmt.setLong(6, seqId+1)
     stmt.setInt(7, appInstance.statusId)
     stmt.setString(8, appInstance.agent)
+    stmt.execute()
+  }
+
+  /**
+    * restart instance
+    * @param appInstance
+    * @param connection
+    * @return
+    */
+  private def restartInstanceUpdate(appInstance: AppInstance)(implicit connection: Connection) = {
+    val sql =
+      s"""
+        |UPDATE $appInstanceTable
+        | SET
+        |   START_TIME = ?
+        |   END_TIME = ?,
+        |   RETURN_CODE = ?,
+        |   STATUS_ID = ?
+        | WHERE INSTANCE_ID = ?
+      """.stripMargin
+    val stmt = connection.prepareStatement(sql)
+    stmt.setTimestamp(1, appInstance.startTime)
+    stmt.setNull(2, java.sql.Types.TIMESTAMP)
+    stmt.setNull(3, java.sql.Types.INTEGER)
+    stmt.setInt(4, appInstance.statusId)
+    stmt.setString(5, appInstance.id)
     stmt.execute()
   }
 

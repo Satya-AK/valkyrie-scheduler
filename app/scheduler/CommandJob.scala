@@ -3,7 +3,6 @@ package scheduler
 
 import java.sql.Timestamp
 import java.util.Date
-
 import model.AppInstance
 import org.quartz.{Job, JobDataMap, JobExecutionContext}
 import play.api.Logger
@@ -13,7 +12,7 @@ import scheduler.CommandExecutor.{Command, CommandResponse}
 import scheduler.DBManager.DBConnection
 import util.AppException.JobExecutionException
 import util.Keyword.{AppSetting, JobData}
-import util.Util.joinPath
+import util.Util.{joinPath, uuid}
 import util.{GlobalContext, ServiceHelper}
 
 /**
@@ -24,7 +23,6 @@ abstract class CommandJob extends Job {
   private val logger = Logger(this.getClass)
   protected val serviceHelper: ServiceHelper
   protected val processCache: ProcessCache
-  protected val instanceId: String
   protected val dBConnection: DBConnection
 
   /**
@@ -38,9 +36,10 @@ abstract class CommandJob extends Job {
 
   def run(context: JobExecutionContext) = {
     val dataMap = context.getJobDetail.getJobDataMap
+    val command = buildCommand(dataMap)
     val triggerId = if(context.getMergedJobDataMap.containsKey("manual"))
       None else Some(context.getTrigger.getKey.getName)
-    val appInstance = AppInstance(instanceId,
+    val appInstance = AppInstance(command.instanceId,
       context.getJobDetail.getKey.getGroup,
       context.getJobDetail.getKey.getName,
       triggerId,
@@ -48,25 +47,27 @@ abstract class CommandJob extends Job {
       None, None, None, -1, Status.running, 1, serviceHelper.accessPoint)
     val dBManager = new DBManager(dBConnection)
     try {
-      dBManager.startInstance(appInstance)
+      if (dataMap.containsKey("instance_id"))
+        dBManager.restartInstance(appInstance)
+      else
+        dBManager.startInstance(appInstance)
       new CommandExecutor(buildCommand(dataMap), processCache).execute() match {
          case CommandResponse(stdout, stderr, None) =>
-           logger.info(s"instance $instanceId execution completed successfully")
+           logger.info(s"instance ${command.instanceId} execution completed successfully")
            dBManager.endInstance(appInstance.copy(endTime = Some(new Timestamp(new Date().getTime)),
              statusId=Status.success, returnCode=Some(0)), stdout.log, stderr.log)
          case CommandResponse(stdout, stderr, Some(x: JobExecutionException)) =>
-           logger.info(s"instance $instanceId execution failed with status code ${x.returnCode}")
+           logger.info(s"instance ${command.instanceId} execution failed with status code ${x.returnCode}")
            dBManager.endInstance(appInstance.copy(endTime=Some(new Timestamp(new Date().getTime)),
              statusId=Status.fail, returnCode=Some(x.returnCode)), stdout.log, stderr.log)
          case CommandResponse(stdout, stderr, Some(x)) =>
-           logger.error(s"fatal error invoking instance $instanceId", x)
+           logger.error(s"fatal error invoking instance ${command.instanceId}", x)
            dBManager.endInstance(appInstance.copy(statusId=Status.error, returnCode=Some(-1),
              message = Some(x.getMessage)), stdout.log, stderr.log)
        }
     } catch {
       case th: Throwable =>
-        println(th.getMessage)
-        logger.warn(s"instance $instanceId failed with exception", th)
+        logger.warn(s"instance ${command.instanceId} failed with exception", th)
         dBManager.endInstance(appInstance.copy(statusId=4, message = Some(th.getMessage), returnCode=Some(-1)), None, None)
     }
   }
@@ -78,6 +79,7 @@ abstract class CommandJob extends Job {
     * @return
     */
   protected def buildCommand(dataMap: JobDataMap) = {
+    val instanceId = Option(dataMap.getString("instance_id")).getOrElse(uuid)
     Command(instanceId, dataMap.getString(JobData.command), getWorkingDir(dataMap),
       GlobalContext.application.configuration.getString(s"app.${AppSetting.tmpDir}")
         .map(joinPath(_, instanceId)).get, getEnvironment(dataMap))

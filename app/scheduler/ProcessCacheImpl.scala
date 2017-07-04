@@ -3,6 +3,7 @@ package scheduler
 import java.util.concurrent.ConcurrentHashMap
 import com.google.inject.Singleton
 import play.api.Logger
+import scala.collection.JavaConverters._
 
 /**
   * Created by chlr on 6/1/17.
@@ -24,6 +25,7 @@ class ProcessCacheImpl extends ProcessCache {
     * @return
     */
   def fetch(instanceId: String): Option[Process] = {
+    println(s"fetching instanceId $instanceId from processCache")
     logger.info(s"fetching process handler for instance id $instanceId")
     Option(cache.get(instanceId))
   }
@@ -35,6 +37,7 @@ class ProcessCacheImpl extends ProcessCache {
     * @return
     */
   def save(instanceId: String, process: Process) = {
+    println(s"saving instanceId $instanceId from processCache")
     logger.info(s"saving process handler for instance id $instanceId")
     cache.put(instanceId, process)
   }
@@ -45,6 +48,8 @@ class ProcessCacheImpl extends ProcessCache {
     * @return
     */
   def remove(instanceId: String) = {
+    println(s"removing instanceId $instanceId from processCache")
+    println(cache.asScala.mkString(","))
     logger.info(s"popping process handler for instance id $instanceId")
     Option(cache.remove(instanceId))
   }

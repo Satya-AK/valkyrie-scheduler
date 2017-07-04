@@ -28,16 +28,35 @@ export class InstanceViewLogComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.refreshData();
+  }
+
+  private refreshData() {
     this.instanceService
       .fetchLog(this.instanceId)
       .subscribe(x => {this.stdout = x.stdout; this.stderr = x.stderr}, x => this.alertService.showErrorMessage(x));
     this.instanceService.fetch(this.instanceId)
-      .subscribe(x => { console.log(""); this.instance = x}, err => this.alertService.showErrorMessage(err))
+      .subscribe(x => { this.instance = x}, err => this.alertService.showErrorMessage(err))
   }
-
 
   setViewTab(tab: string) {
     this.activeTab = tab;
+  }
+
+  /**
+   * kill instance
+   */
+  killInstance() {
+    this.instanceService.kill(this.instanceId)
+      .subscribe(x => {this.alertService.showSuccessMessage(x); this.refreshData()},
+        err => this.alertService.showErrorMessage(err))
+  }
+
+
+  forceFinish() {
+    this.instanceService.forceFinish(this.instanceId)
+      .subscribe(x => { this.alertService.showSuccessMessage(x); this.refreshData() }
+        , err => this.alertService.showErrorMessage(err))
   }
 
 

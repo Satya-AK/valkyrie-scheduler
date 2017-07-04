@@ -1,12 +1,15 @@
 package repo
 
+import java.sql.Timestamp
+import java.util.Date
+
 import com.google.inject.{Inject, Singleton}
 import model._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repo.AppStatusRepository.Status
 import slick.driver.JdbcProfile
 import table.AppInstanceTable
-import util.AppException.EntityNotFoundException
+import util.AppException.{EntityNotFoundException, InvalidStateException}
 import util.ServiceHelper
 import util.Util.{uuid, _}
 
@@ -128,6 +131,22 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     instanceQuery.status match {
       case Some(x) => db.run(query.filter(_.statusId === x).result)
       case None => db.run(query.result)
+    }
+  }
+
+
+  /**
+    * force finish instance
+    * @param instanceId
+    * @return
+    */
+  def forceFinish(instanceId: String) = {
+    db.run(instanceTable
+      .table.filter(x => x.instanceId === instanceId && x.statusId === Status.running).result.headOption) flatMap {
+      case Some(x) => db.run(instanceTable
+        .table.update(x.copy(statusId = Status.finished, endTime = Some(new Timestamp(new Date().getTime)),
+        message = Some("Instance is forced"))))
+      case None => Future.failed(new InvalidStateException(s"cannot force finish instance with id $instanceId"))
     }
   }
 

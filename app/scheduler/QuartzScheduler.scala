@@ -1,17 +1,18 @@
 package scheduler
 
-import java.io.{File, PrintWriter}
+import java.io.File
 
 import com.google.inject.{Inject, Singleton}
 import model.{AppJob, AppTrigger}
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import play.api.{Application, Logger}
+import repo.AppInstanceRepository
 import util.Keyword.JobData
 import util.{GlobalContext, Util}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.collection.JavaConverters._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**
@@ -20,6 +21,7 @@ import scala.concurrent.Future
 
 @Singleton()
 class QuartzScheduler @Inject() (application: Application,
+                                 appInstanceRepository: AppInstanceRepository,
                                  globalContext: GlobalContext) extends Scheduler {
 
   val logger: Logger = Logger(this.getClass)
@@ -100,9 +102,6 @@ class QuartzScheduler @Inject() (application: Application,
 
 
   def launchJob(groupId: String, jobId: String) = {
-    new PrintWriter("/Users/chlr/dev/T800/projects/valkyrie/public/output1.log") {
-      this.write("ping pong!!"); this.close()
-    }
     Future.successful(scheduler.triggerJob(new JobKey(jobId, groupId),
       new JobDataMap(Map("manual" -> "true").asJava))).map(_ => ())
   }
@@ -156,5 +155,19 @@ class QuartzScheduler @Inject() (application: Application,
   override def deleteJob(groupId: String, jobId: String): Future[Unit] = {
     val jobKey = new JobKey(jobId, groupId)
     Future.successful(scheduler.deleteJob(jobKey));
+  }
+
+  /**
+    * restart instance
+    *
+    * @param instanceId
+    * @return
+    */
+  override def restartInstance(instanceId: String): Future[Unit] = {
+    for {
+      instance <- appInstanceRepository.fetchInstance(instanceId)
+      _ = scheduler.triggerJob(new JobKey(instance.jobId, instance.groupId),
+        new JobDataMap(Map("instance_id" -> instanceId).asJava))
+    } yield ()
   }
 }

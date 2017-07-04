@@ -20,6 +20,8 @@ object AppException {
 
   class InvalidJsonFormatException(message: String) extends AppException(message)
 
+  class InvalidStateException(message: String) extends AppException(message)
+
 }
 
 

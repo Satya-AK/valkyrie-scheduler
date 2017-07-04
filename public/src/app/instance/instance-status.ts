@@ -16,6 +16,8 @@ export class InstanceStatus {
   static status = [new InstanceStatus(1, "running"),
     new InstanceStatus(2,"succeeded"),
     new InstanceStatus(3,"failed"),
-    new InstanceStatus(4,"error")];
+    new InstanceStatus(4,"error"),
+    new InstanceStatus(5, "finished")
+  ];
 
 }

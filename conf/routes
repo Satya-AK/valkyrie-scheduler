@@ -26,6 +26,7 @@ POST     /trigger/disable/group/:groupId/trigger/:triggerId   @controllers.Trigg
 POST     /trigger/enable/group/:groupId/trigger/:triggerId    @controllers.TriggerController.enable(groupId: String, triggerId: String)
 
 POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
+POST     /instance/forcefinish/:instanceId              @controllers.InstanceController.forceFinish(instanceId: String)
 POST     /instance/kill/:instanceId                     @controllers.InstanceController.instanceKill(instanceId: String)
 GET      /instance/logs/request/:instanceId             @controllers.InstanceController.requestShowLog(instanceId: String)
 GET      /instance/fetch/:instanceId                    @controllers.InstanceController.fetch(instanceId: String)

@@ -48,11 +48,35 @@ export class InstanceService extends BaseApiService {
       .catch(err => this.handleError(err))
   }
 
-
+  /**
+   * query instances
+   * @param instanceQuery
+   * @returns {Observable<R|T>}
+   */
   query(instanceQuery: InstanceQuery): Observable<Instance[]> {
     return this.http
       .post("/instance/query",  instanceQuery.json())
       .map(x => x.json().map(ins => Instance.fromJson(ins)))
+      .catch(err => this.handleError(err))
+  }
+
+  /**
+   * kill instance
+   * @param instanceId
+   * @returns {Observable<R|T>}
+   */
+  kill(instanceId: string): Observable<string> {
+    return this.http
+      .post("/instance/kill/"+instanceId, {})
+      .map(x => x.json().message)
+      .catch(err => this.handleError(err))
+  }
+
+
+  forceFinish(instanceId: string): Observable<string> {
+    return this.http
+      .post("/instance/forcefinish/"+instanceId, {})
+      .map(x => x.json().message)
       .catch(err => this.handleError(err))
   }
 

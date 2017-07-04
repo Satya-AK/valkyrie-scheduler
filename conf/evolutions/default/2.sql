@@ -10,6 +10,7 @@ INSERT INTO "APP_STATUS" VALUES (1, 'running');
 INSERT INTO "APP_STATUS" VALUES (2, 'succeeded');
 INSERT INTO "APP_STATUS" VALUES (3, 'failed');
 INSERT INTO "APP_STATUS" VALUES (4, 'error');
+INSERT INTO "APP_STATUS" VALUES (5, 'finished');
 
 
 # --- !Downs

@@ -80,6 +80,10 @@ export class InstanceQueryComponent implements OnInit {
     });
   }
 
+  viewLogUrl(instanceId: string) {
+    return "#/instance/job/log/"+ instanceId;
+  }
+
   private getInstanceQuery() {
     let startDate = new Date(this.selectedDateRange.beginDate.year,
       this.selectedDateRange.beginDate.month-1, this.selectedDateRange.beginDate.day);

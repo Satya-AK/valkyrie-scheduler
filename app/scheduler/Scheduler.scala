@@ -87,6 +87,14 @@ trait Scheduler {
     */
   def disableTrigger(groupId: String, triggerId: String): Future[Unit]
 
+
+  /**
+    * restart instance
+    * @param instanceId
+    * @return
+    */
+  def restartInstance(instanceId: String): Future[Unit]
+
   /**
     * destroy the scheduler
     */

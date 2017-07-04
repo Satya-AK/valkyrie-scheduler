@@ -6,9 +6,9 @@ import play.api.libs.json.{JsArray, JsObject, Json}
 import play.api.mvc.Controller
 import repo._
 import scheduler.InstanceAction.{FetchLogAction, KillAction}
-import scheduler.ProcessCache
-import util.{ErrRecoveryAction, Keyword, ServiceHelper, Util}
+import scheduler.{ProcessCache, Scheduler}
 import util.Util.JsObjectEnhancer
+import util.{ErrRecoveryAction, Keyword, ServiceHelper, Util}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -23,6 +23,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
                                     appStatusRepository: AppStatusRepository,
                                     jobRepository: JobRepository,
                                     processCache: ProcessCache,
+                                    scheduler: Scheduler,
                                     serviceHelper: ServiceHelper) extends Controller {
 
 
@@ -80,7 +81,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     instanceRepository.fetchInstance(instanceId) flatMap {
       x => serviceHelper.requestAction(KillAction(instanceId, x.agent), None)
     } map {
-        _ => Ok(Json.obj("success" -> s"killed instance with id $instanceId successfully"))
+        _ => Ok(Json.obj("message" -> s"killed instance with id $instanceId successfully"))
     }
   }
 
@@ -142,6 +143,27 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     appStatusRepository.list
       .map(x => x.map(x => Json.toJson(x)).foldLeft(JsArray())({case (arr,node) => arr :+ node}))
       .map(y => Ok(y))
+  }
+
+  /**
+    * force finish instance
+    * @param instanceId
+    * @return
+    */
+  def forceFinish(instanceId: String) = ErrRecoveryAction.async {
+    instanceRepository
+      .forceFinish(instanceId)
+      .map(_ => Ok(Json.obj("message" -> s"instance with id $instanceId has been force finished")))
+  }
+
+
+  def restartInstance(instanceId: String) = ErrRecoveryAction.async {
+    for {
+      _ <- instanceRepository.fetchInstance(instanceId)
+      _ <- scheduler.restartInstance(instanceId)
+    } yield {
+      Ok(Json.obj("message" -> s"instance $instanceId restarted successfully"))
+    }
   }
 
 }

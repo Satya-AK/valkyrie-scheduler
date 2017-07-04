@@ -92,7 +92,8 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
           case 0 => Success(0)
           case retCode => Failure(new JobExecutionException(retCode, s"command failed with return code $retCode"))
         }
-      case Failure(th) => Failure(new JobExecutionException(-1, th.getMessage))
+      case Failure(th) =>
+        Failure(new JobExecutionException(-1, th.getMessage))
     }
   }
 

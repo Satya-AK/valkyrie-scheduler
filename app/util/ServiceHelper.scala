@@ -41,7 +41,7 @@ class ServiceHelper @Inject() (wSClient: WSClient
         Future.successful(x.json)
       case x =>
         logger.error(Json.stringify(x.json))
-        Future.failed(new RuntimeException("status code failed"))
+        Future.failed(new RuntimeException(s"status code $x is not expected status code of $statusCode"))
     }
   }
 
