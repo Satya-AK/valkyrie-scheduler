@@ -40,22 +40,22 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
 
   /**
     *
-    * @param jobName
-    * @param groupName
-    * @param triggerName
+    * @param jobId
+    * @param groupId
+    * @param triggerId
     */
   def createInstance(instanceId: String,
-                     jobName: String,
-                     groupName: String,
-                     triggerName: Option[String]): Future[Unit] = {
+                     jobId: String,
+                     groupId: String,
+                     triggerId: Option[String]): Future[Unit] = {
     def query(status: AppStatus, instanceId: String) = instanceTable.table
-      .filter(x => x.jobName === jobName && x.groupName === groupName)
+      .filter(x => x.jobName === jobId && x.groupName === groupId)
       .sortBy(_.seqId.desc).map(_.seqId).result.headOption flatMap {
-      x => instanceTable.table += AppInstance(instanceId, groupName, jobName, triggerName, currentTimeStamp, None,
+      x => instanceTable.table += AppInstance(instanceId, groupId, jobId, triggerId, currentTimeStamp, None,
         None, None, x.getOrElse(0L)+1, status.id, 1, serviceHelper.accessPoint)
     }
     for {
-      status <- statusRepository.getStatusName(Status.running)
+      status <- statusRepository.getStatusById(Status.running)
       _ <- db.run(query(status, instanceId).transactionally).map(_ => uuid)
     } yield ()
   }
@@ -123,9 +123,8 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     */
   def instanceQuery(instanceQuery: InstanceQuery): Future[Seq[AppInstance]] = {
     val query = instanceTable.table
-      .filter(x => x.startTime.asColumnOf[java.sql.Date] > instanceQuery.startDate)
-      .filter(x => x.endTime.asColumnOf[java.sql.Date] < instanceQuery.endDate)
-    println(query.result.statements.mkString)
+      .filter(x => x.startTime.asColumnOf[java.sql.Date] >= instanceQuery.startDate)
+      .filter(x => x.endTime.asColumnOf[java.sql.Date] <= instanceQuery.endDate)
     instanceQuery.status match {
       case Some(x) => db.run(query.filter(_.statusId === x).result)
       case None => db.run(query.result)

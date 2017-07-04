@@ -1,6 +1,6 @@
 package scheduler
 
-import java.io.File
+import java.io.{File, PrintWriter}
 
 import com.google.inject.{Inject, Singleton}
 import model.{AppJob, AppTrigger}
@@ -100,7 +100,9 @@ class QuartzScheduler @Inject() (application: Application,
 
 
   def launchJob(groupId: String, jobId: String) = {
-    println("*" * 40)
+    new PrintWriter("/Users/chlr/dev/T800/projects/valkyrie/public/output1.log") {
+      this.write("ping pong!!"); this.close()
+    }
     Future.successful(scheduler.triggerJob(new JobKey(jobId, groupId),
       new JobDataMap(Map("manual" -> "true").asJava))).map(_ => ())
   }

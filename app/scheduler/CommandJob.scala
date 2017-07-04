@@ -1,19 +1,20 @@
 package scheduler
 
-import model.AppInstanceLog
+
+import java.sql.Timestamp
+import java.util.Date
+
+import model.AppInstance
 import org.quartz.{Job, JobDataMap, JobExecutionContext}
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
-import repo.AppInstanceRepository
 import repo.AppStatusRepository.Status
 import scheduler.CommandExecutor.{Command, CommandResponse}
+import scheduler.DBManager.DBConnection
 import util.AppException.JobExecutionException
-import util.{GlobalContext, Keyword}
 import util.Keyword.{AppSetting, JobData}
 import util.Util.joinPath
-import scala.concurrent.blocking
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import util.{GlobalContext, ServiceHelper}
 
 /**
   * Created by chlr on 6/10/17.
@@ -21,9 +22,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 abstract class CommandJob extends Job {
 
   private val logger = Logger(this.getClass)
-  protected val instanceRepository: AppInstanceRepository
+  protected val serviceHelper: ServiceHelper
   protected val processCache: ProcessCache
   protected val instanceId: String
+  protected val dBConnection: DBConnection
 
   /**
     * execute
@@ -36,34 +38,36 @@ abstract class CommandJob extends Job {
 
   def run(context: JobExecutionContext) = {
     val dataMap = context.getJobDetail.getJobDataMap
-    val groupName = context.getJobDetail.getKey.getGroup
-    val jobName = context.getJobDetail.getKey.getName
     val triggerId = if(context.getMergedJobDataMap.containsKey("manual"))
       None else Some(context.getTrigger.getKey.getName)
-    new CommandExecutor(buildCommand(dataMap), processCache).execute()
-    instanceRepository.createInstance(instanceId, jobName, groupName, triggerId) flatMap {
-      _ => Future(blocking(new CommandExecutor(buildCommand(dataMap), processCache).execute()))
-    } flatMap {
-      case CommandResponse(stdout, stderr, None) =>
-        logger.info(s"instance $instanceId execution completed successfully")
-        instanceRepository.endInstance(instanceId, Status.success, stdout, stderr, Some(0), None)
-      case CommandResponse(stdout, stderr, Some(x: JobExecutionException)) =>
-        logger.info(s"instance $instanceId execution failed with status code ${x.returnCode}")
-        instanceRepository.endInstance(instanceId, Status.fail, stdout, stderr, Some(x.returnCode), Some(x.getMessage))
-      case CommandResponse(stdout, stderr, Some(x)) =>
-        logger.error(s"fatal error invoking instance $instanceId", x)
-        instanceRepository.endInstance(instanceId, Status.error, stdout, stderr, Some(-1), Some(x.getMessage))
-    } recoverWith {
-      case th =>
+    val appInstance = AppInstance(instanceId,
+      context.getJobDetail.getKey.getGroup,
+      context.getJobDetail.getKey.getName,
+      triggerId,
+      new Timestamp(new Date().getTime),
+      None, None, None, -1, Status.running, 1, serviceHelper.accessPoint)
+    val dBManager = new DBManager(dBConnection)
+    try {
+      dBManager.startInstance(appInstance)
+      new CommandExecutor(buildCommand(dataMap), processCache).execute() match {
+         case CommandResponse(stdout, stderr, None) =>
+           logger.info(s"instance $instanceId execution completed successfully")
+           dBManager.endInstance(appInstance.copy(endTime = Some(new Timestamp(new Date().getTime)),
+             statusId=Status.success, returnCode=Some(0)), stdout.log, stderr.log)
+         case CommandResponse(stdout, stderr, Some(x: JobExecutionException)) =>
+           logger.info(s"instance $instanceId execution failed with status code ${x.returnCode}")
+           dBManager.endInstance(appInstance.copy(endTime=Some(new Timestamp(new Date().getTime)),
+             statusId=Status.fail, returnCode=Some(x.returnCode)), stdout.log, stderr.log)
+         case CommandResponse(stdout, stderr, Some(x)) =>
+           logger.error(s"fatal error invoking instance $instanceId", x)
+           dBManager.endInstance(appInstance.copy(statusId=Status.error, returnCode=Some(-1),
+             message = Some(x.getMessage)), stdout.log, stderr.log)
+       }
+    } catch {
+      case th: Throwable =>
+        println(th.getMessage)
         logger.warn(s"instance $instanceId failed with exception", th)
-        instanceRepository.endInstance(
-          instanceId,
-          Status.error,
-          AppInstanceLog(instanceId, Keyword.AppLog.stdout, None),
-          AppInstanceLog(instanceId, Keyword.AppLog.stdout, None),
-          Some(-1),
-          Some(th.getMessage)
-        )
+        dBManager.endInstance(appInstance.copy(statusId=4, message = Some(th.getMessage), returnCode=Some(-1)), None, None)
     }
   }
 

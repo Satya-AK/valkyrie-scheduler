@@ -33,6 +33,18 @@ class AppStatusRepository @Inject()(protected val dbConfigProvider: DatabaseConf
     }
   }
 
+  /**
+    * get status by Id
+    * @param id
+    * @return
+    */
+  def getStatusById(id: Int) = {
+    db.run(statusTable.table.filter(_.id === id).result.headOption) flatMap {
+      case Some(x) => Future.successful(x)
+      case None => Future.failed(new EntityNotFoundException(s"status with id $id not found"))
+    }
+  }
+
 
   def list: Future[Seq[AppStatus]] = {
     db.run(statusTable.table.result)
@@ -43,11 +55,10 @@ class AppStatusRepository @Inject()(protected val dbConfigProvider: DatabaseConf
 object AppStatusRepository {
 
   object Status {
-    val success = "succeeded"
-    val fail = "failed"
-    val running = "running"
-    val finished = "finished"
-    val error = "error"
+    val running = 1
+    val success = 2
+    val fail = 3
+    val error = 4
   }
 
 }
