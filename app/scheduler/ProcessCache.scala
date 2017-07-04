@@ -1,10 +1,14 @@
 package scheduler
 
+import java.util.concurrent.ConcurrentHashMap
+
 /**
   * Created by chlr on 5/29/17.
   */
 
 trait ProcessCache {
+
+  val cache = new ConcurrentHashMap[String, Process]()
 
   /**
     * get process for instanceId

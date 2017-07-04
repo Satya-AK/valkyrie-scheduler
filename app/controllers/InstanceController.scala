@@ -9,7 +9,7 @@ import scheduler.InstanceAction.{FetchLogAction, KillAction}
 import scheduler.{ProcessCache, Scheduler}
 import util.Util.JsObjectEnhancer
 import util.{ErrRecoveryAction, Keyword, ServiceHelper, Util}
-
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -164,6 +164,11 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     } yield {
       Ok(Json.obj("message" -> s"instance $instanceId restarted successfully"))
     }
+  }
+
+
+  def test = ErrRecoveryAction.async {
+    Future.successful(Ok(Json.toJson(processCache.cache.entrySet().asScala.map(_.getKey))))
   }
 
 }
