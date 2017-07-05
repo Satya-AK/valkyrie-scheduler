@@ -3,6 +3,7 @@ package scheduler
 import java.util.concurrent.ConcurrentHashMap
 
 import com.google.inject.Singleton
+import org.apache.commons.exec.ExecuteWatchdog
 import play.api.Logger
 
 /**
@@ -15,7 +16,7 @@ import play.api.Logger
 @Singleton
 class ProcessCacheImpl extends ProcessCache {
 
-  override val cache = new ConcurrentHashMap[String, Process]()
+  override val cache = new ConcurrentHashMap[String, ExecuteWatchdog]()
 
   val logger = Logger(getClass)
 
@@ -24,7 +25,7 @@ class ProcessCacheImpl extends ProcessCache {
     * @param instanceId
     * @return
     */
-  def fetch(instanceId: String): Option[Process] = {
+  def fetch(instanceId: String): Option[ExecuteWatchdog] = {
     logger.info(s"fetching process handler for instance id $instanceId")
     Option(cache.get(instanceId))
   }
@@ -35,7 +36,7 @@ class ProcessCacheImpl extends ProcessCache {
     * @param process
     * @return
     */
-  def save(instanceId: String, process: Process) = {
+  def save(instanceId: String, process: ExecuteWatchdog) = {
     logger.info(s"saving process handler for instance id $instanceId")
     cache.put(instanceId, process)
   }

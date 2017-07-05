@@ -67,7 +67,7 @@ class InstanceController @Inject() (instanceRepository: AppInstanceRepository,
     */
   def requestInstanceKill(instanceId: String) = ErrRecoveryAction {
     processCache.remove(instanceId) match {
-      case Some(x) => x.destroyForcibly(); Ok(Json.obj("success" -> "process killed"))
+      case Some(x) => x.destroyProcess(); Ok(Json.obj("success" -> "process killed"))
       case None => BadRequest(Json.obj("failed" -> s"process handler not found for instance id $instanceId"))
     }
   }

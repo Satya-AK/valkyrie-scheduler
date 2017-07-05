@@ -26,7 +26,8 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "6.0.5",
   "net.codingwell" %% "scala-guice" % "4.1.0",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
-  "org.quartz-scheduler" % "quartz" % "2.3.0"
+  "org.quartz-scheduler" % "quartz" % "2.3.0",
+  "org.apache.commons" % "commons-exec" % "1.3"
 )
 
 javaOptions in Test += "-Dconfig.file=conf/application-test.conf"

@@ -1,11 +1,13 @@
 package scheduler
 
-import java.io.File
-import java.util.StringTokenizer
+import java.io._
+
+import _root_.util.AppException.JobExecutionException
+import _root_.util.{Keyword, Util}
 import model.AppInstanceLog
+import org.apache.commons.exec._
 import scheduler.CommandExecutor.{Command, CommandResponse}
-import util.AppException.{JobExecutionException, JobSetUpException}
-import util.{Keyword, Util}
+
 import scala.collection.JavaConverters._
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -17,30 +19,21 @@ import scala.util.{Failure, Success, Try}
 class CommandExecutor(command: Command, processCache: ProcessCache) {
 
 
-  private val stdoutFile = new File(Util.instanceLogDirectory(command.instanceId), "stdout.log")
-
   private val stderrFile = new File(Util.instanceLogDirectory(command.instanceId), "stderr.log")
+  private val stdoutFile = new File(Util.instanceLogDirectory(command.instanceId), "stdout.log")
+  private lazy val stdoutFileStream = new FileOutputStream(stdoutFile)
+  private lazy val stderrFileStream = new FileOutputStream(stderrFile)
+  private val errInputStreamSink = new PipedInputStream()
+  private val outInputStreamSink = new PipedInputStream()
+  private val errInputStream = new PipedOutputStream(errInputStreamSink)
+  private val outOutputStream = new PipedOutputStream(outInputStreamSink)
 
-  /**
-    * build process builder
-    * @return
-    */
   private val processBuilder = {
-    val processBuilder = new ProcessBuilder(parseCommand)
-      .directory(new File(command.workingDir))
-      .redirectOutput(stdoutFile)
-      .redirectError(stderrFile)
-    command.env.foreach({case (key, value) => processBuilder.environment.put(key, value)})
-    processBuilder
-  }
-
-  /**
-    * create temporary directory
-    */
-  private def createTempDir() = {
-    if(! new File(command.tmpDir).mkdirs()) {
-      throw new JobSetUpException("failed to create tmp directory")
-    }
+    val executor = new DefaultExecutor()
+    executor.setWorkingDirectory(new File(command.workingDir))
+    executor.setStreamHandler(new PumpStreamHandler(outOutputStream, errInputStream))
+    executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT))
+    executor
   }
 
   /**
@@ -85,25 +78,15 @@ class CommandExecutor(command: Command, processCache: ProcessCache) {
     * @return
     */
   private def run  = {
-    Try(processBuilder.start()) match {
-      case Success(process) =>
-        processCache.save(command.instanceId, process)
-        process.waitFor() match {
-          case 0 => Success(0)
-          case retCode => Failure(new JobExecutionException(retCode, s"command failed with return code $retCode"))
-        }
-      case Failure(th) =>
-        Failure(new JobExecutionException(-1, th.getMessage))
+    val executor = processBuilder
+    processCache.save(command.instanceId, executor.getWatchdog)
+    new Thread(new StreamPumper(outInputStreamSink, stdoutFileStream)).start()
+    new Thread(new StreamPumper(errInputStreamSink, stderrFileStream)).start()
+    Try(executor.execute(CommandLine.parse(command.command), command.env.asJava)) match {
+      case Success(0) => Success(0)
+      case Success(x) => Failure(new JobExecutionException(x, s"command failed with return code $x"))
+      case Failure(th: ExecuteException) => Failure(new JobExecutionException(th.getExitValue, th.getMessage))
     }
-  }
-
-  /**
-    * convert command string to array string
-    * @return
-    */
-  private def parseCommand = {
-    val tokenizer = new StringTokenizer(command.command)
-    (0 until tokenizer.countTokens).map(_ => tokenizer.nextToken()).toList.asJava
   }
 
 }
