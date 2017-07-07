@@ -40,8 +40,6 @@ class AppGroupRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
     }
   }
 
-
-
   /**
     * get group by Name
     * @param groupName
@@ -52,6 +50,15 @@ class AppGroupRepository @Inject()(protected val dbConfigProvider: DatabaseConfi
       case Some(x) => Future.successful(x)
       case None => Future.failed(new EntityNotFoundException(s"group $groupName not found"))
     }
+  }
+
+  /**
+    * update group
+    * @param group
+    * @return
+    */
+  def update(group: AppGroup) = {
+    db.run(appGroupTable.table.filter(_.id === group.id).update(group))
   }
 
 

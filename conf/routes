@@ -40,4 +40,4 @@ GET      /instance/status                               @controllers.InstanceCon
 POST     /group/create                                  @controllers.GroupController.createGroup
 GET      /groups                                        @controllers.GroupController.listGroups
 GET      /group/fetch/:groupId                          @controllers.GroupController.fetchGroup(groupId: String)
-GET      /deleteme                                      @controllers.InstanceController.test()
+POST     /group/update                                  @controllers.GroupController.update

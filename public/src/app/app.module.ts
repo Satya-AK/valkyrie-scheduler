@@ -12,6 +12,7 @@ import { HttpModule } from '@angular/http';
 import {SharedModule} from "./shared/shared.module";
 import { JobInstanceComponent } from './instance/job-instance/job-instance.component';
 import {InstanceModule} from "./instance/instance.module";
+import {GroupModule} from "./group/group.module";
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {InstanceModule} from "./instance/instance.module";
     AppRoutingModule,
     SharedModule,
     JobModule,
+    GroupModule,
     TriggerModule,
     InstanceModule,
     BrowserModule,

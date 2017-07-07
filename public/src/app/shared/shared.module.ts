@@ -7,7 +7,6 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { GroupModalComponent } from './group-modal/group-modal.component';
 import {FormsModule} from "@angular/forms";
 import {NgSelectizeModule} from "ng-selectize";
-import {GroupContextService} from "./group-context.service";
 
 
 @NgModule({
@@ -21,6 +20,6 @@ import {GroupContextService} from "./group-context.service";
   ],
   declarations: [AlertBannerComponent, GroupModalComponent],
   exports: [AlertBannerComponent, GroupModalComponent],
-  providers: [AlertService, GroupContextService]
+  providers: [AlertService]
 })
 export class SharedModule { }

@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {GroupContextService} from "../../shared/group-context.service";
 import {AlertService} from "../../shared/alert-service.service";
 import {Trigger} from "../trigger";
 import {Subject} from "rxjs/Subject";
 import {Subscription} from "rxjs/Subscription";
 import {TriggerService} from "../trigger-service.service";
 import {DataTableDirective} from "angular-datatables";
+import {GroupContextService} from "../../group/group.service";
 
 @Component({
   selector: 'app-trigger-list',

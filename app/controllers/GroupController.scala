@@ -54,4 +54,18 @@ class GroupController @Inject() (groupRepository: AppGroupRepository)
       .map(x => Ok(Json.toJson(x)))
   }
 
+  /**
+    *
+    * @return
+    */
+  def update = ErrRecoveryAction.async(parse.json) {
+    request =>
+      for {
+        group <- parseJson[AppGroup](request.body)
+        _ <- groupRepository.update(group)
+      } yield {
+        Ok(Json.obj("message" -> s"group ${group.groupName} updated"))
+      }
+  }
+
 }

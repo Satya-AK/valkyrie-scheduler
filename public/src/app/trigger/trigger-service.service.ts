@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {Http} from "@angular/http";
-import {GroupContextService} from "../shared/group-context.service";
 import {Trigger} from "./trigger";
 import {BaseApiService} from "../shared/base-api-service";
+import {GroupContextService} from "../group/group.service";
 
 @Injectable()
 export class TriggerService extends BaseApiService {

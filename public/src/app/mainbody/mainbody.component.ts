@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {GroupContextService} from "../shared/group-context.service";
+import {GroupContextService} from "../group/group.service";
 
 @Component({
   selector: 'app-mainbody',
@@ -10,7 +10,6 @@ export class MainbodyComponent implements OnInit {
 
   constructor(public groupContextService: GroupContextService) { }
 
-  bingo = "Bingo!!!";
 
   ngOnInit() {
   }

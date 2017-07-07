@@ -11,6 +11,6 @@ export class SidebarComponent {
       {name: "Instances", path: "instance", icon: "fa fa-wrench fa-fw"},
       {name: "Jobs", path: "jobs", icon: "fa fa-wrench fa-fw"},
       {name: "Triggers", path: "triggers", icon: "fa fa-wrench fa-fw"},
-      {name: "Agents", path: "agents", icon: "fa fa-wrench fa-fw"},
+      {name: "Groups", path: "groups", icon: "fa fa-wrench fa-fw"},
     ];
 }

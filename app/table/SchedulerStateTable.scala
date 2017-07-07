@@ -1,12 +1,11 @@
 package table
 
 import com.google.inject.Inject
-import model.AppGroup
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 
 /**
-  * Created by chlr on 6/3/17.
+  * Created by chlr on 7/6/17.
   */
 
 class AppGroupTable @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)

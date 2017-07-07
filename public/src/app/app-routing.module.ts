@@ -7,6 +7,8 @@ import {TriggerEditComponent} from "./trigger/trigger-edit/trigger-edit.componen
 import {JobInstanceComponent} from "./instance/job-instance/job-instance.component";
 import {InstanceViewLogComponent} from "./instance/instance-view/instance-view.component";
 import {InstanceQueryComponent} from "./instance/instance-query/instance-query.component";
+import {GroupListComponent} from "./group/group-list/group-list.component";
+import {GroupEditComponent} from "./group/group-edit/group-edit.component";
 
 
 
@@ -20,6 +22,9 @@ const appRoutes: Routes = [
   { path: 'triggers', component: TriggerListComponent },
   { path: 'trigger/new', component: TriggerEditComponent },
   { path: 'trigger/edit/:triggerId', component: TriggerEditComponent },
+  { path: 'groups', component: GroupListComponent },
+  { path: 'group/new', component: GroupEditComponent },
+  { path: 'group/edit/:groupId', component: GroupEditComponent },
   { path: '',   redirectTo: '/jobs', pathMatch: 'full' },
   { path: '**', component: JobListComponent }
 ];

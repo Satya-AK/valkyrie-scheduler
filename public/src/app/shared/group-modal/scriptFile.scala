@@ -1,1 +1,0 @@
-UUID.UUID().replace(/-/g,"")

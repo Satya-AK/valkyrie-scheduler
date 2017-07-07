@@ -3,9 +3,9 @@ import {JobService} from "../job.service";
 import {Job} from "../job";
 import {AlertService} from "../../shared/alert-service.service";
 import {Subject} from "rxjs/Subject";
-import {GroupContextService} from "../../shared/group-context.service";
 import {DataTableDirective} from "angular-datatables";
 import {Subscription} from "rxjs/Subscription";
+import {GroupContextService} from "../../group/group.service";
 
 
 @Component({

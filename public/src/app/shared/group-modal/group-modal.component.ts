@@ -1,6 +1,7 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {Group, GroupContextService} from "../group-context.service";
 import { UUID } from 'angular2-uuid';
+import {GroupContextService} from "../../group/group.service";
+import {Group} from "../../group/group";
 
 
 @Component({
@@ -59,7 +60,7 @@ export class GroupModalComponent  {
 
   fetchGroups() {
     this.groupContextService
-      .listGroups()
+      .list()
       .subscribe(data => {this.groups = data;
           if(this.groupContextService.getCurrentGroup()) {
              let groupItem = this.groups.filter(x => x.name == this.groupContextService.getCurrentGroup().name)[0];
@@ -74,7 +75,7 @@ export class GroupModalComponent  {
   createNUse(data) {
     let group = new Group(UUID.UUID().replace(/-/g,"") ,data.group_name, data.group_email, "this is a description");
     this.groupContextService
-      .createGroup(group)
+      .create(group)
       .subscribe(data => { this.groupContextService.setCurrentGroup(data);
       this.selectedGroup = group.name;
       window.location.href='#/jobs';

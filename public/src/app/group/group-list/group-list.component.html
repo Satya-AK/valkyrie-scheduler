@@ -1,0 +1,62 @@
+<div>
+  <div>
+    <div class="col-sm-1 ctrl-panel">
+      <a href="#/group/new" class="btn btn-default">
+        <span class="glyphicon glyphicon-plus"></span>
+        Group
+      </a>
+    </div>
+  </div>
+  <div bsModal #delConfirmationModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Delete Group</h4>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete {{selectedGroupName}}?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="deleteGroup(selectedGroupId)">
+            Yes
+          </button>
+          <button type="button" class="btn btn-default" data-dismiss="modal" (click)="delConfirmationModal.hide()">
+            No
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <table datatable="ng" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th><input type="checkbox" (click)="selectAll()" [(ngModel)]="selectAllState" class="sorting_disabled"></th>
+        <th>Group Name</th>
+        <th>Description</th>
+        <th>Group Email</th>
+        <th>Edit</th>
+        <th>Delete</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of rows">
+        <td style="text-align: center"><input type="checkbox" [(ngModel)]="item.checked"></td>
+        <td>{{item.name}}</td>
+        <td>{{item.desc}}</td>
+        <td>{{item.email}}</td>
+        <td>
+          <a [href]="groupEditUrl(item.id)" class="btn btn-default btn-small">
+            <span class="glyphicon glyphicon-edit"></span>
+          </a>
+        </td>
+        <td style="text-align: center;">
+          <a (click)="confirmDeleteGroup(item.id)" class="btn btn-danger btn-small">
+            <span class="glyphicon glyphicon-trash"></span>
+          </a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

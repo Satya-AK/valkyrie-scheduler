@@ -5,7 +5,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import {Job} from "./job";
 import {BaseApiService} from "../shared/base-api-service";
-import {GroupContextService} from "../shared/group-context.service";
+import {GroupContextService} from "../group/group.service";
 
 
 @Injectable()

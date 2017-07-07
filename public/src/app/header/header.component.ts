@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {GroupContextService} from "../shared/group-context.service";
+import {GroupContextService} from "../group/group.service";
 
 @Component({
   selector: 'app-header',
@@ -13,7 +13,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
   }
 
-  groups = this.groupContextService.listGroups()
+  groups = this.groupContextService.list();
 
   getCurrentGroupName() {
     if (this.groupContextService.getCurrentGroup()) {
