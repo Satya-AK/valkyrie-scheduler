@@ -7,6 +7,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { GroupModalComponent } from './group-modal/group-modal.component';
 import {FormsModule} from "@angular/forms";
 import {NgSelectizeModule} from "ng-selectize";
+import {OtherService} from "./other.service";
 
 
 @NgModule({
@@ -20,6 +21,6 @@ import {NgSelectizeModule} from "ng-selectize";
   ],
   declarations: [AlertBannerComponent, GroupModalComponent],
   exports: [AlertBannerComponent, GroupModalComponent],
-  providers: [AlertService]
+  providers: [AlertService, OtherService]
 })
 export class SharedModule { }

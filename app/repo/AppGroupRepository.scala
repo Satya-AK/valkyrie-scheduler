@@ -6,6 +6,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import table.AppGroupTable
 import util.AppException.EntityNotFoundException
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

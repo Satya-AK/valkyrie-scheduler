@@ -11,9 +11,11 @@ import com.google.inject.Inject
 class AppSchemaManager @Inject() (instanceTable: AppInstanceTable,
                                   statusTable: AppStatusTable,
                                   instanceLogTable: AppInstanceLogTable,
-                                  groupTable: AppGroupTable) {
+                                  groupTable: AppGroupTable,
+                                  schedulerStateTable: SchedulerStateTable) {
 
-  val schemas = instanceTable.schema :: statusTable.schema :: instanceLogTable.schema :: groupTable.schema  :: Nil
+  val schemas = instanceTable.schema :: statusTable.schema :: instanceLogTable.schema :: groupTable.schema ::
+    schedulerStateTable.schema :: Nil
 
   def evolution = {
     val writer = new StringWriter()

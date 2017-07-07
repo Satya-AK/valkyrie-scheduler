@@ -1,13 +1,53 @@
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;
-    background-color: black;
-    position: absolute">
-  <div class="row">
-    <div class="navbar-header">
-        <a class="navbar-brand header-component" style="color: white;" href="/#/">Valkyrie</a>
-    </div>
-    <div class="dropdown pull-right header-component" *ngIf="getCurrentGroupName()">
-      <strong class="navbar-header" style="line-height: 2.4">Current Group:</strong>
-      <button class="btn btn-default" (click)="show()" style="margin-left: 5px">{{getCurrentGroupName()}}</button>
+<div>
+  <div bsModal #agentModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Scheduler Agents</h4>
+        </div>
+        <div class="modal-body">
+          <table style="width:100%">
+            <tr>
+              <th>Agent</th>
+              <th>isActive</th>
+              <th>Last Check-in Time</th>
+              <th>Checkin Interval</th>
+            </tr>
+            <tr *ngFor="let item of agents">
+              <td>{{item.name}}</td>
+              <td>{{item.active}}</td>
+              <td>{{item.lastCheckInTime}}</td>
+              <td>{{item.checkInInterval}}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="agentModal.hide()">
+            Ok
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</nav>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0;
+      background-color: black;
+      position: absolute">
+    <div class="row">
+      <div class="navbar-header">
+          <a class="navbar-brand header-component" style="color: white;" href="/#/">Valkyrie</a>
+      </div>
+      <div class="dropdown pull-right header-component" *ngIf="getCurrentGroupName()" style="margin-right: 17px">
+        <button  class="button edit-settings" (click)="show()" style="margin-left: 5px">
+          Group: {{getCurrentGroupName()}}
+          <span class="glyphicon glyphicon-icon-computer-service"></span>
+        </button>
+      </div>
+      <div class="dropdown pull-right header-component" *ngIf="getCurrentGroupName()">
+        <button class="button edit-settings" (click)="agentModal.show()">
+          Agents
+          <span class="glyphicon glyphicon-cog" style="font-size: 1.2em; top: 4px"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+</div>

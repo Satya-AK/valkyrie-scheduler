@@ -41,3 +41,4 @@ POST     /group/create                                  @controllers.GroupContro
 GET      /groups                                        @controllers.GroupController.listGroups
 GET      /group/fetch/:groupId                          @controllers.GroupController.fetchGroup(groupId: String)
 POST     /group/update                                  @controllers.GroupController.update
+GET      /agents                                        @controllers.HomeController.agents

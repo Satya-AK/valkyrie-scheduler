@@ -13,6 +13,7 @@ import {SharedModule} from "./shared/shared.module";
 import { JobInstanceComponent } from './instance/job-instance/job-instance.component';
 import {InstanceModule} from "./instance/instance.module";
 import {GroupModule} from "./group/group.module";
+import {ModalModule} from "ngx-bootstrap";
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import {GroupModule} from "./group/group.module";
     BrowserModule,
     FormsModule,
     HttpModule,
+    ModalModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]
