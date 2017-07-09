@@ -23,6 +23,7 @@ class AppGroupTable @Inject()(protected val dbConfigProvider: DatabaseConfigProv
     def groupEmail = column[String]("GROUP_EMAIL", O.SqlType("VARCHAR(300)"))
     def description = column[Option[String]]("DESCRIPTION", O.SqlType("VARCHAR(200)"))
     override def * = (id, groupName, groupEmail ,description) <> (AppGroup.tupled, AppGroup.unapply)
+    def groupNameIndex = index("group_name_app_group_unq_key", groupName, unique = true)
   }
 
 }

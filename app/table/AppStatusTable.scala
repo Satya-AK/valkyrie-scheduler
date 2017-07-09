@@ -20,7 +20,7 @@ class AppStatusTable @Inject()(protected val dbConfigProvider: DatabaseConfigPro
   val schema = table.schema
 
   class TableDef(tag: Tag) extends Table[AppStatus](tag, "APP_STATUS") {
-    def id =  column[Int]("ID")
+    def id =  column[Int]("ID", O.PrimaryKey)
     def statusName = column[String]("STATUS", O.SqlType("varchar(40)"))
     override def * = (id, statusName) <> (AppStatus.tupled, AppStatus.unapply)
   }

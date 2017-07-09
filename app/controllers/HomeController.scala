@@ -1,12 +1,14 @@
 package controllers
 
 import javax.inject._
-import scala.concurrent.ExecutionContext.Implicits.global
+
 import play.api.libs.json.JsArray
 import play.api.mvc._
 import repo.SchedulerStateRepository
 import table.AppSchemaManager
 import util.ErrRecoveryAction
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -29,9 +31,7 @@ class HomeController @Inject() (appSchemaManager: AppSchemaManager,
 
 
   def evolutions = Action {
-    Ok {
-      appSchemaManager.evolution
-    }
+    Ok(appSchemaManager.evolution)
   }
 
   /**
@@ -42,5 +42,6 @@ class HomeController @Inject() (appSchemaManager: AppSchemaManager,
     schedulerStateRepository.getAgent
       .map(x => Ok(x.map(_.json).foldLeft(JsArray())({ case (arr,node) => arr :+ node })))
   }
+
 
 }

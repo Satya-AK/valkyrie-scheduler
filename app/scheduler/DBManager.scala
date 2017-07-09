@@ -1,10 +1,12 @@
 package scheduler
 
-import java.sql.{Connection, DriverManager, ResultSet}
+import java.sql._
 
-import model.AppInstance
+import model._
 import play.api.Logger
+import repo.AppStatusRepository.Status
 import scheduler.DBManager.DBConnection
+import util.{GlobalContext, Keyword}
 
 import scala.util.{Failure, Success, Try}
 
@@ -52,15 +54,43 @@ class DBManager(protected val dBConnection: DBConnection) {
       }
   }
 
-
+  /**
+    *
+    * @param appInstance
+    * @param stdout
+    * @param stderr
+    */
   def endInstance(appInstance: AppInstance, stdout: Option[String], stderr: Option[String]) = {
    run {
      implicit connection =>
        this.updateInstance(appInstance)
       stdout.foreach(this.updateLog(appInstance, _, "stdout"))
       stderr.foreach(this.updateLog(appInstance, _, "stderr"))
-   }
+      this.sendEmail(appInstance, stdout, stderr)
+    }
   }
+
+
+  /**
+    * send email
+    * @param appInstance
+    */
+  private def sendEmail(appInstance: AppInstance, stdout: Option[String], stderr: Option[String])
+                       (implicit connection: Connection) = {
+    GlobalContext.application.configuration
+      .getConfig(Keyword.EmailSetting.rootKey)
+      .map(AppEmailConnection.create) match {
+      case None => logger.error(s"${Keyword.EmailSetting.rootKey} setting not found in app configuration")
+      case Some(x) =>
+        val emailManager = new EmailManager(x)
+        val group = fetchGroup(appInstance.groupId)
+        val job = fetchJob(appInstance.groupId, appInstance.jobId)
+        if (job.emailOnFailure &&  Seq(Status.fail, Status.error).contains(appInstance.statusId) ||
+          job.emailOnSuccess && appInstance.statusId == Status.success)
+          emailManager.send(appInstance, job.jobName, group, stdout, stderr)
+    }
+  }
+
 
 
   private def getSeqId(appInstance: AppInstance)(implicit connection: Connection): Long = {
@@ -78,10 +108,9 @@ class DBManager(protected val dBConnection: DBConnection) {
       }
     } match {
       case Success(()) => if(rs != null) rs.close(); seqId
-      case Failure(th) => if(rs != null) rs.close();  th.printStackTrace(System.out); 0
+      case Failure(th) => if(rs != null) rs.close();  logger.error("error getting sequence id", th); 0
     }
   }
-
 
   private def insertInstance(appInstance: AppInstance, seqId: Long)(implicit connection: Connection): Unit = {
     val insertSql =
@@ -150,7 +179,7 @@ class DBManager(protected val dBConnection: DBConnection) {
         case None => stmt.setNull(1, java.sql.Types.TIMESTAMP)
       }
     appInstance.message match {
-      case Some(x) => stmt.setString(2, x.substring(0,199))
+      case Some(x) => stmt.setString(2, x.take(199))
       case None => stmt.setNull(2, java.sql.Types.VARCHAR)
     }
     appInstance.returnCode match {
@@ -177,7 +206,43 @@ class DBManager(protected val dBConnection: DBConnection) {
 
 
 
+  private def fetchGroup(groupId: String)(implicit connection: Connection) = {
+    val sql ="""SELECT * FROM APP_GROUP WHERE ID = ?""".stripMargin
+    var appGroup: AppGroup = null
+    var rs: ResultSet = null
+    var stmt: PreparedStatement = null
+    try {
+      stmt = connection.prepareStatement(sql)
+      stmt.setString(1, groupId)
+      rs = stmt.executeQuery()
+      while (rs.next()) {
+        appGroup = AppGroup(rs.getString(1), rs.getString(2), rs.getString(3), Option(rs.getString(4)))
+      }
+    } finally {
+       Try({rs.close(); stmt.close()})
+    }
+    appGroup
+  }
 
+
+  private def fetchJob(groupId: String, jobId: String)(implicit connection: Connection) = {
+    val sql ="""SELECT JOB_DATA,DESCRIPTION FROM QRTZ_JOB_DETAILS WHERE JOB_NAME = ? AND JOB_GROUP =?""".stripMargin
+    var rs: ResultSet = null
+    var stmt: PreparedStatement = null
+    var job: Job = null
+    try {
+      stmt = connection.prepareStatement(sql)
+      stmt.setString(1, jobId)
+      stmt.setString(2, groupId)
+      rs = stmt.executeQuery()
+      while (rs.next()) {
+        job = Job(jobId, groupId, Option(rs.getString(2)), Option(rs.getBlob(1)))
+      }
+    } finally {
+      Try({rs.close(); stmt.close()})
+    }
+    AppJob.create(job)
+  }
 }
 
 object DBManager {

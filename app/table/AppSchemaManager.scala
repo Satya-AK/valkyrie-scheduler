@@ -14,8 +14,7 @@ class AppSchemaManager @Inject() (instanceTable: AppInstanceTable,
                                   groupTable: AppGroupTable,
                                   schedulerStateTable: SchedulerStateTable) {
 
-  val schemas = instanceTable.schema :: statusTable.schema :: instanceLogTable.schema :: groupTable.schema ::
-    schedulerStateTable.schema :: Nil
+  val schemas = instanceTable.schema :: statusTable.schema :: instanceLogTable.schema :: groupTable.schema :: Nil
 
   def evolution = {
     val writer = new StringWriter()

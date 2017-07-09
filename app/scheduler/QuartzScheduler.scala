@@ -64,8 +64,10 @@ class QuartzScheduler @Inject() (application: Application,
 
   def createOrUpdateJob(job: AppJob, update: Boolean = false) = {
     val data = Map(JobData.command -> job.cmd,
-      JobData.workingDir -> job.workingDir,
-        JobData.jobName -> job.jobName)
+        JobData.workingDir -> job.workingDir,
+        JobData.jobName -> job.jobName,
+        JobData.emailOnFailure -> job.emailOnFailure.toString,
+        JobData.emailOnSuccess -> job.emailOnSuccess.toString)
     val jobDetail = JobBuilder.newJob(classOf[CommandJobImpl])
       .withIdentity(new JobKey(job.id, job.groupId))
       .setJobData(new JobDataMap(data.asJava))

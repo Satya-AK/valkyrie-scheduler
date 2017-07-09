@@ -25,7 +25,7 @@ export class JobEditComponent implements OnInit {
 
   ngOnInit() {
     this.jobId = this.activatedRoute.snapshot.params["jobId"];
-    this.job = new Job(UUID.UUID().replace(/-/g,""),"", "", "", "");
+    this.job = new Job(UUID.UUID().replace(/-/g,""),"", "", "", "", false, false);
     if (this.jobId) {
       this.createMode = false;
       this.jobService

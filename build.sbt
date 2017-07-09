@@ -27,7 +27,8 @@ libraryDependencies ++= Seq(
   "net.codingwell" %% "scala-guice" % "4.1.0",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
   "org.quartz-scheduler" % "quartz" % "2.3.0",
-  "org.apache.commons" % "commons-exec" % "1.3"
+  "org.apache.commons" % "commons-exec" % "1.3",
+  "javax.mail" % "mail" % "1.4.7"
 )
 
 javaOptions in Test += "-Dconfig.file=conf/application-test.conf"

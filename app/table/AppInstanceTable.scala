@@ -21,7 +21,7 @@ class AppInstanceTable @Inject()(protected val dbConfigProvider: DatabaseConfigP
   val schema = table.schema
 
   class TableDef(tag: Tag) extends Table[AppInstance](tag, "APP_INSTANCE") {
-    def instanceId =  column[String]("INSTANCE_ID", O.SqlType("varchar(40)"))
+    def instanceId =  column[String]("INSTANCE_ID", O.PrimaryKey ,O.SqlType("varchar(40)"))
     def groupName = column[String]("GROUP_ID", O.SqlType("varchar(100)"))
     def jobName = column[String]("JOB_ID", O.SqlType("varchar(100)"))
     def triggerName = column[Option[String]]("TRIGGER_ID", O.SqlType("VARCHAR(100)"))
@@ -33,9 +33,10 @@ class AppInstanceTable @Inject()(protected val dbConfigProvider: DatabaseConfigP
     def statusId = column[Int]("STATUS_ID")
     def attempt = column[Int]("ATTEMPT")
     def agentName = column[String]("AGENT_NAME", O.SqlType("varchar(100)"))
-
     override def * = (instanceId, groupName, jobName, triggerName, startTime, endTime, message, returnCode,
       seqId, statusId, attempt, agentName) <> (AppInstance.tupled, AppInstance.unapply)
+    def idIndex = index("instance_id_app_instance_unq_key", instanceId, unique = true)
+
   }
 
 }

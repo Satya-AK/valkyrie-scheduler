@@ -22,5 +22,6 @@ class AppInstanceLogTable @Inject()(protected val dbConfigProvider: DatabaseConf
     def logType = column[String]("LOG_TYPE", O.SqlType("varchar(10)"))
     def logData = column[Option[String]]("LOG_DATA", O.SqlType("TEXT"))
     override def * = (instanceId, logType, logData) <> (AppInstanceLog.tupled, AppInstanceLog.unapply)
+    def idIndex = index("instance_id_app_instance_log_unq_key", instanceId, unique = false)
   }
 }

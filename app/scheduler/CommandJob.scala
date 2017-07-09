@@ -59,11 +59,11 @@ abstract class CommandJob extends Job {
          case CommandResponse(stdout, stderr, Some(x: JobExecutionException)) =>
            logger.info(s"instance ${command.instanceId} execution failed with status code ${x.returnCode}")
            dBManager.endInstance(appInstance.copy(endTime=Some(new Timestamp(new Date().getTime)),
-             statusId=Status.fail, returnCode=Some(x.returnCode)), stdout.log, stderr.log)
+             statusId=Status.fail, returnCode=Some(x.returnCode), message=Some(x.getMessage)), stdout.log, stderr.log)
          case CommandResponse(stdout, stderr, Some(x)) =>
            logger.error(s"fatal error invoking instance ${command.instanceId}", x)
            dBManager.endInstance(appInstance.copy(statusId=Status.error, returnCode=Some(-1),
-             message = Some(x.getMessage)), stdout.log, stderr.log)
+             message = Some(x.getMessage), endTime=Some(new Timestamp(new Date().getTime))), stdout.log, stderr.log)
        }
     } catch {
       case th: Throwable =>
