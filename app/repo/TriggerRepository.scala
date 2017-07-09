@@ -5,7 +5,8 @@ import model.AppTrigger
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import table.{CronTriggerTable, TriggerTable}
-import util.AppException.EntityNotFoundException
+import util.AppException.{EntityNotFoundException, InvalidStateException}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -39,11 +40,45 @@ class TriggerRepository @Inject()(protected val dbConfigProvider: DatabaseConfig
     }
   }
 
+  /**
+    * check if trigger exists with a name in group while create
+    * @param groupId
+    * @param triggerName
+    * @return
+    */
+  def checkTriggerNameForCreate(groupId: String, triggerName: String): Future[Unit] = {
+    listTriggers(groupId).map(x => x.find(_.triggerName == triggerName)) flatMap {
+      case Some(_) => Future.failed(new InvalidStateException(s"trigger with name $triggerName already exists"))
+      case None => Future.successful(())
+    }
+  }
 
-  def listTriggers(groupName: String): Future[Seq[AppTrigger]] = {
+  /**
+    *
+    * @param groupId
+    * @param triggerId
+    * @param triggerName
+    * @return
+    */
+  def checkTriggerNameForUpdate(groupId: String, triggerId: String, triggerName: String): Future[Unit] = {
+    listTriggers(groupId).map(x => x.filter(_.triggerName == triggerName).toList) flatMap {
+      case x :: Nil if x.id == triggerId => Future.successful(())
+      case Nil => Future.successful(())
+      case x =>
+        println(x)
+        Future.failed(new InvalidStateException(s"trigger with name $triggerName already exists"))
+    }
+  }
+
+  /**
+    * list trigger
+    * @param groupId
+    * @return
+    */
+  def listTriggers(groupId: String): Future[Seq[AppTrigger]] = {
     val action = for {
-      mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupName)
-      cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupName && x.triggerName === mainTrigger.triggerName)
+      mainTrigger <- triggerTable.table.filter(x => x.tgrGroupId === groupId)
+      cronTrigger <- cronTriggerTable.table.filter(x => x.groupName === groupId && x.triggerName === mainTrigger.triggerName)
     } yield mainTrigger -> cronTrigger
     db.run(action.result).map(x => x.map(y => AppTrigger.create(y._1, y._2)))
   }

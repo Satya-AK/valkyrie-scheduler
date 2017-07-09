@@ -29,6 +29,7 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
       for {
         _ <- groupRepository.getGroupById(groupId)
         appJob <- Util.parseJson[AppJob](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- jobRepository.checkJobNameForCreate(groupId, appJob.jobName)
         _ <- scheduler.createJob(appJob)
       } yield Ok(Json.obj("message" -> "job created"))
   }
@@ -43,6 +44,7 @@ class JobController @Inject()(triggerRepository: TriggerRepository,
       for {
         _ <- groupRepository.getGroupById(groupId)
         appJob <- Util.parseJson[AppJob](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- jobRepository.checkJobNameForUpdate(groupId, appJob.id ,appJob.jobName)
         _ <- scheduler.updateJob(appJob)
       } yield Ok(Json.obj("message" -> s"updated job ${appJob.jobName}"))
   }

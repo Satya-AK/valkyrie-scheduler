@@ -95,6 +95,21 @@ trait Scheduler {
     */
   def restartInstance(instanceId: String): Future[Unit]
 
+
+  /**
+    * put scheduler in standbydown
+    * @return
+    */
+  def disableScheduler: Future[Unit]
+
+
+  /**
+    * enable scheduler
+    * @return
+    */
+  def enabledScheduler: Future[Unit]
+
+
   /**
     * destroy the scheduler
     */

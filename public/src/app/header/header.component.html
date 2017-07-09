@@ -39,12 +39,12 @@
       <div class="dropdown pull-right header-component" *ngIf="getCurrentGroupName()" style="margin-right: 17px">
         <button  class="button edit-settings" (click)="show()" style="margin-left: 5px">
           Group: {{getCurrentGroupName()}}
-          <span class="glyphicon glyphicon-icon-computer-service"></span>
+          <span class="glyphicons glyphicons-group"></span>
         </button>
       </div>
       <div class="dropdown pull-right header-component" *ngIf="getCurrentGroupName()">
         <button class="button edit-settings" (click)="agentModal.show()">
-          Agents
+          Scheduler
           <span class="glyphicon glyphicon-cog" style="font-size: 1.2em; top: 4px"></span>
         </button>
       </div>

@@ -24,6 +24,7 @@ GET      /trigger/fetch/group/:groupId/trigger/:triggerId     @controllers.Trigg
 POST     /trigger/delete/group/:groupId/trigger/:triggerId    @controllers.TriggerController.deleteTrigger(groupId: String, triggerId: String)
 POST     /trigger/disable/group/:groupId/trigger/:triggerId   @controllers.TriggerController.disable(groupId: String, triggerId: String)
 POST     /trigger/enable/group/:groupId/trigger/:triggerId    @controllers.TriggerController.enable(groupId: String, triggerId: String)
+POST     /trigger/update/group/:groupId                       @controllers.TriggerController.updateTrigger(groupId: String)
 
 POST     /instance/kill/request/:instanceId             @controllers.InstanceController.requestInstanceKill(instanceId: String)
 POST     /instance/forcefinish/:instanceId              @controllers.InstanceController.forceFinish(instanceId: String)
@@ -41,4 +42,9 @@ POST     /group/create                                  @controllers.GroupContro
 GET      /groups                                        @controllers.GroupController.listGroups
 GET      /group/fetch/:groupId                          @controllers.GroupController.fetchGroup(groupId: String)
 POST     /group/update                                  @controllers.GroupController.update
-GET      /agents                                        @controllers.HomeController.agents
+
+
+
+GET      /scheduler/agents                              @controllers.SchedulerController.agents
+POST     /scheduler/state/enabled                       @controllers.SchedulerController.setSchedulerState(state: Boolean ?= true)
+POST     /scheduler/state/disabled                      @controllers.SchedulerController.setSchedulerState(state: Boolean ?= false)

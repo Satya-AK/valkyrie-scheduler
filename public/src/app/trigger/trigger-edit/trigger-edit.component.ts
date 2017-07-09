@@ -25,7 +25,7 @@ export class TriggerEditComponent implements OnInit {
               private alertService: AlertService,
               private activatedRoute: ActivatedRoute) {
     this.jobService.list().subscribe(x => this.jobs = x);
-    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""), "", "", "", "", false);
+    this.trigger = new Trigger(UUID.UUID().replace(/-/g,""), "", "", "", "", true);
     this.triggerId = this.activatedRoute.snapshot.params["triggerId"];
     if (this.triggerId) {
       this.triggerService.fetch(this.triggerId)
@@ -56,6 +56,16 @@ export class TriggerEditComponent implements OnInit {
     this.triggerService
       .create(this.trigger)
       .subscribe(data => {this.alertService.showSuccessMessage(data); window.location.href='#/triggers';},
+        data => this.alertService.showErrorMessage(data))
+  }
+
+  /**
+   * update trigger
+   */
+  updateTrigger() {
+    this.triggerService
+      .update(this.trigger)
+      .subscribe(x => {this.alertService.showSuccessMessage(x); window.location.href='#/triggers';},
         data => this.alertService.showErrorMessage(data))
   }
 

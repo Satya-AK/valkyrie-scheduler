@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
               private otherService: OtherService) { }
 
   ngOnInit() {
-    this.otherService.agents().subscribe(x => { console.log(x) ;this.agents = x})
+    this.otherService.agents().subscribe(x => this.agents = x)
   }
 
   groups = this.groupContextService.list();

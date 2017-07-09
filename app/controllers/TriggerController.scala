@@ -31,8 +31,25 @@ class TriggerController @Inject()(triggerRepository: TriggerRepository,
       for {
         _ <- groupRepository.getGroupById(groupId)
         appTrigger <- Util.parseJson[AppTrigger](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- triggerRepository.checkTriggerNameForCreate(groupId, appTrigger.triggerName)
         _ <- scheduler.createTrigger(appTrigger)
-      } yield Ok(Json.obj("success" -> "trigger created"))
+      } yield Ok(Json.obj("message" -> "trigger created"))
+  }
+
+
+  /**
+    * update trigger
+    * @param groupId
+    * @return
+    */
+  def updateTrigger(groupId: String) = ErrRecoveryAction.async(parse.json) {
+    request =>
+      for {
+        _ <- groupRepository.getGroupById(groupId)
+        appTrigger <- Util.parseJson[AppTrigger](request.body.as[JsObject].update("group_id" -> groupId))
+        _ <- triggerRepository.checkTriggerNameForUpdate(groupId, appTrigger.id ,appTrigger.triggerName)
+        _ <- scheduler.updateTrigger(appTrigger)
+      } yield Ok(Json.obj("message" -> "trigger updated successfully"))
   }
 
 

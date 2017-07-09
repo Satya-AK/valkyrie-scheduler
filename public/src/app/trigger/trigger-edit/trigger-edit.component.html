@@ -20,10 +20,7 @@
       <div class="row">
         <label for="desc" class="col-sm-3 control-label">Description</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" name="desc" required [(ngModel)]="trigger.desc" #desc="ngModel">
-          <div class="row alert alert-danger" [hidden]="desc.valid || desc.pristine">
-            Description field is a mandatory field
-          </div>
+          <input type="text" class="form-control" name="desc" [(ngModel)]="trigger.desc" #desc="ngModel">
         </div>
       </div>
     </div>
@@ -45,7 +42,7 @@
         <label for="job" class="col-sm-3 control-label">Job</label>
         <div class="col-sm-6">
           <ng-selectize name="job" [config]="ngSelectOptions" [options] = "jobs" required
-                        [(ngModel)]="trigger.jobId" [disabled]="!groups" placeholder="Select Job" #jobName="ngModel">
+                        [(ngModel)]="trigger.jobId" [enabled]="!triggerId" placeholder="Select Job" #jobName="ngModel">
           </ng-selectize>
           <div class="row alert alert-danger" [hidden]="!!trigger.jobId || jobName.pristine">
             Job is a mandatory field
@@ -54,15 +51,24 @@
       </div>
     </div>
 
-    <button type="submit" *ngIf="!triggerId" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobId"
-            (click)="createTrigger()">
-      Create Trigger
-    </button>
+    <div class="form-group">
+      <div class="row">
+        <label for="trigger_state" class="col-sm-3 control-label">Enable Trigger</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" name="workDir" required [(ngModel)]="!trigger.disable" #disable="ngModel">
+        </div>
+      </div>
+    </div>
 
-    <button type="submit" *ngIf="!!triggerId" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobId"
-            (click)="createTrigger()">
-      Update Trigger
-    </button>
-
+    <div class="form-group">
+        <button type="submit" *ngIf="!triggerId" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobId"
+                (click)="createTrigger()">
+          Create Trigger
+        </button>
+        <button type="submit" *ngIf="!!triggerId" class="btn btn-success"  [disabled]="triggerForm.invalid || !trigger.jobId"
+                (click)="updateTrigger()">
+          Update Trigger
+        </button>
+    </div>
   </form>
 </div>

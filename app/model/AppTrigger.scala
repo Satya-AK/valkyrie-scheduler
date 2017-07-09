@@ -17,7 +17,7 @@ import scheduler.SchedulerParser
   * @param cron
   * @param desc
   */
-case class AppTrigger(id: String,
+case class  AppTrigger(id: String,
                       triggerName: String,
                       groupId: String,
                       jobId: String,

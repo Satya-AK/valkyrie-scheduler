@@ -82,4 +82,15 @@ export class TriggerService extends BaseApiService {
       .catch(err => this.handleError(err))
   }
 
+  /**
+   *
+   * @param trigger
+   */
+  update(trigger: Trigger) {
+    return this.http
+      .post("/trigger/update/group/"+this.groupContextService.getCurrentGroup().id, trigger.json())
+      .map(x => x.json().message)
+      .catch(err => this.handleError(err))
+  }
+
 }

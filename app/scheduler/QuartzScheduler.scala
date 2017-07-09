@@ -86,7 +86,8 @@ class QuartzScheduler @Inject() (application: Application,
       .withDescription(appTrigger.desc.orNull)
       .withSchedule(CronScheduleBuilder.cronSchedule(appTrigger.quartzCron).withMisfireHandlingInstructionDoNothing())
       .build()
-    Future.successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
+    Future
+      .successful(scheduler.scheduleJob(triggerDetail)).map(_ => ())
   }
 
   def updateTrigger(appTrigger: AppTrigger) = {
@@ -171,5 +172,24 @@ class QuartzScheduler @Inject() (application: Application,
       _ = scheduler.triggerJob(new JobKey(instance.jobId, instance.groupId),
         new JobDataMap(Map("launch-mode" -> "restart" ,"instance_id" -> instanceId).asJava))
     } yield ()
+  }
+
+  /**
+    * put scheduler in standbydown
+    *
+    * @return
+    */
+  override def disableScheduler: Future[Unit] = {
+    Future.successful(scheduler.standby())
+  }
+
+
+  /**
+    * enable scheduler
+    *
+    * @return
+    */
+  override def enabledScheduler: Future[Unit] = {
+    Future.successful(scheduler.start())
   }
 }

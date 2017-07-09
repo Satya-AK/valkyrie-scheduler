@@ -20,10 +20,7 @@
       <div class="row">
         <label for="desc" class="col-sm-3 control-label">Description</label>
         <div class="col-sm-6">
-          <input type="text" class="form-control" name="desc" required [(ngModel)]="job.desc" #desc="ngModel">
-          <div class="row alert alert-danger" [hidden]="desc.valid || desc.pristine">
-            Description field is a mandatory field
-          </div>
+          <input type="text" class="form-control" name="desc" [(ngModel)]="job.desc" #desc="ngModel">
         </div>
       </div>
     </div>
@@ -55,12 +52,12 @@
     <div class="form-group row" style="align-content: center">
       <div class="col-sm-12">
         <div class="form-group row col-sm-offset-2">
-          <label for="emailOnFailure" class="col-sm-3 control-label">Email on Failure</label>
+          <label for="emailOnFailure" class="col-sm-3 control-label" style="line-height: 2.4">Email on Failure</label>
           <div class="col-sm-1">
             <input type="checkbox" class="form-control" name="emailOnFailure" [(ngModel)]="job.emailOnFailure"
                    #emailOnFailure="ngModel">
           </div>
-          <label for="emailOnSuccess" class="col-sm-3 control-label">Email on Success</label>
+          <label for="emailOnSuccess" class="col-sm-3 control-label" style="line-height: 2.4">Email on Success</label>
           <div class="col-sm-1">
             <input type="checkbox" class="form-control" name="emailOnSuccess" [(ngModel)]="job.emailOnSuccess"
                    #emailOnSuccess="ngModel">
