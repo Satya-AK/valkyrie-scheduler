@@ -31,7 +31,7 @@ export class InstanceViewLogComponent implements OnInit {
     this.refreshData();
   }
 
-  private refreshData() {
+  refreshData() {
     this.instanceService
       .fetchLog(this.instanceId)
       .subscribe(x => {this.stdout = x.stdout; this.stderr = x.stderr}, x => this.alertService.showErrorMessage(x));

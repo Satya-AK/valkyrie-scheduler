@@ -20,6 +20,18 @@ export class Instance {
               public agent: string) {}
 
 
+  isForceFinishable() {
+    return !(this.status == InstanceStatus.succeeded || this.status == InstanceStatus.finished)
+  }
+
+  isKillable() {
+    return this.status == InstanceStatus.running
+  }
+
+  isRerunnable() {
+    return !(this.status == InstanceStatus.running)
+  }
+
   statusName(): string {
     return InstanceStatus.status.filter(x => x.id == this.status).map(x => x.name)[0]
   }

@@ -1,5 +1,5 @@
 <div>
-  <h3>Job Instances of {{jobId}}</h3>
+  <h3 *ngIf="job != null">Job Name: {{job.name}}</h3>
   <table datatable="ng" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="table table-bordered table-striped">
     <thead>
     <tr>

@@ -4,7 +4,19 @@
     <li role="presentation" [ngClass]="{'active': activeTab=='stdout'}"><a (click)="setViewTab('stdout')">STDOUT</a></li>
     <li role="presentation" [ngClass]="{'active': activeTab=='stderr'}"><a (click)="setViewTab('stderr')">STDERR</a></li>
   </ul>
-
+  <div class="control-panel">
+    <label style="float: left;"><strong>Action:</strong></label>
+    <button class="btn btn-default" (click)="killInstance()" [disabled]="instance?!instance.isKillable():true">
+      Kill <span class="glyphicon glyphicon-stop"></span>
+    </button>
+    <button class="btn btn-default" (click)="restartInstance()" [disabled]="instance?!instance.isRerunnable():true">
+      Rerun<span class="glyphicon glyphicon-repeat"></span>
+    </button>
+    <button class="btn btn-default" (click)="forceFinish()" [disabled]="instance?!instance.isForceFinishable():true">
+      Force Finish<span class="glyphicon glyphicon glyphicon-off"></span>
+    </button>
+    <button class="btn btn-primary" (click)="refreshData()">Refresh<span class="glyphicon glyphicon-refresh"></span></button>
+  </div>
   <div class="tab-content clearfix">
     <div class="tab-pane pull-left log-component" [ngClass]="{'active': activeTab=='stdout'}" *ngIf="activeTab=='stdout'">
       {{stdout}}
@@ -13,12 +25,6 @@
       {{stderr}}
     </div>
     <div class="tab-pane pull-left" *ngIf="activeTab=='info'" [ngClass]="{'active': activeTab=='info'}">
-      <div class="control-panel">
-        <label style="float: left;"><strong>Action:</strong></label>
-        <button class="btn btn-default" (click)="killInstance()">Kill <span class="glyphicon glyphicon-stop"></span></button>
-        <button class="btn btn-default" (click)="restartInstance()">Rerun<span class="glyphicon glyphicon-repeat"></span></button>
-        <button class="btn btn-default" (click)="forceFinish()">Force Finish<span class="glyphicon glyphicon-repeat"></span></button>
-      </div>
       <table class="table-fill" *ngIf="instance">
         <tbody class="table-hover">
         <tr>
