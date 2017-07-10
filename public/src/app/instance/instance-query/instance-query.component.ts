@@ -6,8 +6,9 @@ import {Instance} from "app/instance/instance";
 import {Subject} from "rxjs/Subject";
 import {IMyDrpOptions} from "mydaterangepicker";
 import {InstanceStatus} from "../instance-status";
-import {FormControl} from "@angular/forms";
 import {DataTableDirective} from "angular-datatables";
+import {GroupContextService} from "../../group/group.service";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'app-instance-query',
@@ -21,9 +22,11 @@ export class InstanceQueryComponent implements OnInit {
   public selectedDateRange: {beginDate: { year: number, month: number, day: number}, endDate: { year: number, month: number, day: number}} = null;
   public statusList: InstanceStatus[] = InstanceStatus.status;
   public selectedStatus: string = null;
+  private groupContextSubscription: Subscription = null;
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
 
   constructor(private alertService: AlertService,
+              private groupContextService: GroupContextService,
               private instanceService: InstanceService) {
   }
 
@@ -54,9 +57,15 @@ export class InstanceQueryComponent implements OnInit {
 
   ngOnInit() {
     this.setInitDate();
-    this.instanceService
-      .query(this.getInstanceQuery())
-      .subscribe(x => {this.rows = x; this.dtTrigger.next()}, err => this.alertService.showErrorMessage(err))
+    this.fetchData(false);
+    this.groupContextSubscription = this.groupContextService.groupContextObservable
+      .subscribe(x => this.fetchData(true), err => this.alertService.showErrorMessage(err))
+  }
+
+  ngOnDestroy() {
+    if (this.groupContextSubscription) {
+      this.groupContextSubscription.unsubscribe();
+    }
   }
 
   private setInitDate() {
@@ -67,14 +76,16 @@ export class InstanceQueryComponent implements OnInit {
       endDate: {year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate()}};
   }
 
-  fetchData() {
+  fetchData(refreshDTInstance: boolean) {
     this.instanceService
       .query(this.getInstanceQuery())
-      .subscribe(x => {this.rows = x;this.refreshData()}, err => this.alertService.showErrorMessage(err))
+      .subscribe(x => {if (refreshDTInstance) {this.refreshDTTable(x)} else { this.rows = x; this.dtTrigger.next()}},
+        err => this.alertService.showErrorMessage(err))
   }
 
-  private refreshData() {
+  private refreshDTTable(data: Instance[]) {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      this.rows = data;
       dtInstance.destroy();
       this.dtTrigger.next();
     });
@@ -90,7 +101,7 @@ export class InstanceQueryComponent implements OnInit {
     let endDate = new Date(this.selectedDateRange.endDate.year,
       this.selectedDateRange.endDate.month-1, this.selectedDateRange.endDate.day);
     return new InstanceQuery(startDate.toISOString().substring(0,10),
-      endDate.toISOString().substring(0,10),Number(this.selectedStatus))
+      endDate.toISOString().substring(0,10),Number(this.selectedStatus), this.groupContextService.getCurrentGroup().id)
   }
 
 }

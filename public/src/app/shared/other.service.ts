@@ -12,7 +12,7 @@ export class OtherService extends BaseApiService {
 
   agents(): Observable<Agent[]> {
     return this.http
-      .get("/agents")
+      .get("/scheduler/agents")
       .map(x => x.json().map(y => Agent.fromJson(y)))
       .catch(err => this.handleError(err))
   }

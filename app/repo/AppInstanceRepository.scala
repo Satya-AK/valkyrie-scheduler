@@ -38,7 +38,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     * @return
     */
   def listInstances(jobId: String): Future[Seq[AppInstance]] = {
-    db.run(instanceTable.table.filter(_.jobName === jobId).result)
+    db.run(instanceTable.table.filter(_.jobId === jobId).result)
   }
 
   /**
@@ -52,7 +52,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
                      groupId: String,
                      triggerId: Option[String]): Future[Unit] = {
     def query(status: AppStatus, instanceId: String) = instanceTable.table
-      .filter(x => x.jobName === jobId && x.groupName === groupId)
+      .filter(x => x.jobId === jobId && x.groupId === groupId)
       .sortBy(_.seqId.desc).map(_.seqId).result.headOption flatMap {
       x => instanceTable.table += AppInstance(instanceId, groupId, jobId, triggerId, currentTimeStamp, None,
         None, None, x.getOrElse(0L)+1, status.id, 1, serviceHelper.accessPoint)
@@ -141,6 +141,7 @@ class AppInstanceRepository @Inject()(protected val dbConfigProvider: DatabaseCo
     val query = instanceTable.table
       .filter(x => x.startTime.asColumnOf[java.sql.Date] >= instanceQuery.startDate)
       .filter(x => x.endTime.asColumnOf[java.sql.Date] <= instanceQuery.endDate)
+      .filter(x => x.groupId === instanceQuery.groupId)
     instanceQuery.status match {
       case Some(x) => db.run(query.filter(_.statusId === x).result)
       case None => db.run(query.result)
